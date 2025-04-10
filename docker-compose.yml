@@ -1,0 +1,9 @@
+version: '3'
+
+services:
+  react-app:
+    build: .
+    container_name: react-app
+    ports:
+      - "80:3000"  # 외부에서 80으로 접속 → 컨테이너 3000으로 전달
+    restart: always

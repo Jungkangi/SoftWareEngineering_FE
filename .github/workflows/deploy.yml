@@ -17,10 +17,7 @@ jobs:
           username: ubuntu
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            cd ~/SoftWareEngineering_FE || exit 1
-            git reset --hard
-            git clean -fd
+            cd ~/SoftWareEngineering_FE
             git pull origin dev
-            npm ci
-            pm2 delete aegis-frontend || true
-            pm2 start npm --name "aegis-frontend" -- start
+            docker compose down || true
+            docker compose up -d --build
