@@ -1,9 +1,56 @@
 import styled from "styled-components";
 
-// Styled components for the hero section
-const HeroSection = styled.section`
+// Header 스타일
+export const Header = styled.header`
+  display: flex;
+  align-items: center;
+  height: 4rem;
+  padding: 0 1rem;
+  border-bottom: 1px solid #e5e7eb;
+  background-color: #ffffff;
+
+  @media (min-width: 1024px) {
+    padding: 0 1.5rem;
+  }
+`;
+
+export const Logo = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+  color: #111827;
+  text-decoration: none;
+
+  svg {
+    height: 1.5rem;
+    width: 1.5rem;
+    color: #3b82f6;
+  }
+`;
+
+export const Nav = styled.nav`
+  margin-left: auto;
+  display: flex;
+  gap: 1rem;
+
+  a {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #6b7280;
+    text-decoration: none;
+    transition: color 0.2s;
+
+    &:hover {
+      color: #3b82f6;
+    }
+  }
+`;
+
+// Hero Section 스타일
+export const HeroSection = styled.section`
   width: 100%;
-  padding: 3rem 1.5rem;
+  padding: 3rem 1rem;
   background-color: #f9fafb;
 
   @media (min-width: 768px) {
@@ -13,20 +60,14 @@ const HeroSection = styled.section`
   @media (min-width: 1024px) {
     padding: 8rem 2rem;
   }
-
-  @media (min-width: 1280px) {
-    padding: 12rem 2rem;
-  }
 `;
 
-const Container = styled.div`
+export const HeroContainer = styled.div`
   max-width: 1200px;
   margin: 0 auto;
-`;
-
-const HeroGrid = styled.div`
   display: grid;
   gap: 1.5rem;
+  align-items: center; /* 수직 정렬 추가 */
 
   @media (min-width: 1024px) {
     grid-template-columns: 1fr 1fr;
@@ -34,18 +75,17 @@ const HeroGrid = styled.div`
   }
 `;
 
-const HeroContent = styled.div`
+export const HeroContent = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center;
   gap: 1rem;
 `;
 
-const HeroTitle = styled.h1`
+export const HeroTitle = styled.h1`
   font-size: 2rem;
   font-weight: 700;
   line-height: 1.2;
-  letter-spacing: -0.025em;
   color: #111827;
 
   @media (min-width: 640px) {
@@ -57,7 +97,7 @@ const HeroTitle = styled.h1`
   }
 `;
 
-const HeroDescription = styled.p`
+export const HeroDescription = styled.p`
   max-width: 600px;
   color: #6b7280;
   font-size: 1rem;
@@ -67,37 +107,83 @@ const HeroDescription = styled.p`
   }
 `;
 
-const ButtonGroup = styled.div`
+export const ButtonGroup = styled.div`
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
-  margin-top: 1rem;
 
   @media (min-width: 400px) {
     flex-direction: row;
   }
 `;
 
-const DemoContainer = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
+// 주요 기능 섹션 스타일
+export const FeaturesSection = styled.section`
+  width: 100%;
+  padding: 3rem 1rem;
+  background-color: #ffffff;
+
+  @media (min-width: 768px) {
+    padding: 6rem 2rem;
+  }
 `;
 
-const DemoCard = styled.div`
+export const FeaturesContainer = styled.div`
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  gap: 1.5rem;
+
+  @media (min-width: 1024px) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+`;
+
+export const FeatureCard = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  padding: 2rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  background-color: #f9fafb;
+  text-align: center;
+
+  svg {
+    height: 2rem;
+    width: 2rem;
+    color: #3b82f6;
+  }
+
+  h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #111827;
+  }
+
+  p {
+    font-size: 0.875rem;
+    color: #6b7280;
+  }
+`;
+
+// Dashboard Card 스타일
+export const DashboardCard = styled.div`
   position: relative;
-  height: 350px;
   width: 100%;
   overflow: hidden;
   border-radius: 0.75rem;
   border: 1px solid #e5e7eb;
   background-color: white;
   padding: 1rem;
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
-    0 10px 10px -5px rgba(0, 0, 0, 0.04);
-`;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
 
-const DemoHeader = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 1rem; /* 내부 요소 간격 */
+`;
+export const DashboardHeader = styled.div`
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -105,64 +191,57 @@ const DemoHeader = styled.div`
   padding-bottom: 0.5rem;
 `;
 
-const DemoTitle = styled.div`
+export const DashboardTitle = styled.div`
   font-weight: 500;
 `;
 
-const DemoContent = styled.div`
+export const DashboardContent = styled.div`
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-rows: auto 1fr; /* Sprint Progress 위에 Tasks와 Team */
+  grid-template-columns: 1fr 1fr; /* Tasks와 Team을 좌우로 배치 */
   gap: 1rem;
-  padding-top: 1rem;
-  height: calc(100% - 2.5rem);
+  margin-top: 0; /* 위쪽 여백 제거 */
 `;
 
-const DemoCard1 = styled.div`
-  grid-column: span 2;
+
+export const DashboardCardItem = styled.div`
   border-radius: 0.5rem;
   border: 1px solid #e5e7eb;
   padding: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 `;
 
-const DemoCard2 = styled.div`
-  border-radius: 0.5rem;
-  border: 1px solid #e5e7eb;
-  padding: 0.75rem;
-`;
-
-const DemoProgressBar = styled.div`
+export const ProgressBar = styled.div`
   height: 0.5rem;
   background-color: #f3f4f6;
   border-radius: 9999px;
-  margin-top: 0.5rem;
+  margin-top: 0.25rem; /* 여백 최소화 */
   overflow: hidden;
 
-  &::after {
-    content: "";
-    display: block;
+  div {
     height: 100%;
-    width: 66%;
     background-color: #3b82f6;
     border-radius: 9999px;
   }
 `;
-
-const DemoProgressText = styled.div`
+export const ProgressText = styled.div`
   display: flex;
   justify-content: space-between;
   font-size: 0.75rem;
   color: #6b7280;
-  margin-top: 0.5rem;
+  margin-top: 0.25rem; /* 여백 최소화 */
 `;
 
-const DemoTaskList = styled.div`
+export const TaskList = styled.div`
   margin-top: 0.5rem;
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
 `;
 
-const DemoTask = styled.div`
+export const TaskItem = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -172,21 +251,12 @@ const DemoTask = styled.div`
   font-size: 0.75rem;
 `;
 
-// const DemoTaskStatus = styled.div`
-//   font-size: 0.75rem;
-//   color: ${(props) => {
-//     if (props.status === "In Progress") return "#3b82f6";
-//     if (props.status === "Completed") return "#10b981";
-//     return "#f59e0b";
-//   }};
-// `;
-
-const DemoTeam = styled.div`
+export const TeamContainer = styled.div`
   display: flex;
   margin-top: 0.5rem;
 `;
 
-const DemoAvatar = styled.div`
+export const TeamAvatar = styled.div`
   width: 2rem;
   height: 2rem;
   border-radius: 9999px;
@@ -198,134 +268,3 @@ const DemoAvatar = styled.div`
   margin-right: -0.5rem;
   border: 2px solid white;
 `;
-
-// Icon components
-const LayoutDashboardIcon = () => (
-  <svg
-    width="20"
-    height="20"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    style={{ color: "#3b82f6" }}
-  >
-    <rect width="7" height="7" x="3" y="3" rx="1"></rect>
-    <rect width="7" height="7" x="14" y="3" rx="1"></rect>
-    <rect width="7" height="7" x="14" y="14" rx="1"></rect>
-    <rect width="7" height="7" x="3" y="14" rx="1"></rect>
-  </svg>
-);
-
-const ChevronRightIcon = () => (
-  <svg
-    width="16"
-    height="16"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <path d="m9 18 6-6-6-6"></path>
-  </svg>
-);
-
-// Main component
-const HeroCover = () => {
-  return (
-    <HeroSection>
-      <Container>
-        <HeroGrid>
-          <HeroContent>
-            <HeroTitle>Project management simplified for your team</HeroTitle>
-            <HeroDescription>
-              TaskForge helps teams plan, track, and deliver their best work
-              with our flexible project management platform.
-            </HeroDescription>
-            <ButtonGroup>
-              {/* <Button variant="primary" size="lg">
-                Try Demo Dashboard
-                <ChevronRightIcon />
-              </Button>
-              <Button variant="outline" size="lg">
-                View Pricing
-              </Button> */}
-            </ButtonGroup>
-          </HeroContent>
-
-          <DemoContainer>
-            <DemoCard>
-              <DemoHeader>
-                <LayoutDashboardIcon />
-                <DemoTitle>Project Dashboard</DemoTitle>
-              </DemoHeader>
-              <DemoContent>
-                <DemoCard1>
-                  <div>Current Sprint Progress</div>
-                  <DemoProgressBar />
-                  <DemoProgressText>
-                    <div>67% Complete</div>
-                    <div>5 days remaining</div>
-                  </DemoProgressText>
-                </DemoCard1>
-
-                <DemoCard2>
-                  <div
-                    style={{ display: "flex", justifyContent: "space-between" }}
-                  >
-                    <div style={{ fontSize: "0.875rem", fontWeight: 500 }}>
-                      Tasks
-                    </div>
-                    <div style={{ fontSize: "0.75rem", color: "#6b7280" }}>
-                      View all
-                    </div>
-                  </div>
-                  <DemoTaskList>
-                    {[
-                      { title: "Update UI components", status: "In Progress" },
-                      { title: "Fix login issue", status: "Pending" },
-                      { title: "Add analytics", status: "Completed" },
-                    ].map((task) => (
-                      <DemoTask key={task.title}>
-                        <div>{task.title}</div>
-                        {/* <DemoTaskStatus status={task.status}>
-                          {task.status}
-                        </DemoTaskStatus> */}
-                      </DemoTask>
-                    ))}
-                  </DemoTaskList>
-                </DemoCard2>
-
-                <DemoCard2>
-                  <div
-                    style={{ display: "flex", justifyContent: "space-between" }}
-                  >
-                    <div style={{ fontSize: "0.875rem", fontWeight: 500 }}>
-                      Team
-                    </div>
-                    <div style={{ fontSize: "0.75rem", color: "#6b7280" }}>
-                      All members
-                    </div>
-                  </div>
-                  <DemoTeam>
-                    {[1, 2, 3, 4, 5].map((i) => (
-                      <DemoAvatar key={i}>
-                        {String.fromCharCode(64 + i)}
-                      </DemoAvatar>
-                    ))}
-                  </DemoTeam>
-                </DemoCard2>
-              </DemoContent>
-            </DemoCard>
-          </DemoContainer>
-        </HeroGrid>
-      </Container>
-    </HeroSection>
-  );
-};
-
-export default HeroCover;

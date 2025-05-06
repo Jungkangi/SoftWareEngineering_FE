@@ -1,0 +1,14 @@
+{
+	"dashboard": {
+	  "sprintProgress": {
+		"percentage": 90,
+		"remainingDays": 3
+	  },
+	  "tasks": [
+		{ "title": "Update UI components", "status": "진행중" },
+		{ "title": "Fix login issue", "status": "보류중" },
+		{ "title": "Add analytics", "status": "완료" }
+	  ],
+	  "team": ["A", "B", "C", "D", "E","F"]
+	}
+  }
