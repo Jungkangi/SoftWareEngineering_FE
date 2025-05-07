@@ -24,7 +24,14 @@ import {
   TeamContainer,
   TeamAvatar,
 } from "./introStyled";
-import { ChevronRight, Clock, LayoutDashboard, LineChart, ListChecks, Users } from "lucide-react";
+import {
+  ChevronRight,
+  Clock,
+  LayoutDashboard,
+  LineChart,
+  ListChecks,
+  Users,
+} from "lucide-react";
 
 interface SprintProgress {
   percentage: number;
@@ -50,9 +57,10 @@ const fetchDashboardData = async (): Promise<DashboardData> => {
   return response.json();
 };
 
-
 export default function IntroPage(): JSX.Element {
-  const [dashboardData, setDashboardData] = useState<DashboardData | null>(null);
+  const [dashboardData, setDashboardData] = useState<DashboardData | null>(
+    null
+  );
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -100,8 +108,8 @@ export default function IntroPage(): JSX.Element {
           <HeroContent>
             <HeroTitle>Project management simplified for your team</HeroTitle>
             <HeroDescription>
-              TaskForge helps teams plan, track, and deliver their best work with our flexible project management
-              platform.
+              TaskForge helps teams plan, track, and deliver their best work
+              with our flexible project management platform.
             </HeroDescription>
             <ButtonGroup>
               <a href="/dashboard" style={{ textDecoration: "none" }}>
@@ -170,7 +178,9 @@ export default function IntroPage(): JSX.Element {
                 {/* <div>67% Complete</div>
                 <div>5 days remaining</div> */}
                 <div>{dashboardData.sprintProgress.percentage}% Complete</div>
-                <div>{dashboardData.sprintProgress.remainingDays} days remaining</div>
+                <div>
+                  {dashboardData.sprintProgress.remainingDays} days remaining
+                </div>
               </ProgressText>
             </DashboardCardItem>
 
@@ -178,9 +188,15 @@ export default function IntroPage(): JSX.Element {
             <DashboardContent>
               {/* Tasks */}
               <DashboardCardItem>
-                <div style={{ display: "flex", justifyContent: "space-between" }}>
-                  <div style={{ fontSize: "0.875rem", fontWeight: 500 }}>Tasks</div>
-                  <div style={{ fontSize: "0.75rem", color: "#6b7280" }}>View all</div>
+                <div
+                  style={{ display: "flex", justifyContent: "space-between" }}
+                >
+                  <div style={{ fontSize: "0.875rem", fontWeight: 500 }}>
+                    Tasks
+                  </div>
+                  <div style={{ fontSize: "0.75rem", color: "#6b7280" }}>
+                    View all
+                  </div>
                 </div>
                 <TaskList>
                   {dashboardData.tasks.map((task: Task, index: number) => (
@@ -228,17 +244,23 @@ export default function IntroPage(): JSX.Element {
 
               {/* Team */}
               <DashboardCardItem>
-                <div style={{ display: "flex", justifyContent: "space-between" }}>
-                  <div style={{ fontSize: "0.875rem", fontWeight: 500 }}>Team</div>
-                  <div style={{ fontSize: "0.75rem", color: "#6b7280" }}>All members</div>
+                <div
+                  style={{ display: "flex", justifyContent: "space-between" }}
+                >
+                  <div style={{ fontSize: "0.875rem", fontWeight: 500 }}>
+                    Team
+                  </div>
+                  <div style={{ fontSize: "0.75rem", color: "#6b7280" }}>
+                    All members
+                  </div>
                 </div>
                 <TeamContainer>
                   {/* {[1, 2, 3, 4, 5].map((i) => (
                     <TeamAvatar key={i}>{String.fromCharCode(64 + i)}</TeamAvatar>
                   ))} */}
-                    {dashboardData.team.map((member: string, index: number) => (
-                      <TeamAvatar key={index}>{member}</TeamAvatar>
-                    ))}
+                  {dashboardData.team.map((member: string, index: number) => (
+                    <TeamAvatar key={index}>{member}</TeamAvatar>
+                  ))}
                 </TeamContainer>
               </DashboardCardItem>
             </DashboardContent>
@@ -252,32 +274,38 @@ export default function IntroPage(): JSX.Element {
           {[
             {
               title: "Project Management",
-              description: "Create and manage projects, assign team members, and track progress.",
+              description:
+                "Create and manage projects, assign team members, and track progress.",
               icon: LayoutDashboard,
             },
             {
               title: "Sprint Planning",
-              description: "Create sprints, manage backlogs, and visualize sprint progress.",
+              description:
+                "Create sprints, manage backlogs, and visualize sprint progress.",
               icon: Clock,
             },
             {
               title: "Issue Tracking",
-              description: "Create, assign, and track issues with customizable workflows.",
+              description:
+                "Create, assign, and track issues with customizable workflows.",
               icon: ListChecks,
             },
             {
               title: "Team Collaboration",
-              description: "Communicate with team members, mention others, and collaborate on issues.",
+              description:
+                "Communicate with team members, mention others, and collaborate on issues.",
               icon: Users,
             },
             {
               title: "Reporting & Analytics",
-              description: "Generate visual reports on project progress and team performance.",
+              description:
+                "Generate visual reports on project progress and team performance.",
               icon: LineChart,
             },
             {
               title: "Customizable Workflows",
-              description: "Create custom workflows that match your team's unique processes.",
+              description:
+                "Create custom workflows that match your team's unique processes.",
               icon: ChevronRight,
             },
           ].map((feature, index) => (
