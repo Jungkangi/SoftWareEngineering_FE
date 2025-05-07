@@ -1,7 +1,14 @@
-import Router from "./router/router";
+import AppRouter from "./router/router";
+import { RecoilRoot } from "recoil";
+import GlobalStyle from "./styles/globalStyle";
 
 function App() {
-  return <Router />;
+  return (
+    <RecoilRoot>
+      <GlobalStyle />
+      <AppRouter />
+    </RecoilRoot>
+  );
 }
 
 export default App;

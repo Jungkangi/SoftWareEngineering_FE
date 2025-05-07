@@ -1,13 +1,21 @@
-import React from "react";
-import { Routes, Route } from "react-router-dom";
-import { Dashboard, Intro } from "../page";
+import { Routes, Route, BrowserRouter } from "react-router-dom";
+import { Dashboard, Intro, Layout } from "../page/index";
 
 const AppRouter = () => {
   return (
-    <Routes>
-      <Route path="/dashboard" element={<Dashboard />} />
-      <Route path="/intro" element={<Intro />} />
-    </Routes>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/intro" element={<Intro />} />
+        <Route path="/" element={<Layout />}>
+          <Route index element={<Dashboard />} />
+          <Route path="project" element={<Dashboard />} />
+          <Route path="sprint" element={<Dashboard />} />
+          <Route path="team" element={<Dashboard />} />
+          <Route path="reports" element={<Dashboard />} />
+          <Route path="settings" element={<Dashboard />} />
+        </Route>
+      </Routes>
+    </BrowserRouter>
   );
 };
 

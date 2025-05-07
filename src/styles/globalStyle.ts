@@ -9,8 +9,16 @@ const GlobalStyle = createGlobalStyle`
 
   body {
     font-family: 'Pretendard', sans-serif;
-    background-color: #f5f5f5;
+    margin: 0;
+    padding: 0;
   }
+
+  html{
+    width: 100vw;
+    height: 100vw;
+    overflow:hidden;
+  }
+
 `;
 
 export default GlobalStyle;
