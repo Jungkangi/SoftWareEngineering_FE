@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
   Header,
   Logo,
@@ -49,41 +49,19 @@ interface DashboardData {
   team: string[];
 }
 
-const fetchDashboardData = async (): Promise<DashboardData> => {
-  const response = await fetch("http://localhost:3000/dashboard");
-  if (!response.ok) {
-    throw new Error("Failed to fetch dashboard data");
-  }
-  return response.json();
-};
-
 export default function IntroPage(): JSX.Element {
-  const [dashboardData, setDashboardData] = useState<DashboardData | null>(
-    null
-  );
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setLoading(true);
-        const data = await fetchDashboardData();
-        setDashboardData(data);
-      } catch (err: any) {
-        setError(err.message || "Failed to load data");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, []);
-
-  if (loading) return <div>Loading...</div>;
-  if (error) return <div>Error: {error}</div>;
-
-  if (!dashboardData) return <div>No data available</div>;
+  const [dashboardData] = useState<DashboardData>({
+    sprintProgress: {
+      percentage: 67,
+      remainingDays: 5,
+    },
+    tasks: [
+      { title: "Update UI components", status: "진행중" },
+      { title: "Fix login issue", status: "보류중" },
+      { title: "Add analytics", status: "완료" },
+    ],
+    team: ["A", "B", "C", "D", "E"],
+  });
 
   return (
     <div>
@@ -112,7 +90,7 @@ export default function IntroPage(): JSX.Element {
               with our flexible project management platform.
             </HeroDescription>
             <ButtonGroup>
-              <a href="/dashboard" style={{ textDecoration: "none" }}>
+              <a href="/" style={{ textDecoration: "none" }}>
                 <button
                   style={{
                     padding: "1rem 2rem",
@@ -122,7 +100,7 @@ export default function IntroPage(): JSX.Element {
                     borderRadius: "0.5rem",
                     fontSize: "1rem",
                     cursor: "pointer",
-                    lineHeight: "1", // 텍스트를 정가운데로 위치
+                    lineHeight: "1",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
@@ -142,7 +120,7 @@ export default function IntroPage(): JSX.Element {
                     borderRadius: "0.5rem",
                     fontSize: "1rem",
                     cursor: "pointer",
-                    lineHeight: "1", // 텍스트를 정가운데로 위치
+                    lineHeight: "1",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
@@ -175,8 +153,6 @@ export default function IntroPage(): JSX.Element {
                 />
               </ProgressBar>
               <ProgressText>
-                {/* <div>67% Complete</div>
-                <div>5 days remaining</div> */}
                 <div>{dashboardData.sprintProgress.percentage}% Complete</div>
                 <div>
                   {dashboardData.sprintProgress.remainingDays} days remaining
@@ -199,7 +175,7 @@ export default function IntroPage(): JSX.Element {
                   </div>
                 </div>
                 <TaskList>
-                  {dashboardData.tasks.map((task: Task, index: number) => (
+                  {dashboardData.tasks.map((task, index) => (
                     <TaskItem key={index}>
                       <div>{task.title}</div>
                       <div
@@ -217,28 +193,6 @@ export default function IntroPage(): JSX.Element {
                       </div>
                     </TaskItem>
                   ))}
-                  {/* {[
-                    { title: "Update UI components", status: "In Progress" },
-                    { title: "Fix login issue", status: "Pending" },
-                    { title: "Add analytics", status: "Completed" },
-                  ].map((task) => (
-                    <TaskItem key={task.title}>
-                      <div>{task.title}</div>
-                      <div
-                        style={{
-                          fontSize: "0.75rem",
-                          color:
-                            task.status === "In Progress"
-                              ? "#3b82f6"
-                              : task.status === "Completed"
-                              ? "#10b981"
-                              : "#f59e0b",
-                        }}
-                      >
-                        {task.status}
-                      </div>
-                    </TaskItem>
-                  ))} */}
                 </TaskList>
               </DashboardCardItem>
 
@@ -255,10 +209,7 @@ export default function IntroPage(): JSX.Element {
                   </div>
                 </div>
                 <TeamContainer>
-                  {/* {[1, 2, 3, 4, 5].map((i) => (
-                    <TeamAvatar key={i}>{String.fromCharCode(64 + i)}</TeamAvatar>
-                  ))} */}
-                  {dashboardData.team.map((member: string, index: number) => (
+                  {dashboardData.team.map((member, index) => (
                     <TeamAvatar key={index}>{member}</TeamAvatar>
                   ))}
                 </TeamContainer>
