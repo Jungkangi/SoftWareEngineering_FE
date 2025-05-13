@@ -1,0 +1,24 @@
+import { useEffect, useState } from "react"
+
+export function useIsMobile() {
+  const [isMobile, setIsMobile] = useState(false)
+
+  useEffect(() => {
+    const checkIfMobile = () => {
+      setIsMobile(window.innerWidth < 768)
+    }
+
+    // 초기 체크
+    checkIfMobile()
+
+    // 리사이즈 이벤트 리스너
+    window.addEventListener("resize", checkIfMobile)
+
+    // 클린업 함수
+    return () => {
+      window.removeEventListener("resize", checkIfMobile)
+    }
+  }, [])
+
+  return isMobile
+}
