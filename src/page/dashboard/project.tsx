@@ -419,7 +419,7 @@ const ResponsiveTableCellLg = styled(TableCell)`
 
 // Main Component
 export default function ProjectsPage() {
-  const isMobile = useIsMobile()
+  // const isMobile = useIsMobile()
   const [selectedTab, setSelectedTab] = useState("all")
   const [showNewProjectDialog, setShowNewProjectDialog] = useState(false)
   const [showFilterDropdown, setShowFilterDropdown] = useState(false)
@@ -509,104 +509,417 @@ export default function ProjectsPage() {
   })
 
   return (
-    <SidebarProvider defaultOpen={!isMobile}>
-      <PageContainer>
-        <Sidebar>
-          <SidebarHeader>
-            <Link
-              to="/dashboard"
-              style={{ display: "flex", alignItems: "center", gap: "0.5rem", fontWeight: "bold", fontSize: "1.25rem" }}
-            >
-              <LayoutDashboard size={24} color="#111827" />
-              <span>TaskForge</span>
-            </Link>
-          </SidebarHeader>
-          <SidebarContent>
-            <SidebarMenu>
-              {sidebarItems.map((item) => (
-                <SidebarMenuItem key={item.label}>
-                  <SidebarMenuButton asChild tooltip={item.label} isActive={item.label === "Projects"}>
-                    <Link to={item.href} style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
-                      <item.icon size={20} />
-                      <span>{item.label}</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarContent>
-          <SidebarFooter>
-            <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-              <Avatar>
-                <AvatarFallback>JD</AvatarFallback>
-              </Avatar>
-              <div>
-                <p style={{ fontSize: "0.875rem", fontWeight: "500" }}>John Doe</p>
-                <p style={{ fontSize: "0.75rem", color: "#6b7280" }}>Admin</p>
-              </div>
-            </div>
-          </SidebarFooter>
-        </Sidebar>
+    // <SidebarProvider defaultOpen={!isMobile}>
+    //   <PageContainer>
+    //     <Sidebar>
+    //       <SidebarHeader>
+    //         <Link
+    //           to="/dashboard"
+    //           style={{ display: "flex", alignItems: "center", gap: "0.5rem", fontWeight: "bold", fontSize: "1.25rem" }}
+    //         >
+    //           <LayoutDashboard size={24} color="#111827" />
+    //           <span>TaskForge</span>
+    //         </Link>
+    //       </SidebarHeader>
+    //       <SidebarContent>
+    //         <SidebarMenu>
+    //           {sidebarItems.map((item) => (
+    //             <SidebarMenuItem key={item.label}>
+    //               <SidebarMenuButton asChild tooltip={item.label} isActive={item.label === "Projects"}>
+    //                 <Link to={item.href} style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
+    //                   <item.icon size={20} />
+    //                   <span>{item.label}</span>
+    //                 </Link>
+    //               </SidebarMenuButton>
+    //             </SidebarMenuItem>
+    //           ))}
+    //         </SidebarMenu>
+    //       </SidebarContent>
+    //       <SidebarFooter>
+    //         <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+    //           <Avatar>
+    //             <AvatarFallback>JD</AvatarFallback>
+    //           </Avatar>
+    //           <div>
+    //             <p style={{ fontSize: "0.875rem", fontWeight: "500" }}>John Doe</p>
+    //             <p style={{ fontSize: "0.75rem", color: "#6b7280" }}>Admin</p>
+    //           </div>
+    //         </div>
+    //       </SidebarFooter>
+    //     </Sidebar>
 
-        <MainContent>
-          <Header>
-            <SidebarTrigger />
-            <SearchContainer>
-              <Search size={16} color="#6b7280" />
-              <Input type="search" placeholder="Search projects..." />
-            </SearchContainer>
-          </Header>
-          <Main>
-            <ContentContainer>
-              <PageHeader>
-                <PageTitle>Projects</PageTitle>
-                <ActionButtons>
-                  <DropdownContainer>
-                    <Button variant="outline" size="sm" onClick={() => setShowFilterDropdown(!showFilterDropdown)}>
-                      <Filter size={16} />
-                      <span>Filter</span>
-                      <ChevronDown size={16} />
-                    </Button>
-                    {showFilterDropdown && (
-                      <DropdownContent>
-                        <DropdownLabel>Filter by</DropdownLabel>
-                        <DropdownSeparator />
-                        <DropdownItem>Priority</DropdownItem>
-                        <DropdownItem>Category</DropdownItem>
-                        <DropdownItem>Team Member</DropdownItem>
-                        <DropdownItem>Due Date</DropdownItem>
-                      </DropdownContent>
-                    )}
-                  </DropdownContainer>
-                  <Button size="sm" onClick={() => setShowNewProjectDialog(true)}>
-                    <Plus size={16} />
-                    <span>New Project</span>
+    //     <MainContent>
+    //       <Header>
+    //         <SidebarTrigger />
+    //         <SearchContainer>
+    //           <Search size={16} color="#6b7280" />
+    //           <Input type="search" placeholder="Search projects..." />
+    //         </SearchContainer>
+    //       </Header>
+    //       <Main>
+    //         <ContentContainer>
+    //           <PageHeader>
+    //             <PageTitle>Projects</PageTitle>
+    //             <ActionButtons>
+    //               <DropdownContainer>
+    //                 <Button variant="outline" size="sm" onClick={() => setShowFilterDropdown(!showFilterDropdown)}>
+    //                   <Filter size={16} />
+    //                   <span>Filter</span>
+    //                   <ChevronDown size={16} />
+    //                 </Button>
+    //                 {showFilterDropdown && (
+    //                   <DropdownContent>
+    //                     <DropdownLabel>Filter by</DropdownLabel>
+    //                     <DropdownSeparator />
+    //                     <DropdownItem>Priority</DropdownItem>
+    //                     <DropdownItem>Category</DropdownItem>
+    //                     <DropdownItem>Team Member</DropdownItem>
+    //                     <DropdownItem>Due Date</DropdownItem>
+    //                   </DropdownContent>
+    //                 )}
+    //               </DropdownContainer>
+    //               <Button size="sm" onClick={() => setShowNewProjectDialog(true)}>
+    //                 <Plus size={16} />
+    //                 <span>New Project</span>
+    //               </Button>
+    //             </ActionButtons>
+    //           </PageHeader>
+
+    //           <TabsContainer>
+    //             <TabsList>
+    //               <Tab active={selectedTab === "all"} onClick={() => setSelectedTab("all")}>
+    //                 All Projects
+    //               </Tab>
+    //               <Tab active={selectedTab === "in-progress"} onClick={() => setSelectedTab("in-progress")}>
+    //                 In Progress
+    //               </Tab>
+    //               <Tab active={selectedTab === "completed"} onClick={() => setSelectedTab("completed")}>
+    //                 Completed
+    //               </Tab>
+    //               <Tab active={selectedTab === "planning"} onClick={() => setSelectedTab("planning")}>
+    //                 Planning
+    //               </Tab>
+    //             </TabsList>
+    //             <TabContent>
+    //               <Card>
+    //                 <CardHeader>
+    //                   <CardTitle>Projects ({filteredProjects.length})</CardTitle>
+    //                   <CardDescription>Manage and monitor your team's projects</CardDescription>
+    //                 </CardHeader>
+    //                 <CardContent>
+    //                 <Table>
+    //                   <TableHeader>
+    //                     <TableRow>
+    //                       <TableHead>Name</TableHead>
+    //                       <ResponsiveTableHead>Status</ResponsiveTableHead>
+    //                       <ResponsiveTableHead>Progress</ResponsiveTableHead>
+    //                       <ResponsiveTableHead>Due Date</ResponsiveTableHead>
+    //                       <ResponsiveTableHeadLg>Team</ResponsiveTableHeadLg>
+    //                       <TableHead>Priority</TableHead>
+    //                       <TableHead></TableHead>
+    //                     </TableRow>
+    //                   </TableHeader>
+    //                   <TableBody>
+    //                     {filteredProjects.map((project) => (
+    //                       <TableRow key={project.id}>
+    //                         <TableCell>
+    //                           <div style={{ fontWeight: "500" }}>{project.name}</div>
+    //                           <div style={{ fontSize: "0.75rem", color: "#6b7280" }}>
+    //                             {project.status} • Due {project.dueDate}
+    //                           </div>
+    //                         </TableCell>
+    //                         <ResponsiveTableCell>
+    //                           <Badge
+    //                             variant={
+    //                               project.status === "Completed"
+    //                                 ? "success"
+    //                                 : project.status === "Planning"
+    //                                 ? "secondary"
+    //                                 : "default"
+    //                             }
+    //                           >
+    //                             {project.status}
+    //                           </Badge>
+    //                         </ResponsiveTableCell>
+    //                         <ResponsiveTableCell>
+    //                           <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+    //                             <Progress value={project.progress} />
+    //                             <span style={{ fontSize: "0.75rem", color: "#6b7280" }}>
+    //                               {project.progress}%
+    //                             </span>
+    //                           </div>
+    //                         </ResponsiveTableCell>
+    //                         <ResponsiveTableCell>
+    //                           {project.dueDate}
+    //                         </ResponsiveTableCell>
+    //                         <ResponsiveTableCellLg>
+    //                           <AvatarGroup>
+    //                             {project.team.map((member, i) => (
+    //                               <Avatar key={i}>
+    //                                 <AvatarFallback>{member}</AvatarFallback>
+    //                               </Avatar>
+    //                             ))}
+    //                           </AvatarGroup>
+    //                         </ResponsiveTableCellLg>
+    //                         <TableCell>
+    //                           <Badge
+    //                             variant={
+    //                               project.priority === "High"
+    //                                 ? "destructive"
+    //                                 : project.priority === "Medium"
+    //                                 ? "default"
+    //                                 : "secondary"
+    //                             }
+    //                           >
+    //                             {project.priority}
+    //                           </Badge>
+    //                         </TableCell>
+    //                         <TableCell>
+    //                           <DropdownContainer>
+    //                             <Button
+    //                               variant="ghost"
+    //                               size="sm"
+    //                               onClick={() =>
+    //                                 setShowActionDropdown(
+    //                                   project.id === showActionDropdown ? null : project.id
+    //                                 )
+    //                               }
+    //                             >
+    //                               <ChevronDown size={16} />
+    //                             </Button>
+    //                             {showActionDropdown === project.id && (
+    //                               <DropdownContent>
+    //                                 <DropdownItem>View Project</DropdownItem>
+    //                                 <DropdownItem>Edit Project</DropdownItem>
+    //                                 <DropdownItem>Manage Team</DropdownItem>
+    //                                 <DropdownSeparator />
+    //                                 <DropdownItemDestructive>Delete Project</DropdownItemDestructive>
+    //                               </DropdownContent>
+    //                             )}
+    //                           </DropdownContainer>
+    //                         </TableCell>
+    //                       </TableRow>
+    //                     ))}
+    //                   </TableBody>
+    //                 </Table>
+    //                 </CardContent>
+    //               </Card>
+    //             </TabContent>
+    //           </TabsContainer>
+
+    //           <GridContainer>
+    //             <Card>
+    //               <CardHeader>
+    //                 <CardTitle style={{ fontSize: "0.875rem" }}>Project Categories</CardTitle>
+    //               </CardHeader>
+    //               <CardContent>
+    //                 <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+    //                   {[
+    //                     { name: "Web Development", count: 2 },
+    //                     { name: "Mobile Development", count: 1 },
+    //                     { name: "Backend Development", count: 1 },
+    //                     { name: "Research", count: 1 },
+    //                     { name: "Infrastructure", count: 1 },
+    //                   ].map((category) => (
+    //                     <CategoryItem key={category.name}>
+    //                       <span style={{ fontSize: "0.875rem" }}>{category.name}</span>
+    //                       <Badge variant="outline">{category.count}</Badge>
+    //                     </CategoryItem>
+    //                   ))}
+    //                 </div>
+    //               </CardContent>
+    //             </Card>
+
+    //             <Card>
+    //               <CardHeader>
+    //                 <CardTitle style={{ fontSize: "0.875rem" }}>Project Status</CardTitle>
+    //               </CardHeader>
+    //               <CardContent>
+    //                 <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+    //                   {[
+    //                     { status: "Planning", count: 1, percentage: 20 },
+    //                     { status: "In Progress", count: 3, percentage: 60 },
+    //                     { status: "Completed", count: 1, percentage: 20 },
+    //                   ].map((status) => (
+    //                     <StatusItem key={status.status}>
+    //                       <StatusHeader>
+    //                         <span style={{ fontSize: "0.875rem" }}>{status.status}</span>
+    //                         <span style={{ fontSize: "0.875rem", color: "#6b7280" }}>{status.count}</span>
+    //                       </StatusHeader>
+    //                       <Progress value={status.percentage} />
+    //                     </StatusItem>
+    //                   ))}
+    //                 </div>
+    //               </CardContent>
+    //             </Card>
+
+    //             <Card>
+    //               <CardHeader>
+    //                 <CardTitle style={{ fontSize: "0.875rem" }}>Team Workload</CardTitle>
+    //               </CardHeader>
+    //               <CardContent>
+    //                 <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+    //                   {[
+    //                     { name: "Alex Brown", initials: "AB", projects: 3, tasks: 12 },
+    //                     { name: "Chris Davis", initials: "CD", projects: 3, tasks: 8 },
+    //                     { name: "Emma Ford", initials: "EF", projects: 2, tasks: 6 },
+    //                     { name: "Grace Hill", initials: "GH", projects: 1, tasks: 4 },
+    //                     { name: "Ivan Jones", initials: "IJ", projects: 2, tasks: 7 },
+    //                   ].map((member) => (
+    //                     <TeamMemberItem key={member.initials}>
+    //                       <Avatar style={{ height: "2rem", width: "2rem" }}>
+    //                         <AvatarFallback
+    //                           style={{ backgroundColor: "#111827", color: "#ffffff", fontSize: "0.75rem" }}
+    //                         >
+    //                           {member.initials}
+    //                         </AvatarFallback>
+    //                       </Avatar>
+    //                       <TeamMemberInfo>
+    //                         <TeamMemberName>{member.name}</TeamMemberName>
+    //                         <TeamMemberRole>
+    //                           {member.projects} projects, {member.tasks} tasks
+    //                         </TeamMemberRole>
+    //                       </TeamMemberInfo>
+    //                     </TeamMemberItem>
+    //                   ))}
+    //                 </div>
+    //               </CardContent>
+    //               <CardFooter>
+    //                 <Button variant="ghost" size="sm" style={{ width: "100%" }}>
+    //                   View All Team Members
+    //                 </Button>
+    //               </CardFooter>
+    //             </Card>
+    //           </GridContainer>
+    //         </ContentContainer>
+    //       </Main>
+    //     </MainContent>
+    //   </PageContainer>
+
+    //   {/* New Project Dialog */}
+    //   {showNewProjectDialog && (
+    //     <DialogOverlay onClick={() => setShowNewProjectDialog(false)}>
+    //       <DialogContent onClick={(e) => e.stopPropagation()}>
+    //         <DialogHeader>
+    //           <DialogTitle>Create new project</DialogTitle>
+    //           <DialogDescription>Fill in the details below to create a new project for your team.</DialogDescription>
+    //         </DialogHeader>
+    //         <FormGrid>
+    //           <FormGroup>
+    //             <Label htmlFor="project-name">Project name</Label>
+    //             <Input id="project-name" placeholder="Enter project name" />
+    //           </FormGroup>
+    //           <FormGroup>
+    //             <Label htmlFor="project-description">Description</Label>
+    //             <Textarea id="project-description" placeholder="Enter project description" />
+    //           </FormGroup>
+    //           <FormRow>
+    //             <FormGroup>
+    //               <Label htmlFor="priority">Priority</Label>
+    //               <SelectContainer>
+    //                 <SelectTriggerContainer onClick={() => setShowPrioritySelect(!showPrioritySelect)}>
+    //                   <SelectValue>Medium</SelectValue>
+    //                   <ChevronDown size={16} />
+    //                 </SelectTriggerContainer>
+    //                 {showPrioritySelect && (
+    //                   <SelectContent>
+    //                     <SelectItem>High</SelectItem>
+    //                     <SelectItem>Medium</SelectItem>
+    //                     <SelectItem>Low</SelectItem>
+    //                   </SelectContent>
+    //                 )}
+    //               </SelectContainer>
+    //             </FormGroup>
+    //             <FormGroup>
+    //               <Label htmlFor="category">Category</Label>
+    //               <SelectContainer>
+    //                 <SelectTriggerContainer onClick={() => setShowCategorySelect(!showCategorySelect)}>
+    //                   <SelectValue>Web Development</SelectValue>
+    //                   <ChevronDown size={16} />
+    //                 </SelectTriggerContainer>
+    //                 {showCategorySelect && (
+    //                   <SelectContent>
+    //                     <SelectItem>Web Development</SelectItem>
+    //                     <SelectItem>Mobile Development</SelectItem>
+    //                     <SelectItem>Backend Development</SelectItem>
+    //                     <SelectItem>Research</SelectItem>
+    //                     <SelectItem>Infrastructure</SelectItem>
+    //                   </SelectContent>
+    //                 )}
+    //               </SelectContainer>
+    //             </FormGroup>
+    //           </FormRow>
+    //           <FormGroup>
+    //             <Label htmlFor="due-date">Due date</Label>
+    //             <Input type="date" id="due-date" />
+    //           </FormGroup>
+    //         </FormGrid>
+    //         <DialogFooter>
+    //           <Button type="submit">Create Project</Button>
+    //         </DialogFooter>
+    //       </DialogContent>
+    //     </DialogOverlay>
+    //   )}
+    // </SidebarProvider>
+     <PageContainer>
+      <MainContent>
+        <Header>
+          <SearchContainer>
+            <Search size={16} color="#6b7280" />
+            <Input type="search" placeholder="Search projects..." />
+          </SearchContainer>
+        </Header>
+        <Main>
+          <ContentContainer>
+            <PageHeader>
+              <PageTitle>Projects</PageTitle>
+              <ActionButtons>
+                <DropdownContainer>
+                  <Button variant="outline" size="sm" onClick={() => setShowFilterDropdown(!showFilterDropdown)}>
+                    <Filter size={16} />
+                    <span>Filter</span>
+                    <ChevronDown size={16} />
                   </Button>
-                </ActionButtons>
-              </PageHeader>
+                  {showFilterDropdown && (
+                    <DropdownContent>
+                      <DropdownLabel>Filter by</DropdownLabel>
+                      <DropdownSeparator />
+                      <DropdownItem>Priority</DropdownItem>
+                      <DropdownItem>Category</DropdownItem>
+                      <DropdownItem>Team Member</DropdownItem>
+                      <DropdownItem>Due Date</DropdownItem>
+                    </DropdownContent>
+                  )}
+                </DropdownContainer>
+                <Button size="sm" onClick={() => setShowNewProjectDialog(true)}>
+                  <Plus size={16} />
+                  <span>New Project</span>
+                </Button>
+              </ActionButtons>
+            </PageHeader>
 
-              <TabsContainer>
-                <TabsList>
-                  <Tab active={selectedTab === "all"} onClick={() => setSelectedTab("all")}>
-                    All Projects
-                  </Tab>
-                  <Tab active={selectedTab === "in-progress"} onClick={() => setSelectedTab("in-progress")}>
-                    In Progress
-                  </Tab>
-                  <Tab active={selectedTab === "completed"} onClick={() => setSelectedTab("completed")}>
-                    Completed
-                  </Tab>
-                  <Tab active={selectedTab === "planning"} onClick={() => setSelectedTab("planning")}>
-                    Planning
-                  </Tab>
-                </TabsList>
-                <TabContent>
-                  <Card>
-                    <CardHeader>
-                      <CardTitle>Projects ({filteredProjects.length})</CardTitle>
-                      <CardDescription>Manage and monitor your team's projects</CardDescription>
-                    </CardHeader>
-                    <CardContent>
+            <TabsContainer>
+              <TabsList>
+                <Tab active={selectedTab === "all"} onClick={() => setSelectedTab("all")}>
+                  All Projects
+                </Tab>
+                <Tab active={selectedTab === "in-progress"} onClick={() => setSelectedTab("in-progress")}>
+                  In Progress
+                </Tab>
+                <Tab active={selectedTab === "completed"} onClick={() => setSelectedTab("completed")}>
+                  Completed
+                </Tab>
+                <Tab active={selectedTab === "planning"} onClick={() => setSelectedTab("planning")}>
+                  Planning
+                </Tab>
+              </TabsList>
+              <TabContent>
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Projects ({filteredProjects.length})</CardTitle>
+                    <CardDescription>Manage and monitor your team's projects</CardDescription>
+                  </CardHeader>
+                  <CardContent>
                     <Table>
                       <TableHeader>
                         <TableRow>
@@ -702,99 +1015,98 @@ export default function ProjectsPage() {
                         ))}
                       </TableBody>
                     </Table>
-                    </CardContent>
-                  </Card>
-                </TabContent>
-              </TabsContainer>
-
-              <GridContainer>
-                <Card>
-                  <CardHeader>
-                    <CardTitle style={{ fontSize: "0.875rem" }}>Project Categories</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
-                      {[
-                        { name: "Web Development", count: 2 },
-                        { name: "Mobile Development", count: 1 },
-                        { name: "Backend Development", count: 1 },
-                        { name: "Research", count: 1 },
-                        { name: "Infrastructure", count: 1 },
-                      ].map((category) => (
-                        <CategoryItem key={category.name}>
-                          <span style={{ fontSize: "0.875rem" }}>{category.name}</span>
-                          <Badge variant="outline">{category.count}</Badge>
-                        </CategoryItem>
-                      ))}
-                    </div>
                   </CardContent>
                 </Card>
+              </TabContent>
+            </TabsContainer>
 
-                <Card>
-                  <CardHeader>
-                    <CardTitle style={{ fontSize: "0.875rem" }}>Project Status</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-                      {[
-                        { status: "Planning", count: 1, percentage: 20 },
-                        { status: "In Progress", count: 3, percentage: 60 },
-                        { status: "Completed", count: 1, percentage: 20 },
-                      ].map((status) => (
-                        <StatusItem key={status.status}>
-                          <StatusHeader>
-                            <span style={{ fontSize: "0.875rem" }}>{status.status}</span>
-                            <span style={{ fontSize: "0.875rem", color: "#6b7280" }}>{status.count}</span>
-                          </StatusHeader>
-                          <Progress value={status.percentage} />
-                        </StatusItem>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
+            <GridContainer>
+              <Card>
+                <CardHeader>
+                  <CardTitle style={{ fontSize: "0.875rem" }}>Project Categories</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+                    {[
+                      { name: "Web Development", count: 2 },
+                      { name: "Mobile Development", count: 1 },
+                      { name: "Backend Development", count: 1 },
+                      { name: "Research", count: 1 },
+                      { name: "Infrastructure", count: 1 },
+                    ].map((category) => (
+                      <CategoryItem key={category.name}>
+                        <span style={{ fontSize: "0.875rem" }}>{category.name}</span>
+                        <Badge variant="outline">{category.count}</Badge>
+                      </CategoryItem>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
 
-                <Card>
-                  <CardHeader>
-                    <CardTitle style={{ fontSize: "0.875rem" }}>Team Workload</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
-                      {[
-                        { name: "Alex Brown", initials: "AB", projects: 3, tasks: 12 },
-                        { name: "Chris Davis", initials: "CD", projects: 3, tasks: 8 },
-                        { name: "Emma Ford", initials: "EF", projects: 2, tasks: 6 },
-                        { name: "Grace Hill", initials: "GH", projects: 1, tasks: 4 },
-                        { name: "Ivan Jones", initials: "IJ", projects: 2, tasks: 7 },
-                      ].map((member) => (
-                        <TeamMemberItem key={member.initials}>
-                          <Avatar style={{ height: "2rem", width: "2rem" }}>
-                            <AvatarFallback
-                              style={{ backgroundColor: "#111827", color: "#ffffff", fontSize: "0.75rem" }}
-                            >
-                              {member.initials}
-                            </AvatarFallback>
-                          </Avatar>
-                          <TeamMemberInfo>
-                            <TeamMemberName>{member.name}</TeamMemberName>
-                            <TeamMemberRole>
-                              {member.projects} projects, {member.tasks} tasks
-                            </TeamMemberRole>
-                          </TeamMemberInfo>
-                        </TeamMemberItem>
-                      ))}
-                    </div>
-                  </CardContent>
-                  <CardFooter>
-                    <Button variant="ghost" size="sm" style={{ width: "100%" }}>
-                      View All Team Members
-                    </Button>
-                  </CardFooter>
-                </Card>
-              </GridContainer>
-            </ContentContainer>
-          </Main>
-        </MainContent>
-      </PageContainer>
+              <Card>
+                <CardHeader>
+                  <CardTitle style={{ fontSize: "0.875rem" }}>Project Status</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+                    {[
+                      { status: "Planning", count: 1, percentage: 20 },
+                      { status: "In Progress", count: 3, percentage: 60 },
+                      { status: "Completed", count: 1, percentage: 20 },
+                    ].map((status) => (
+                      <StatusItem key={status.status}>
+                        <StatusHeader>
+                          <span style={{ fontSize: "0.875rem" }}>{status.status}</span>
+                          <span style={{ fontSize: "0.875rem", color: "#6b7280" }}>{status.count}</span>
+                        </StatusHeader>
+                        <Progress value={status.percentage} />
+                      </StatusItem>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle style={{ fontSize: "0.875rem" }}>Team Workload</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+                    {[
+                      { name: "Alex Brown", initials: "AB", projects: 3, tasks: 12 },
+                      { name: "Chris Davis", initials: "CD", projects: 3, tasks: 8 },
+                      { name: "Emma Ford", initials: "EF", projects: 2, tasks: 6 },
+                      { name: "Grace Hill", initials: "GH", projects: 1, tasks: 4 },
+                      { name: "Ivan Jones", initials: "IJ", projects: 2, tasks: 7 },
+                    ].map((member) => (
+                      <TeamMemberItem key={member.initials}>
+                        <Avatar style={{ height: "2rem", width: "2rem" }}>
+                          <AvatarFallback
+                            style={{ backgroundColor: "#111827", color: "#ffffff", fontSize: "0.75rem" }}
+                          >
+                            {member.initials}
+                          </AvatarFallback>
+                        </Avatar>
+                        <TeamMemberInfo>
+                          <TeamMemberName>{member.name}</TeamMemberName>
+                          <TeamMemberRole>
+                            {member.projects} projects, {member.tasks} tasks
+                          </TeamMemberRole>
+                        </TeamMemberInfo>
+                      </TeamMemberItem>
+                    ))}
+                  </div>
+                </CardContent>
+                <CardFooter>
+                  <Button variant="ghost" size="sm" style={{ width: "100%" }}>
+                    View All Team Members
+                  </Button>
+                </CardFooter>
+              </Card>
+            </GridContainer>
+          </ContentContainer>
+        </Main>
+      </MainContent>
 
       {/* New Project Dialog */}
       {showNewProjectDialog && (
@@ -860,6 +1172,6 @@ export default function ProjectsPage() {
           </DialogContent>
         </DialogOverlay>
       )}
-    </SidebarProvider>
+    </PageContainer>
   )
 }
