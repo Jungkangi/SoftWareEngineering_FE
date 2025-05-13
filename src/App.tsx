@@ -1,12 +1,30 @@
+// import AppRouter from "./router/router";
+// import { RecoilRoot } from "recoil";
+// import GlobalStyle from "./styles/globalStyle";
+
+// function App() {
+//   return (
+//     <RecoilRoot>
+//       <GlobalStyle />
+//       <AppRouter />
+//     </RecoilRoot>
+//   );
+// }
+
+// export default App;
 import AppRouter from "./router/router";
 import { RecoilRoot } from "recoil";
 import GlobalStyle from "./styles/globalStyle";
+import { ThemeProvider } from "styled-components"; // ThemeProvider 추가
+import { lightTheme } from "./page/dashboard/projectStyled"; // lightTheme 가져오기
 
 function App() {
   return (
     <RecoilRoot>
-      <GlobalStyle />
-      <AppRouter />
+      <ThemeProvider theme={lightTheme}>
+        <GlobalStyle />
+        <AppRouter />
+      </ThemeProvider>
     </RecoilRoot>
   );
 }

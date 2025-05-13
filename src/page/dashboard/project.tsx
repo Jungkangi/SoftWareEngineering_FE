@@ -43,8 +43,8 @@ import {
   SidebarTrigger,
   Label,
   Textarea,
-} from "../../components/ui"
-import { useIsMobile } from "../../hooks/use-mobile"
+  useIsMobile
+} from "./projectStyled"
 
 // Styled Components
 const PageContainer = styled.div`
