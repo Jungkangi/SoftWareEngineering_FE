@@ -1,5 +1,5 @@
 import { Routes, Route, BrowserRouter } from "react-router-dom";
-import { Dashboard, Intro, Layout,ProjectsPage } from "../page/index";
+import { Dashboard, Intro, Layout, ProjectsPage } from "../page/index";
 
 const AppRouter = () => {
   return (

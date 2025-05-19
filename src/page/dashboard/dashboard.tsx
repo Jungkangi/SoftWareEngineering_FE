@@ -1,4 +1,4 @@
-import React from "react";
+import { useState } from "react";
 import {
   DashboardContainer,
   StatsContainer,
@@ -23,6 +23,7 @@ import {
 } from "./dashboardStyled";
 
 import { Funnel } from "lucide-react";
+import Modal from "../../component/modal/modal"; // Assuming you have a Modal component
 
 const projectStats = [
   { title: "Total Projects", value: "12", change: "+3 from last month" },
@@ -58,7 +59,13 @@ const activeProjects = [
   },
 ];
 
-const Dashboard: React.FC = () => {
+const Dashboard = () => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const handleViewProjectClick = () => {
+    setIsModalOpen(true);
+  };
+
   return (
     <DashboardContainer>
       <DashboardHeader>
@@ -68,7 +75,7 @@ const Dashboard: React.FC = () => {
             <Funnel />
             Filter
           </FilterButton>
-          <NewProjectButton>+ New Project ▾</NewProjectButton>
+          <NewProjectButton>+ New Project</NewProjectButton>
         </HeaderActions>
       </DashboardHeader>
 
@@ -89,26 +96,43 @@ const Dashboard: React.FC = () => {
       </TabContainer>
 
       <ProjectsContainer>
-        {activeProjects.map((project, index) => (
-          <ProjectCard key={index}>
-            <div>
-              <ProjectTitle>
-                {project.title} <span>{project.priority}</span>
-              </ProjectTitle>
-              <ProjectMeta>Due {project.due}</ProjectMeta>
-            </div>
-            <ProgressBarWrapper>
-              <ProgressBar progress={project.progress} />
-            </ProgressBarWrapper>
-            <ProjectMeta>{project.issues}</ProjectMeta>
-            <TeamAvatars>
-              {project.members.map((m, idx) => (
-                <div key={idx}>{m}</div>
-              ))}
-            </TeamAvatars>
-            <ViewButton>View Project</ViewButton>
-          </ProjectCard>
-        ))}
+        {activeProjects.length > 0 ? (
+          activeProjects.map((project, index) => (
+            <ProjectCard key={index}>
+              <div>
+                <ProjectTitle>
+                  {project.title} <span>{project.priority}</span>
+                </ProjectTitle>
+                <ProjectMeta>Due {project.due}</ProjectMeta>
+              </div>
+              <ProgressBarWrapper>
+                <ProgressBar progress={project.progress} />
+              </ProgressBarWrapper>
+              <ProjectMeta>{project.issues}</ProjectMeta>
+              <TeamAvatars>
+                {project.members.map((m, idx) => (
+                  <div key={idx}>{m}</div>
+                ))}
+              </TeamAvatars>
+              <ViewButton onClick={handleViewProjectClick}>
+                View Project
+              </ViewButton>
+              {isModalOpen && (
+                <Modal
+                  onClose={() => setIsModalOpen(false)}
+                  isOpen={isModalOpen}
+                >
+                  <h2>Project Details</h2>
+                  <p>
+                    Here you can display detailed information about the project.
+                  </p>
+                </Modal>
+              )}
+            </ProjectCard>
+          ))
+        ) : (
+          <p>No active projects available.</p>
+        )}
       </ProjectsContainer>
     </DashboardContainer>
   );
