@@ -1,0 +1,824 @@
+import { useState } from "react"
+import { ChevronLeft, ChevronRight, Home, LayoutDashboard, LineChart, Plus, Settings, Users } from 'lucide-react'
+import {
+  Avatar,
+  AvatarFallback,
+  Badge,
+  Button,
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+  Progress,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+  DialogOverlay,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+  FormGrid,
+  FormGroup,
+  FormRow,
+  Label,
+  Textarea,
+} from "../../components/ui"
+import {
+  PageContainer,
+  MainContent,
+  Header,
+  Main,
+  ContentContainer,
+  PageHeader,
+  PageTitle,
+  ActionButtons,
+  useIsMobile
+} from "./sprintStyled"
+
+export default function SprintsPage() {
+  const isMobile = useIsMobile()
+  const [activeProjectId, setActiveProjectId] = useState("1")
+  const [activeTab, setActiveTab] = useState("board")
+  const [isProjectSelectOpen, setIsProjectSelectOpen] = useState(false)
+  const [showNewSprintDialog, setShowNewSprintDialog] = useState(false)
+
+  const projects = [
+    { id: "1", name: "Website Redesign" },
+    { id: "2", name: "Mobile App Development" },
+    { id: "3", name: "API Integration" },
+  ]
+
+  const sprints = [
+    {
+      id: 1,
+      projectId: "1",
+      name: "Sprint 4",
+      startDate: "Oct 15, 2023",
+      endDate: "Oct 29, 2023",
+      status: "In Progress",
+      progress: 45,
+      issues: {
+        todo: [
+          { id: 101, title: "Implement user settings page", assignee: "AB", priority: "Medium" },
+          { id: 102, title: "Fix navigation responsiveness", assignee: "CD", priority: "High" },
+        ],
+        inProgress: [
+          { id: 103, title: "Redesign homepage hero section", assignee: "EF", priority: "High" },
+          { id: 104, title: "Add dark mode support", assignee: "AB", priority: "Medium" },
+        ],
+        review: [{ id: 105, title: "Optimize image loading", assignee: "CD", priority: "Low" }],
+        done: [
+          { id: 106, title: "Create new logo variations", assignee: "EF", priority: "Medium" },
+          { id: 107, title: "Update footer links", assignee: "GH", priority: "Low" },
+        ],
+      },
+    },
+    {
+      id: 2,
+      projectId: "1",
+      name: "Sprint 3",
+      startDate: "Oct 1, 2023",
+      endDate: "Oct 15, 2023",
+      status: "Completed",
+      progress: 100,
+      issues: {
+        todo: [],
+        inProgress: [],
+        review: [],
+        done: [
+          { id: 201, title: "Setup CI/CD pipeline", assignee: "AB", priority: "High" },
+          { id: 202, title: "Implement authentication", assignee: "CD", priority: "High" },
+          { id: 203, title: "Create basic page layouts", assignee: "EF", priority: "Medium" },
+          { id: 204, title: "Design system foundation", assignee: "GH", priority: "Medium" },
+        ],
+      },
+    },
+    {
+      id: 3,
+      projectId: "2",
+      name: "Sprint 2",
+      startDate: "Oct 15, 2023",
+      endDate: "Oct 29, 2023",
+      status: "In Progress",
+      progress: 65,
+      issues: {
+        todo: [{ id: 301, title: "Implement push notifications", assignee: "IJ", priority: "Medium" }],
+        inProgress: [
+          { id: 302, title: "Build user profile screen", assignee: "CD", priority: "Medium" },
+          { id: 303, title: "Create onboarding flow", assignee: "GH", priority: "High" },
+        ],
+        review: [{ id: 304, title: "Fix login issues on Android", assignee: "AB", priority: "High" }],
+        done: [
+          { id: 305, title: "Setup app navigation", assignee: "CD", priority: "Medium" },
+          { id: 306, title: "Design app icon", assignee: "EF", priority: "Low" },
+        ],
+      },
+    },
+  ]
+
+  // Sprint 타입 정의
+  type Issue = {
+    id: number;
+    title: string;
+    assignee: string;
+    priority: string;
+  };
+
+  type Sprint = {
+    id: number;
+    projectId: string;
+    name: string;
+    startDate: string;
+    endDate: string;
+    status: string;
+    progress: number;
+    issues: {
+      todo: Issue[];
+      inProgress: Issue[];
+      review: Issue[];
+      done: Issue[];
+    };
+  };
+
+  // Filter sprints by active project
+  const filteredSprints = sprints.filter((sprint: Sprint) => sprint.projectId === activeProjectId)
+
+  // Current active sprint
+  const activeSprint = filteredSprints.find((sprint: Sprint) => sprint.status === "In Progress") || filteredSprints[0] || undefined
+
+  // Get sprint column counts
+  const getColumnCounts = (sprint: Sprint | undefined) => {
+    if (!sprint || !sprint.issues) {
+      return {
+        todo: 0,
+        inProgress: 0,
+        review: 0,
+        done: 0,
+      }
+    }
+
+    return {
+      todo: sprint.issues.todo?.length || 0,
+      inProgress: sprint.issues.inProgress?.length || 0,
+      review: sprint.issues.review?.length || 0,
+      done: sprint.issues.done?.length || 0,
+    }
+  }
+
+  const columnCounts = getColumnCounts(activeSprint)
+
+  // 새 스프린트 생성 핸들러 (실제 데이터 추가는 필요에 따라 구현)
+  const handleCreateSprint = (data: { name: string; startDate: string; endDate: string; goal: string }) => {
+    // 예시: alert(JSON.stringify(data))
+    // 실제로는 setSprints([...sprints, ...]) 등으로 추가
+    alert(`Sprint created: ${JSON.stringify(data)}`)
+  }
+
+  return (
+    <PageContainer>
+      <MainContent>
+        <Header>
+          <div style={{ width: "100%", maxWidth: 400 }}>
+            <Select>
+              <SelectTrigger
+                onClick={() => setIsProjectSelectOpen((open) => !open)}
+                tabIndex={0}
+              >
+                <SelectValue>
+                  {projects.find((p) => p.id === activeProjectId)?.name || "Select project"}
+                </SelectValue>
+              </SelectTrigger>
+              {isProjectSelectOpen && (
+                <SelectContent>
+                  {projects.map((project) => (
+                    <SelectItem
+                      key={project.id}
+                      value={project.id}
+                      onClick={() => {
+                        setActiveProjectId(project.id)
+                        setIsProjectSelectOpen(false)
+                      }}
+                    >
+                      {project.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              )}
+            </Select>
+          </div>
+          <div>
+            <Button size="sm" onClick={() => setShowNewSprintDialog(true)}>
+              <Plus size={16} style={{ marginRight: 6 }} />
+              New Sprint
+            </Button>
+          </div>
+        </Header>
+        <Main>
+          <ContentContainer>
+            <PageHeader>
+              <PageTitle>Sprints</PageTitle>
+              <ActionButtons>
+                <Button variant="outline" size="sm">
+                  <ChevronLeft size={16} style={{ marginRight: 4 }} />
+                  Previous
+                </Button>
+                <Button variant="outline" size="sm">
+                  Next
+                  <ChevronRight size={16} style={{ marginLeft: 4 }} />
+                </Button>
+              </ActionButtons>
+            </PageHeader>
+
+            {/* 카드 4분할 */}
+            <div style={{ display: "grid", gap: 16, gridTemplateColumns: "repeat(4, 1fr)" }}>
+              <Card>
+                <CardHeader style={{ paddingBottom: 8 }}>
+                  <CardTitle style={{ fontSize: 14, fontWeight: 500 }}>Current Sprint</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div style={{ fontSize: 22, fontWeight: 700 }}>{activeSprint?.name || "No active sprint"}</div>
+                  <p style={{ fontSize: 12, color: "#888" }}>
+                    {activeSprint ? `${activeSprint.startDate} - ${activeSprint.endDate}` : "No dates available"}
+                  </p>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardHeader style={{ paddingBottom: 8 }}>
+                  <CardTitle style={{ fontSize: 14, fontWeight: 500 }}>Sprint Progress</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div style={{ fontSize: 22, fontWeight: 700 }}>{activeSprint?.progress || 0}%</div>
+                  <Progress value={activeSprint?.progress || 0} style={{ marginTop: 8, height: 8 }} />
+                </CardContent>
+              </Card>
+              <Card>
+                <CardHeader style={{ paddingBottom: 8 }}>
+                  <CardTitle style={{ fontSize: 14, fontWeight: 500 }}>Total Issues</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div style={{ fontSize: 22, fontWeight: 700 }}>{Object.values(columnCounts).reduce((a, b) => a + b, 0)}</div>
+                  <p style={{ fontSize: 12, color: "#888" }}>{columnCounts.done} completed</p>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardHeader style={{ paddingBottom: 8 }}>
+                  <CardTitle style={{ fontSize: 14, fontWeight: 500 }}>Velocity</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div style={{ fontSize: 22, fontWeight: 700 }}>24 points</div>
+                  <p style={{ fontSize: 12, color: "#888" }}>+3 from last sprint</p>
+                </CardContent>
+              </Card>
+            </div>
+
+            <Tabs>
+              <TabsList>
+                <TabsTrigger
+                  active={activeTab === "board"}
+                  onClick={() => setActiveTab("board")}
+                >
+                  Board
+                </TabsTrigger>
+                <TabsTrigger
+                  active={activeTab === "list"}
+                  onClick={() => setActiveTab("list")}
+                >
+                  List
+                </TabsTrigger>
+                <TabsTrigger
+                  active={activeTab === "analytics"}
+                  onClick={() => setActiveTab("analytics")}
+                >
+                  Analytics
+                </TabsTrigger>
+              </TabsList>
+              <TabsContent style={{ display: activeTab === "board" ? "block" : "none" }}>
+                <Card>
+                  <CardHeader>
+                    <CardTitle>{activeSprint?.name || "Sprint Board"}</CardTitle>
+                    <CardDescription>Drag and drop issues between columns to update their status</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div style={{ display: "grid", gap: 16, gridTemplateColumns: "repeat(4, 1fr)" }}>
+                      {/* To Do Column */}
+                      <div style={{ border: "1px solid #e5e7eb", borderRadius: 12, padding: 16, background: "#f9fafb" }}>
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+                          <h3 style={{ fontWeight: 500, fontSize: 14 }}>To Do</h3>
+                          <Badge variant="outline">{columnCounts.todo}</Badge>
+                        </div>
+                        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                          {activeSprint?.issues?.todo?.map((issue) => (
+                            <Card key={issue.id} style={{ padding: 12 }}>
+                              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+                                  <div style={{ fontWeight: 500, fontSize: 14 }}>{issue.title}</div>
+                                  <Badge
+                                    variant={
+                                      issue.priority === "High"
+                                        ? "destructive"
+                                        : issue.priority === "Medium"
+                                          ? "default"
+                                          : "secondary"
+                                    }
+                                    style={{ marginLeft: 8, fontSize: 12 }}
+                                  >
+                                    {issue.priority}
+                                  </Badge>
+                                </div>
+                                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                                  <div style={{ fontSize: 12, color: "#888" }}>#{issue.id}</div>
+                                  <Avatar style={{ width: 24, height: 24 }}>
+                                    <AvatarFallback style={{ fontSize: 12 }}>{issue.assignee}</AvatarFallback>
+                                  </Avatar>
+                                </div>
+                              </div>
+                            </Card>
+                          ))}
+                          {columnCounts.todo === 0 && (
+                            <div style={{ fontSize: 12, color: "#888", textAlign: "center", padding: "16px 0" }}>No issues in To Do</div>
+                          )}
+                          <Button variant="ghost" size="sm" style={{ width: "100%", marginTop: 8 }}>
+                            <Plus size={16} style={{ marginRight: 4 }} />
+                            Add Issue
+                          </Button>
+                        </div>
+                      </div>
+                      {/* In Progress Column */}
+                      <div style={{ border: "1px solid #e5e7eb", borderRadius: 12, padding: 16, background: "#f9fafb" }}>
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+                          <h3 style={{ fontWeight: 500, fontSize: 14 }}>In Progress</h3>
+                          <Badge variant="outline">{columnCounts.inProgress}</Badge>
+                        </div>
+                        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                          {activeSprint?.issues?.inProgress?.map((issue) => (
+                            <Card key={issue.id} style={{ padding: 12 }}>
+                              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+                                  <div style={{ fontWeight: 500, fontSize: 14 }}>{issue.title}</div>
+                                  <Badge
+                                    variant={
+                                      issue.priority === "High"
+                                        ? "destructive"
+                                        : issue.priority === "Medium"
+                                          ? "default"
+                                          : "secondary"
+                                    }
+                                    style={{ marginLeft: 8, fontSize: 12 }}
+                                  >
+                                    {issue.priority}
+                                  </Badge>
+                                </div>
+                                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                                  <div style={{ fontSize: 12, color: "#888" }}>#{issue.id}</div>
+                                  <Avatar style={{ width: 24, height: 24 }}>
+                                    <AvatarFallback style={{ fontSize: 12 }}>{issue.assignee}</AvatarFallback>
+                                  </Avatar>
+                                </div>
+                              </div>
+                            </Card>
+                          ))}
+                          {columnCounts.inProgress === 0 && (
+                            <div style={{ fontSize: 12, color: "#888", textAlign: "center", padding: "16px 0" }}>No issues in progress</div>
+                          )}
+                        </div>
+                      </div>
+                      {/* Review Column */}
+                      <div style={{ border: "1px solid #e5e7eb", borderRadius: 12, padding: 16, background: "#f9fafb" }}>
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+                          <h3 style={{ fontWeight: 500, fontSize: 14 }}>Review</h3>
+                          <Badge variant="outline">{columnCounts.review}</Badge>
+                        </div>
+                        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                          {activeSprint?.issues?.review?.map((issue) => (
+                            <Card key={issue.id} style={{ padding: 12 }}>
+                              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+                                  <div style={{ fontWeight: 500, fontSize: 14 }}>{issue.title}</div>
+                                  <Badge
+                                    variant={
+                                      issue.priority === "High"
+                                        ? "destructive"
+                                        : issue.priority === "Medium"
+                                          ? "default"
+                                          : "secondary"
+                                    }
+                                    style={{ marginLeft: 8, fontSize: 12 }}
+                                  >
+                                    {issue.priority}
+                                  </Badge>
+                                </div>
+                                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                                  <div style={{ fontSize: 12, color: "#888" }}>#{issue.id}</div>
+                                  <Avatar style={{ width: 24, height: 24 }}>
+                                    <AvatarFallback style={{ fontSize: 12 }}>{issue.assignee}</AvatarFallback>
+                                  </Avatar>
+                                </div>
+                              </div>
+                            </Card>
+                          ))}
+                          {columnCounts.review === 0 && (
+                            <div style={{ fontSize: 12, color: "#888", textAlign: "center", padding: "16px 0" }}>No issues in review</div>
+                          )}
+                        </div>
+                      </div>
+                      {/* Done Column */}
+                      <div style={{ border: "1px solid #e5e7eb", borderRadius: 12, padding: 16, background: "#f9fafb" }}>
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+                          <h3 style={{ fontWeight: 500, fontSize: 14 }}>Done</h3>
+                          <Badge variant="outline">{columnCounts.done}</Badge>
+                        </div>
+                        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                          {activeSprint?.issues?.done?.map((issue) => (
+                            <Card key={issue.id} style={{ padding: 12 }}>
+                              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+                                  <div style={{ fontWeight: 500, fontSize: 14 }}>{issue.title}</div>
+                                  <Badge
+                                    variant={
+                                      issue.priority === "High"
+                                        ? "destructive"
+                                        : issue.priority === "Medium"
+                                          ? "default"
+                                          : "secondary"
+                                    }
+                                    style={{ marginLeft: 8, fontSize: 12 }}
+                                  >
+                                    {issue.priority}
+                                  </Badge>
+                                </div>
+                                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                                  <div style={{ fontSize: 12, color: "#888" }}>#{issue.id}</div>
+                                  <Avatar style={{ width: 24, height: 24 }}>
+                                    <AvatarFallback style={{ fontSize: 12 }}>{issue.assignee}</AvatarFallback>
+                                  </Avatar>
+                                </div>
+                              </div>
+                            </Card>
+                          ))}
+                          {columnCounts.done === 0 && (
+                            <div style={{ fontSize: 12, color: "#888", textAlign: "center", padding: "16px 0" }}>No completed issues</div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </TabsContent>
+              <TabsContent style={{ display: activeTab === "list" ? "block" : "none" }}>
+                <Card>
+                  <CardHeader>
+                    <CardTitle>{activeSprint?.name || "Sprint Issues"}</CardTitle>
+                    <CardDescription>View and manage all issues in this sprint</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
+                      {["To Do", "In Progress", "Review", "Done"].map((column, index) => {
+                        const issueKey = column.toLowerCase().replace(" ", "") as keyof typeof activeSprint.issues
+                        const issues = activeSprint?.issues?.[issueKey] || []
+
+                        return (
+                          <div key={column} style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                              <h3 style={{ fontWeight: 500 }}>{column}</h3>
+                              <Badge variant="outline">{issues.length}</Badge>
+                            </div>
+                            {issues.length > 0 ? (
+                              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                                {issues.map((issue) => (
+                                  <Card key={issue.id} style={{ padding: 12 }}>
+                                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                                      <div>
+                                        <div style={{ fontWeight: 500 }}>{issue.title}</div>
+                                        <div style={{ fontSize: 12, color: "#888" }}>
+                                          #{issue.id} • Assigned to {issue.assignee}
+                                        </div>
+                                      </div>
+                                      <Badge
+                                        variant={
+                                          issue.priority === "High"
+                                            ? "destructive"
+                                            : issue.priority === "Medium"
+                                              ? "default"
+                                              : "secondary"
+                                        }
+                                      >
+                                        {issue.priority}
+                                      </Badge>
+                                    </div>
+                                  </Card>
+                                ))}
+                              </div>
+                            ) : (
+                              <div style={{ fontSize: 14, color: "#888", padding: 8 }}>
+                                No issues in {column.toLowerCase()}
+                              </div>
+                            )}
+                          </div>
+                        )
+                      })}
+                    </div>
+                  </CardContent>
+                </Card>
+              </TabsContent>
+              <TabsContent style={{ display: activeTab === "analytics" ? "block" : "none" }}>
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Sprint Analytics</CardTitle>
+                    <CardDescription>Track progress and performance metrics for this sprint</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div style={{ display: "flex", flexDirection: "column", gap: 32 }}>
+                      <div>
+                        <h3 style={{ fontSize: 14, fontWeight: 500, marginBottom: 8 }}>Burndown Chart</h3>
+                        <div style={{
+                          height: 200, width: "100%", border: "1px solid #e5e7eb", borderRadius: 12,
+                          background: "#f9fafb", display: "flex", alignItems: "center", justifyContent: "center"
+                        }}>
+                          <p style={{ color: "#888", fontSize: 14 }}>Burndown chart visualization goes here</p>
+                        </div>
+                      </div>
+                      <div>
+                        <h3 style={{ fontSize: 14, fontWeight: 500, marginBottom: 8 }}>Issue Distribution</h3>
+                        <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 8 }}>
+                          {Object.entries({
+                            "To Do": columnCounts.todo,
+                            "In Progress": columnCounts.inProgress,
+                            Review: columnCounts.review,
+                            Done: columnCounts.done,
+                          }).map(([status, count]) => (
+                            <Card key={status} style={{ padding: 12, textAlign: "center" }}>
+                              <div style={{ fontSize: 22, fontWeight: 700 }}>{count}</div>
+                              <div style={{ fontSize: 12, color: "#888" }}>{status}</div>
+                            </Card>
+                          ))}
+                        </div>
+                      </div>
+                      <div>
+                        <h3 style={{ fontSize: 14, fontWeight: 500, marginBottom: 8 }}>Team Performance</h3>
+                        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                          {["AB", "CD", "EF", "GH"].map((member) => {
+                            const assignedIssues = [
+                              ...(activeSprint?.issues?.todo || []),
+                              ...(activeSprint?.issues?.inProgress || []),
+                              ...(activeSprint?.issues?.review || []),
+                              ...(activeSprint?.issues?.done || []),
+                            ].filter((issue) => issue.assignee === member)
+
+                            const completedIssues = (activeSprint?.issues.done || []).filter(
+                              (issue) => issue.assignee === member,
+                            )
+
+                            const completionRate =
+                              assignedIssues.length > 0
+                                ? Math.round((completedIssues.length / assignedIssues.length) * 100)
+                                : 0
+
+                            return (
+                              <div key={member} style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                                <Avatar style={{ width: 32, height: 32 }}>
+                                  <AvatarFallback style={{ background: "#6366f1", color: "#fff", fontSize: 12 }}>
+                                    {member}
+                                  </AvatarFallback>
+                                </Avatar>
+                                <div style={{ flex: 1, minWidth: 0 }}>
+                                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 4 }}>
+                                    <p style={{ fontSize: 14 }}>{member}</p>
+                                    <p style={{ fontSize: 12, color: "#888" }}>
+                                      {completedIssues.length}/{assignedIssues.length} issues
+                                    </p>
+                                  </div>
+                                  <Progress value={completionRate} style={{ height: 8 }} />
+                                </div>
+                              </div>
+                            )
+                          })}
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </TabsContent>
+            </Tabs>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>Project Sprints</CardTitle>
+                <CardDescription>
+                  All sprints for {projects.find((p) => p.id === activeProjectId)?.name || "this project"}
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+                  {filteredSprints.map((sprint: Sprint) => (
+                    <Card key={sprint.id} style={{ overflow: "hidden" }}>
+                      <div style={{ display: "flex", borderBottom: "1px solid #e5e7eb" }}>
+                        <div
+                          style={{
+                            width: 4,
+                            background:
+                              sprint.status === "Completed"
+                                ? "#22c55e"
+                                : sprint.status === "In Progress"
+                                  ? "#3b82f6"
+                                  : "#d1d5db"
+                          }}
+                        ></div>
+                        <CardHeader style={{ flex: 1 }}>
+                          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                            <CardTitle style={{ fontSize: 18 }}>{sprint.name}</CardTitle>
+                            <Badge
+                              variant={
+                                sprint.status === "Completed"
+                                  ? "success"
+                                  : sprint.status === "In Progress"
+                                    ? "default"
+                                    : "secondary"
+                              }
+                            >
+                              {sprint.status}
+                            </Badge>
+                          </div>
+                          <CardDescription>
+                            {sprint.startDate} - {sprint.endDate}
+                          </CardDescription>
+                        </CardHeader>
+                      </div>
+                      <CardContent style={{ padding: 16 }}>
+                        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                          <div>
+                            <div style={{ display: "flex", justifyContent: "space-between", fontSize: 14, marginBottom: 4 }}>
+                              <span>Progress</span>
+                              <span>{sprint.progress}%</span>
+                            </div>
+                            <Progress value={sprint.progress} style={{ height: 8 }} />
+                          </div>
+                          <div style={{ display: "flex", gap: 12 }}>
+                            {["Todo", "In Progress", "Review", "Done"].map((status) => {
+                              const key = status.toLowerCase().replace(" ", "") as keyof typeof sprint.issues
+                              const count = sprint.issues && sprint.issues[key] ? sprint.issues[key].length : 0
+
+                              return (
+                                <div key={status} style={{ flex: 1 }}>
+                                  <div style={{ textAlign: "center", padding: 8, border: "1px solid #e5e7eb", borderRadius: 8 }}>
+                                    <div style={{ fontSize: 16, fontWeight: 600 }}>{count}</div>
+                                    <div style={{ fontSize: 12, color: "#888" }}>{status}</div>
+                                  </div>
+                                </div>
+                              )
+                            })}
+                          </div>
+                          <div style={{ display: "flex", justifyContent: "flex-end" }}>
+                            <Button variant="outline" size="sm">
+                              View Details
+                            </Button>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </ContentContainer>
+        </Main>
+        <NewSprintDialog
+          open={showNewSprintDialog}
+          onClose={() => setShowNewSprintDialog(false)}
+          onSubmit={handleCreateSprint}
+        />
+      </MainContent>
+    </PageContainer>
+  )
+}
+
+// NewSprintDialog 로직 분리
+function NewSprintDialog({
+  open,
+  onClose,
+  onSubmit,
+}: {
+  open: boolean
+  onClose: () => void
+  onSubmit: (data: { name: string; startDate: string; endDate: string; goal: string }) => void
+}) {
+  const [name, setName] = useState("")
+  const [startDate, setStartDate] = useState("")
+  const [endDate, setEndDate] = useState("")
+  const [goal, setGoal] = useState("")
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    onSubmit({ name, startDate, endDate, goal })
+    setName("")
+    setStartDate("")
+    setEndDate("")
+    setGoal("")
+    onClose()
+  }
+
+  if (!open) return null
+
+  return (
+    <DialogOverlay onClick={onClose}>
+      <DialogContent onClick={e => e.stopPropagation()}>
+        <form onSubmit={handleSubmit}>
+          <DialogHeader>
+            <DialogTitle>Create new sprint</DialogTitle>
+            <DialogDescription>
+              Fill in the details below to create a new sprint.
+            </DialogDescription>
+          </DialogHeader>
+          <FormGrid>
+            <FormGroup>
+              <Label htmlFor="sprint-name">Sprint name</Label>
+              <input
+                id="sprint-name"
+                placeholder="Enter sprint name"
+                value={name}
+                onChange={e => setName(e.target.value)}
+                required
+                style={{
+                  width: "100%",
+                  minHeight: "2.5rem",
+                  borderRadius: 8,
+                  border: "1px solid #e5e7eb",
+                  padding: 8,
+                  fontSize: 14,
+                  background: "#fff",
+                  color: "#222",
+                }}
+              />
+            </FormGroup>
+            <FormRow>
+              <FormGroup>
+                <Label htmlFor="sprint-start-date">Start date</Label>
+                <input
+                  type="date"
+                  id="sprint-start-date"
+                  value={startDate}
+                  onChange={e => setStartDate(e.target.value)}
+                  required
+                  style={{
+                    width: "100%",
+                    minHeight: "2.5rem",
+                    borderRadius: 8,
+                    border: "1px solid #e5e7eb",
+                    padding: 8,
+                    fontSize: 14,
+                    background: "#fff",
+                    color: "#222",
+                  }}
+                />
+              </FormGroup>
+              <FormGroup>
+                <Label htmlFor="sprint-end-date">End date</Label>
+                <input
+                  type="date"
+                  id="sprint-end-date"
+                  value={endDate}
+                  onChange={e => setEndDate(e.target.value)}
+                  required
+                  style={{
+                    width: "100%",
+                    minHeight: "2.5rem",
+                    borderRadius: 8,
+                    border: "1px solid #e5e7eb",
+                    padding: 8,
+                    fontSize: 14,
+                    background: "#fff",
+                    color: "#222",
+                  }}
+                />
+              </FormGroup>
+            </FormRow>
+            <FormGroup>
+              <Label htmlFor="sprint-goal">Sprint goal</Label>
+              <Textarea
+                id="sprint-goal"
+                placeholder="Describe the sprint goal"
+                value={goal}
+                onChange={e => setGoal(e.target.value)}
+                style={{ borderRadius: 8, border: "1px solid #e5e7eb", padding: 8, fontSize: 14 }}
+              />
+            </FormGroup>
+          </FormGrid>
+          <DialogFooter>
+            <Button type="button" variant="ghost" onClick={onClose} style={{ marginRight: 8 }}>
+              Cancel
+            </Button>
+            <Button type="submit">Create Sprint</Button>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </DialogOverlay>
+  )
+}
