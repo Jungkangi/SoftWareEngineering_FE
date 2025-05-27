@@ -12,6 +12,7 @@ export const Wrapper = styled.div`
 `;
 
 export const SubWrapper = styled.div`
+  z-index: 100;
   display: flex;
   flex-direction: row;
   position: relative;
@@ -26,4 +27,5 @@ export const Content = styled.div`
   width: 100%;
   height: 100%;
   background-color: #efefef;
+  overflow: auto;
 `;
