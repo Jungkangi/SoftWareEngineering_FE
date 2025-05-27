@@ -9,6 +9,7 @@ import {
   ChartLine,
   Users,
   User,
+  FileClock,
 } from "lucide-react";
 
 const Sidebar = () => {
@@ -18,7 +19,7 @@ const Sidebar = () => {
     <S.SidebarContainer isOpen={isSidebarOpen}>
       <S.SidebarMenu>
         <S.SidebarMenuItem isOpen={isSidebarOpen}>
-          <S.SidebarLink isOpen={isSidebarOpen} to="/sprint">
+          <S.SidebarLink isOpen={isSidebarOpen} to="/">
             <House />
             <span>Home</span>
           </S.SidebarLink>
@@ -27,6 +28,12 @@ const Sidebar = () => {
           <S.SidebarLink isOpen={isSidebarOpen} to="/project">
             <LayoutDashboard />
             <span>Project</span>
+          </S.SidebarLink>
+        </S.SidebarMenuItem>
+        <S.SidebarMenuItem isOpen={isSidebarOpen}>
+          <S.SidebarLink isOpen={isSidebarOpen} to="/sprint">
+            <FileClock />
+            <span>Sprint</span>
           </S.SidebarLink>
         </S.SidebarMenuItem>
         <S.SidebarMenuItem isOpen={isSidebarOpen}>

@@ -1,11 +1,19 @@
 import { Routes, Route, BrowserRouter } from "react-router-dom";
-import { Dashboard, Intro, Layout,ProjectsPage, SprintsPage } from "../page/index";
+import {
+  Dashboard,
+  Intro,
+  Layout,
+  ProjectsPage,
+  SprintsPage,
+  AuthPage,
+} from "../page/index";
 
 const AppRouter = () => {
   return (
     <BrowserRouter>
       <Routes>
         <Route path="/intro" element={<Intro />} />
+        <Route path="/auth" element={<AuthPage />} />
         <Route path="/" element={<Layout />}>
           <Route index element={<Dashboard />} />
           <Route path="project" element={<ProjectsPage />} />
