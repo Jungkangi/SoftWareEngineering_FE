@@ -74,8 +74,8 @@ export default function IntroPage(): JSX.Element {
           </Logo>
         </a>
         <Nav>
-          <a href="/login">Log In</a>
-          <a href="/signup">Sign Up</a>
+          <a href="/auth">Log In</a>
+          <a href="/auth">Sign Up</a>
         </Nav>
       </Header>
 

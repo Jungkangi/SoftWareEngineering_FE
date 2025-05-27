@@ -23,7 +23,7 @@ import {
 } from "./dashboardStyled";
 
 import { Funnel } from "lucide-react";
-import Modal from "../../component/modal/modal"; // Assuming you have a Modal component
+import Modal from "../../components/modal/modal"; // Assuming you have a Modal component
 
 const projectStats = [
   { title: "Total Projects", value: "12", change: "+3 from last month" },
