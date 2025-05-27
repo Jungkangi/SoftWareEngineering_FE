@@ -6,7 +6,7 @@ export const SidebarContainer = styled.div<{ isOpen: boolean }>`
   transition: all ease 0.3s;
   top: 0;
   left: 0;
-  width: ${({ isOpen }) => (isOpen ? "15%" : "4em")};
+  width: ${({ isOpen }) => (isOpen ? "15%" : "3em")};
   height: 100%;
   overflow: hidden;
   background: #d8d7d7;
@@ -39,6 +39,7 @@ export const SidebarMenuItem = styled.li<{ isOpen: boolean }>`
   width: 100%;
   height: 15%;
   cursor: pointer;
+  transition: background-color ease 0.3s;
 
   &:hover {
     background-color: #f5f5f5;

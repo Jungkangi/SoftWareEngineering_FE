@@ -1,6 +1,6 @@
 import * as S from "./sidebarStyled";
 import { useRecoilState } from "recoil";
-import { sidebarOpenState } from "../../../props/sidebarprops";
+import { sidebarOpenState } from "../../props/sidebarprops";
 import {
   LayoutDashboard,
   House,

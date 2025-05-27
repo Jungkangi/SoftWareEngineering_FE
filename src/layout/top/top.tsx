@@ -1,6 +1,6 @@
 import * as S from "./topStyled";
 import { useRecoilState } from "recoil";
-import { sidebarOpenState } from "../../../props/sidebarprops";
+import { sidebarOpenState } from "../../props/sidebarprops";
 import { PanelLeft, Bell, Search } from "lucide-react";
 
 const Sidebar = () => {

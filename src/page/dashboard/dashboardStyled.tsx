@@ -8,13 +8,16 @@ export const DashboardHeader = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 24px;
+  height: fit-content;
+  margin-bottom: 2%;
 `;
 
 export const Title = styled.h1`
-  font-size: 28px;
+  font-size: 2em;
   font-weight: 700;
   color: #333;
+  margin: 0;
+  padding: 0;
 `;
 
 export const HeaderActions = styled.div`
@@ -23,26 +26,28 @@ export const HeaderActions = styled.div`
 `;
 
 export const FilterButton = styled.button`
-  padding: 8px 16px;
-  border: 1px solid #ddd;
+  padding: 0.5em 1em;
+  border: 0.1em solid #ddd;
   background: white;
-  border-radius: 8px;
-  font-size: 14px;
+  border-radius: 0.5em;
+  font-size: 0.875em;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 0.5em;
   cursor: pointer;
+  height: 2.5em;
 `;
 
 export const NewProjectButton = styled.button`
-  padding: 8px 16px;
+  padding: 0.5em 1em;
   border: none;
   background: #1c1c1c;
   color: white;
-  border-radius: 8px;
-  font-size: 14px;
+  border-radius: 0.5em;
+  font-size: 0.875em;
   font-weight: 600;
   cursor: pointer;
+  height: 2.5em;
 `;
 
 export const StatsContainer = styled.div`
