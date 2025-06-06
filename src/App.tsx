@@ -16,7 +16,7 @@ import AppRouter from "./router/router";
 import { RecoilRoot } from "recoil";
 import GlobalStyle from "./styles/globalStyle";
 import { ThemeProvider } from "styled-components"; // ThemeProvider 추가
-import { lightTheme } from "./page/dashboard/projectStyled"; // lightTheme 가져오기
+import { lightTheme } from "./page/project/projectStyled"; // lightTheme 가져오기
 
 function App() {
   return (
