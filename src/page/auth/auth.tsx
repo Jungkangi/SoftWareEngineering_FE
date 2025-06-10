@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useRecoilState } from "recoil";
 import { authisLogin } from "../../props/authisLogin";
 import * as S from "./authStyled";
@@ -16,6 +16,7 @@ import {
   TeamAvatar,
 } from "../intro/introStyled";
 import { LayoutDashboard, ArrowLeft } from "lucide-react";
+import { useLogin } from "../../hooks/login";
 
 interface SprintProgress {
   percentage: number;
@@ -48,10 +49,25 @@ const Auth: React.FC = () => {
     team: ["A", "B", "C", "D", "E"],
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const [password, setPassword] = useState("");
+  const [uid, setUid] = useState("");
+  const [passwordCheck, setPasswordCheck] = useState("");
+
+  const isPasswordMismatch =
+    authMode !== "login" && passwordCheck && password !== passwordCheck;
+
+  const { login, loading, error } = useLogin();
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (authMode === "login") {
-      // TODO: 로그인 로직
+      console.log("start");
+      const result = await login(uid, password);
+      if (result) {
+        console.log("로그인 성공:", result.access_token);
+      } else {
+        console.error("로그인 실패:", error);
+      }
     } else {
       // TODO: 회원가입 로직
     }
@@ -67,7 +83,9 @@ const Auth: React.FC = () => {
           <img src="/assets/5278.jpg" alt="Background"></img>
         </S.ZeroLeft>
         <S.Left authMode={authMode}>
-          <S.Title>Login Jungkang2</S.Title>
+          <S.Title>
+            {authMode === "login" ? "Login Jungkang2" : "Signup Jungkang2"}
+          </S.Title>
           <S.SocialButtons>
             <S.SocialButton provider="google">
               <img
@@ -81,9 +99,75 @@ const Auth: React.FC = () => {
             </S.SocialButton>
           </S.SocialButtons>
           <S.Separator>OR</S.Separator>
-          <S.Form onSubmit={handleSubmit}>
-            <S.Input type="email" placeholder="Enter email address" required />
-            <S.Input type="password" placeholder="Enter password" required />
+          <S.Form>
+            {authMode === "login" ? (
+              <>
+                <S.Input
+                  type="text"
+                  name="UID"
+                  placeholder="Enter ID"
+                  onChange={(e) => setUid(e.target.value)}
+                  required
+                />
+                <S.Input
+                  type="password"
+                  name="PASSWORD"
+                  placeholder="Enter Password"
+                  required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
+              </>
+            ) : (
+              <>
+                <S.Input
+                  type="text"
+                  name="UID"
+                  placeholder="Enter ID"
+                  required
+                />
+                <S.Input
+                  type="text"
+                  name="NICKNAME"
+                  placeholder="Enter Nickname"
+                  required
+                />
+                <S.Input
+                  type="password"
+                  name="PASSWORD"
+                  placeholder="Enter Password"
+                  required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
+                <S.Input
+                  type="password"
+                  name="PASSWORD_CHECK"
+                  placeholder="Enter Password Check"
+                  required
+                  value={passwordCheck}
+                  onChange={(e) => setPasswordCheck(e.target.value)}
+                  style={
+                    isPasswordMismatch
+                      ? { borderColor: "red", outlineColor: "red" }
+                      : undefined
+                  }
+                />
+                <S.Input
+                  type="email"
+                  name="EMAIL"
+                  placeholder="Enter email address"
+                  required
+                />
+                <S.Input
+                  type="tel"
+                  name="PHONE"
+                  placeholder="Enter phone number"
+                  required
+                />
+              </>
+            )}
+
             <S.ForgotPasswordWrapper>
               <S.ForgotLink>
                 {authMode === "login" ? "Forgot password?" : ""}
@@ -103,7 +187,7 @@ const Auth: React.FC = () => {
               </S.ForgotLink>
             </S.ForgotPasswordWrapper>
 
-            <S.SubmitButton type="submit">
+            <S.SubmitButton type="submit" onClick={handleSubmit}>
               {authMode === "login" ? "Login" : "SignUp"}
             </S.SubmitButton>
           </S.Form>
