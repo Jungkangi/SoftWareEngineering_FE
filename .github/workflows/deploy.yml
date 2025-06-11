@@ -20,7 +20,5 @@ jobs:
             cd ~/SoftWareEngineering_FE
             git fetch --all
             git reset --hard origin/dev
-            rm -rf node_modules package-lock.json
-            npm install
             docker compose down || true
             docker compose up -d --build
