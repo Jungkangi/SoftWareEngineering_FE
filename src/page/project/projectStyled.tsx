@@ -806,3 +806,362 @@ export const SidebarTrigger: React.FC = () => {
     </SidebarTriggerButton>
   )
 }
+
+// 페이지 레이아웃
+export const PageContainer = styled.div`
+  display: flex;
+  min-height: 100vh;
+  background-color: ${({ theme }) => theme.colors.backgroundSecondary};
+`
+
+export const MainContent = styled.div`
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+`
+
+export const Header = styled.header`
+  display: flex;
+  height: 4rem;
+  align-items: center;
+  gap: ${({ theme }) => theme.space[4]};
+  border-bottom: 1px solid ${({ theme }) => theme.colors.border};
+  background-color: ${({ theme }) => theme.colors.background};
+  padding: 0 ${({ theme }) => theme.space[6]};
+`
+
+export const SearchContainer = styled.div`
+  display: flex;
+  align-items: center;
+  gap: ${({ theme }) => theme.space[2]};
+  width: 100%;
+  @media (min-width: ${({ theme }) => theme.breakpoints.md}) {
+    width: 20rem;
+  }
+  @media (min-width: ${({ theme }) => theme.breakpoints.lg}) {
+    width: 24rem;
+  }
+`
+
+export const Main = styled.main`
+  flex: 1;
+  overflow: auto;
+  padding: ${({ theme }) => theme.space[6]};
+`
+
+export const ContentContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: ${({ theme }) => theme.space[6]};
+`
+
+export const PageHeader = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: ${({ theme }) => theme.space[4]};
+  @media (min-width: ${({ theme }) => theme.breakpoints.sm}) {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+`
+
+export const PageTitle = styled.h1`
+  font-size: ${({ theme }) => theme.fontSizes["2xl"]};
+  font-weight: 700;
+  letter-spacing: -0.025em;
+`
+
+export const ActionButtons = styled.div`
+  display: flex;
+  align-items: center;
+  gap: ${({ theme }) => theme.space[2]};
+`
+
+export const TabsContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: ${({ theme }) => theme.space[2]};
+`
+
+export const TabsList = styled.div`
+  display: flex;
+  border-bottom: 1px solid ${({ theme }) => theme.colors.border};
+`
+
+export const Tab = styled.button<{ active?: boolean }>`
+  padding: ${({ theme }) => theme.space[2]} ${({ theme }) => theme.space[4]};
+  font-size: ${({ theme }) => theme.fontSizes.sm};
+  font-weight: 500;
+  border-bottom: 2px solid ${({ active, theme }) => (active ? theme.colors.primary : "transparent")};
+  color: ${({ active, theme }) => (active ? theme.colors.primary : theme.colors.mutedForeground)};
+  &:hover {
+    color: ${({ theme }) => theme.colors.foreground};
+  }
+`
+
+export const TabContent = styled.div`
+  margin-top: ${({ theme }) => theme.space[4]};
+`
+
+export const GridContainer = styled.div`
+  display: grid;
+  gap: ${({ theme }) => theme.space[4]};
+  @media (min-width: ${({ theme }) => theme.breakpoints.md}) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  @media (min-width: ${({ theme }) => theme.breakpoints.lg}) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+`
+
+export const CategoryItem = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+`
+
+export const StatusItem = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: ${({ theme }) => theme.space[2]};
+`
+
+export const StatusHeader = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+`
+
+export const TeamMemberItem = styled.div`
+  display: flex;
+  align-items: center;
+  gap: ${({ theme }) => theme.space[3]};
+`
+
+export const TeamMemberInfo = styled.div`
+  flex: 1;
+  min-width: 0;
+`
+
+export const TeamMemberName = styled.p`
+  font-size: ${({ theme }) => theme.fontSizes.sm};
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+`
+
+export const TeamMemberRole = styled.p`
+  font-size: ${({ theme }) => theme.fontSizes.xs};
+  color: ${({ theme }) => theme.colors.mutedForeground};
+`
+
+export const AvatarGroup = styled.div`
+  display: flex;
+  margin-left: -0.5rem;
+`
+
+// Dialog
+export const DialogOverlay = styled.div`
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+`
+
+export const DialogContent = styled.div`
+  background-color: ${({ theme }) => theme.colors.background};
+  border-radius: ${({ theme }) => theme.radii.lg};
+  box-shadow: ${({ theme }) => theme.shadows.lg};
+  width: 100%;
+  max-width: 32rem;
+  max-height: 85vh;
+  overflow-y: auto;
+  padding: ${({ theme }) => theme.space[6]};
+  @media (min-width: ${({ theme }) => theme.breakpoints.sm}) {
+    max-width: 32.5rem;
+  }
+`
+
+export const DialogHeader = styled.div`
+  margin-bottom: ${({ theme }) => theme.space[4]};
+`
+
+export const DialogTitle = styled.h2`
+  font-size: ${({ theme }) => theme.fontSizes.lg};
+  font-weight: 600;
+  margin-bottom: ${({ theme }) => theme.space[1]};
+`
+
+export const DialogDescription = styled.p`
+  font-size: ${({ theme }) => theme.fontSizes.sm};
+  color: ${({ theme }) => theme.colors.mutedForeground};
+`
+
+export const FormGrid = styled.div`
+  display: grid;
+  gap: ${({ theme }) => theme.space[4]};
+  padding: ${({ theme }) => theme.space[4]} 0;
+`
+
+export const FormGroup = styled.div`
+  display: grid;
+  gap: ${({ theme }) => theme.space[2]};
+`
+
+export const FormRow = styled.div`
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: ${({ theme }) => theme.space[4]};
+`
+
+// Dropdown
+export const DropdownContainer = styled.div`
+  position: relative;
+`
+
+export const DropdownContent = styled.div<{ $fixedTop?: number; $fixedLeft?: number; $fixedWidth?: number }>`
+  position: ${({ $fixedTop }) => ($fixedTop !== undefined ? "fixed" : "absolute")};
+  right: 0;
+  z-index: 10;
+  min-width: 8rem;
+  overflow: hidden;
+  border-radius: ${({ theme }) => theme.radii.md};
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  background-color: ${({ theme }) => theme.colors.background};
+  box-shadow: ${({ theme }) => theme.shadows.md};
+  ${({ $fixedTop, $fixedLeft, $fixedWidth }) =>
+    $fixedTop !== undefined && $fixedLeft !== undefined
+      ? `
+    top: ${$fixedTop}px;
+    left: ${$fixedLeft}px;
+    width: ${$fixedWidth ? `${$fixedWidth}px` : "auto"};
+    right: auto;
+  `
+      : ""}
+`
+
+export const DropdownLabel = styled.div`
+  padding: ${({ theme }) => theme.space[2]} ${({ theme }) => theme.space[3]};
+  font-size: ${({ theme }) => theme.fontSizes.sm};
+  font-weight: 500;
+  color: ${({ theme }) => theme.colors.mutedForeground};
+`
+
+export const DropdownSeparator = styled.div`
+  height: 1px;
+  background-color: ${({ theme }) => theme.colors.border};
+  margin: ${({ theme }) => theme.space[1]} 0;
+`
+
+export const DropdownItem = styled.button`
+  display: flex;
+  width: 100%;
+  align-items: center;
+  padding: ${({ theme }) => theme.space[2]} ${({ theme }) => theme.space[3]};
+  font-size: ${({ theme }) => theme.fontSizes.sm};
+  text-align: left;
+  &:hover {
+    background-color: ${({ theme }) => theme.colors.accent};
+  }
+`
+
+export const DropdownItemDestructive = styled(DropdownItem)`
+  color: ${({ theme }) => theme.colors.destructive};
+  &:hover {
+    background-color: ${({ theme }) => theme.colors.destructive}10;
+  }
+`
+
+// Select
+export const SelectContainer = styled.div`
+  position: relative;
+`
+
+export const SelectTriggerContainer = styled.button`
+  display: flex;
+  height: 2.5rem;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+  border-radius: ${({ theme }) => theme.radii.md};
+  border: 1px solid ${({ theme }) => theme.colors.input};
+  background-color: transparent;
+  padding: 0 ${({ theme }) => theme.space[3]};
+  font-size: ${({ theme }) => theme.fontSizes.sm};
+  &:focus {
+    outline: none;
+    border-color: ${({ theme }) => theme.colors.primary};
+    box-shadow: 0 0 0 1px ${({ theme }) => theme.colors.primary};
+  }
+`
+
+export const SelectValue = styled.span`
+  display: flex;
+  align-items: center;
+  gap: ${({ theme }) => theme.space[2]};
+`
+
+export const SelectContent = styled.div`
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 10;
+  width: 100%;
+  overflow: hidden;
+  border-radius: ${({ theme }) => theme.radii.md};
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  background-color: ${({ theme }) => theme.colors.background};
+  box-shadow: ${({ theme }) => theme.shadows.md};
+  margin-top: ${({ theme }) => theme.space[1]};
+`
+
+export const SelectItem = styled.button`
+  display: flex;
+  width: 100%;
+  align-items: center;
+  padding: ${({ theme }) => theme.space[2]} ${({ theme }) => theme.space[3]};
+  font-size: ${({ theme }) => theme.fontSizes.sm};
+  text-align: left;
+  &:hover {
+    background-color: ${({ theme }) => theme.colors.accent};
+  }
+`
+
+export const DialogFooter = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  margin-top: ${({ theme }) => theme.space[4]};
+`
+
+// Responsive Table
+export const ResponsiveTableHead = styled(TableHead)`
+  display: none;
+  @media (min-width: 768px) {
+    display: table-cell;
+  }
+`
+
+export const ResponsiveTableHeadLg = styled(TableHead)`
+  display: none;
+  @media (min-width: 1024px) {
+    display: table-cell;
+  }
+`
+
+export const ResponsiveTableCell = styled(TableCell)`
+  display: none;
+  @media (min-width: 768px) {
+    display: table-cell;
+  }
+`
+
+export const ResponsiveTableCellLg = styled(TableCell)`
+  display: none;
+  @media (min-width: 1024px) {
+    display: table-cell;
+  }
+`
