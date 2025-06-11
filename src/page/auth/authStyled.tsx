@@ -13,8 +13,10 @@ export const Wrapper = styled.div`
 `;
 
 export const LinkWraper = styled(Link)`
-  width: 80%;
+  width: fit-content;
+  margin-left: 10%;
   margin-bottom: 1em;
+  align-self: flex-start;
 
   svg {
     scale: 1.5;
@@ -81,7 +83,7 @@ export const Title = styled.h2`
 export const SocialButtons = styled.div`
   display: flex;
   gap: 1rem;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
 `;
 
 export const SocialButton = styled.button<{ provider: "google" | "apple" }>`
@@ -162,7 +164,7 @@ export const SubmitButton = styled.button`
   border-radius: 8px;
   font-size: 1rem;
   cursor: pointer;
-  margin-top: 1rem;
+  margin-top: 0.5rem;
   &:hover {
     opacity: 0.9;
   }

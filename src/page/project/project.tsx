@@ -10,7 +10,7 @@ import {
   Search,
   Settings,
   Users,
-} from "lucide-react"
+} from "lucide-react";
 import {
   Avatar,
   AvatarFallback,
@@ -108,7 +108,6 @@ export default function ProjectsPage() {
     { name: "Grace Hill", initials: "GH", projects: 1, tasks: 4 },
     { name: "Ivan Jones", initials: "IJ", projects: 2, tasks: 7 },
   ]
-
   const sidebarItems = [
     { icon: Home, label: "Home", href: "/dashboard" },
     { icon: LayoutDashboard, label: "Projects", href: "/dashboard/projects" },
@@ -179,7 +178,7 @@ export default function ProjectsPage() {
       status: "Planning",
       category: "Infrastructure",
     },
-  ]
+  ];
 
   // Filter projects based on selected tab
   const filteredProjects = projects.filter((project) => {
