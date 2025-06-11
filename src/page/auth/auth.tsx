@@ -17,6 +17,8 @@ import {
 } from "../intro/introStyled";
 import { LayoutDashboard, ArrowLeft } from "lucide-react";
 import { useLogin } from "../../hooks/login";
+import { useCreateUser } from "../../hooks/createUser";
+import { useNavigate } from "react-router-dom";
 
 interface SprintProgress {
   percentage: number;
@@ -52,24 +54,45 @@ const Auth: React.FC = () => {
   const [password, setPassword] = useState("");
   const [uid, setUid] = useState("");
   const [passwordCheck, setPasswordCheck] = useState("");
+  const [nickname, setNickname] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
 
   const isPasswordMismatch =
     authMode !== "login" && passwordCheck && password !== passwordCheck;
 
   const { login, loading, error } = useLogin();
+  const { createUser } = useCreateUser();
+  const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (authMode === "login") {
-      console.log("start");
+      console.log("start" + uid + password);
       const result = await login(uid, password);
       if (result) {
-        console.log("로그인 성공:", result.access_token);
+        alert(`반갑습니다 ${uid}님!`);
+        localStorage.setItem("access_token", result.access_token);
+        navigate("/");
       } else {
-        console.error("로그인 실패:", error);
+        alert(
+          `로그인 실패:\n
+          ${error}\n
+          다시 시도해 주세요 문제가 계속될경우 관리자에게 문의해 주세요.`
+        );
       }
     } else {
-      // TODO: 회원가입 로직
+      const result = await createUser(uid, nickname, password, email, phone);
+      if (result) {
+        alert(`${uid}님의 회원가입이 완료되었습니다!`);
+        setAuthMode("login");
+      } else {
+        alert(
+          `회원가입 실패:\n
+            ${error}\n
+            다시 시도해 주세요 문제가 계속될경우 관리자에게 문의해 주세요.`
+        );
+      }
     }
   };
 
@@ -125,12 +148,15 @@ const Auth: React.FC = () => {
                   name="UID"
                   placeholder="Enter ID"
                   required
+                  onChange={(e) => setUid(e.target.value)}
                 />
                 <S.Input
                   type="text"
                   name="NICKNAME"
                   placeholder="Enter Nickname"
                   required
+                  value={nickname}
+                  onChange={(e) => setNickname(e.target.value)}
                 />
                 <S.Input
                   type="password"
@@ -158,12 +184,16 @@ const Auth: React.FC = () => {
                   name="EMAIL"
                   placeholder="Enter email address"
                   required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                 />
                 <S.Input
                   type="tel"
                   name="PHONE"
                   placeholder="Enter phone number"
                   required
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
                 />
               </>
             )}

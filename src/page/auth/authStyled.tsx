@@ -13,8 +13,10 @@ export const Wrapper = styled.div`
 `;
 
 export const LinkWraper = styled(Link)`
-  width: 80%;
+  width: fit-content;
+  margin-left: 10%;
   margin-bottom: 1em;
+  align-self: flex-start;
 
   svg {
     scale: 1.5;
