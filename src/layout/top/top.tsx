@@ -19,7 +19,7 @@ const Sidebar = () => {
           <Search />
           <S.SearchInput placeholder="Search..." />
         </S.SearchInputWrapper>
-        <S.CreateButton>+ Create</S.CreateButton>
+        {/* <S.CreateButton>+ Create</S.CreateButton> */}
         <S.NotificationIcon>
           <Bell />
           <div>3</div>

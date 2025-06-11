@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Header,
   Logo,
@@ -32,6 +33,8 @@ import {
   ListChecks,
   Users,
 } from "lucide-react";
+import { useSetRecoilState } from "recoil";
+import { authisLogin } from "../../props/authisLogin";
 
 interface SprintProgress {
   percentage: number;
@@ -62,6 +65,8 @@ export default function IntroPage(): JSX.Element {
     ],
     team: ["A", "B", "C", "D", "E"],
   });
+  const setAuthMode = useSetRecoilState(authisLogin);
+  const navigate = useNavigate();
 
   return (
     <div>
@@ -74,8 +79,22 @@ export default function IntroPage(): JSX.Element {
           </Logo>
         </a>
         <Nav>
-          <a href="/auth">Log In</a>
-          <a href="/auth">Sign Up</a>
+          <button
+            onClick={() => {
+              setAuthMode("login");
+              navigate("/auth");
+            }}
+          >
+            Log In
+          </button>
+          <button
+            onClick={() => {
+              setAuthMode("signup");
+              navigate("/auth");
+            }}
+          >
+            Sign Up
+          </button>
         </Nav>
       </Header>
 
