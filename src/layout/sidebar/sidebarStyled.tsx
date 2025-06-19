@@ -3,85 +3,89 @@ import styled from "styled-components";
 
 export const SidebarContainer = styled.div<{ isOpen: boolean }>`
   position: relative;
-  transition: all ease 0.3s;
+  z-index: 100;
+  transition: width ease 0.3s;
   top: 0;
   left: 0;
-  width: ${({ isOpen }) => (isOpen ? "15%" : "3em")};
+  width: ${({ isOpen }) => (isOpen ? "15%" : "60px")};
   height: 100%;
   overflow: hidden;
-  background: #d8d7d7;
+  background: white;
   display: flex;
-  justify-content: flex-start;
-  align-items: center;
   flex-direction: column;
-  border-right: 1px solid #c8c8c8;
+  box-shadow: 0 1px 4px #b9b9b9;
+  color: white;
 `;
 
 export const SidebarMenu = styled.ul`
   list-style: none;
   width: 100%;
-  height: 40%;
   padding: 0;
-  margin-top: 10em;
-  display: flex;
-  justify-content: space-between;
-  align-items: left;
-  flex-direction: column;
+  margin-top: 1rem;
+  flex: 1;
+  overflow-y: auto;
 `;
 
 export const SidebarMenuItem = styled.li<{ isOpen: boolean }>`
-  padding: ${({ isOpen }) => (isOpen ? "1rem 1rem 1rem 2rem" : "0")};
   display: flex;
-  justify-content: center;
   align-items: center;
-  color: #3a3a3a;
-  font-weight: 500;
   width: 100%;
-  height: 15%;
+  padding: 0.75rem 1.5rem;
   cursor: pointer;
-  transition: background-color ease 0.3s;
+
+  transition: all ease 0.3s;
 
   &:hover {
-    background-color: #f5f5f5;
+    background-color: #50586c;
+
+    svg {
+      color: white;
+    }
+
+    span {
+      color: white;
+    }
   }
 
   svg {
-    margin-right: ${({ isOpen }) => (isOpen ? "1em" : "0")};
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+    margin-right: ${({ isOpen }) => (isOpen ? "1rem" : "0")};
   }
 
   span {
     display: ${({ isOpen }) => (isOpen ? "inline" : "none")};
+    font-size: 0.875rem;
   }
 `;
 
 export const SidebarLink = styled(Link)<{ isOpen: boolean }>`
   text-decoration: none;
-  color: inherit;
-  width: 100%;
+  color: black;
   display: flex;
   align-items: center;
-  justify-content: ${({ isOpen }) => (isOpen ? "left" : "center")};
+  width: 100%;
 `;
 
 export const SidebarFooter = styled.div<{ isOpen: boolean }>`
-  position: absolute;
-  bottom: 0;
-  padding: ${({ isOpen }) => (isOpen ? "1rem 1rem 1rem 2rem" : "0")};
-  border-top: 1px solid #c8c8c8;
+  padding: 0.75rem 1rem;
+  box-shadow: 0 -1px 4px #b9b9b9;
   display: flex;
-  width: 100%;
-  height: 5rem;
   align-items: center;
-  justify-content: ${({ isOpen }) => (isOpen ? "left" : "center")};
+  justify-content: ${({ isOpen }) => (isOpen ? "flex-start" : "center")};
+  height: 60px;
+  color: black;
+
   svg {
-    background-color: #eeeeee;
-    border-radius: 50%;
-    margin-right: ${({ isOpen }) => (isOpen ? "1em" : "0")};
-    height: 1.5em;
-    width: 1.5em;
+    width: 20px;
+    height: 20px;
+    margin-right: ${({ isOpen }) => (isOpen ? "1rem" : "0")};
   }
+
   span {
     display: ${({ isOpen }) => (isOpen ? "inline" : "none")};
+    font-size: 0.875rem;
   }
 `;
 

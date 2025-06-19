@@ -2,12 +2,13 @@ import styled from "styled-components";
 
 export const Wrapper = styled.div`
   width: 100%;
-  height: 7%;
+  height: 5%;
   border-bottom: 1px solid #c8c8c8;
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 0 1%;
+  z-index: 200;
 `;
 
 export const FSubWrapper = styled.div`
