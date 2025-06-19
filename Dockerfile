@@ -11,7 +11,7 @@ RUN npm ci
 
 # Copy the rest of the application
 COPY . .
-
+RUN npm rebuild
 # Build the Vite project
 RUN npm run build
 
