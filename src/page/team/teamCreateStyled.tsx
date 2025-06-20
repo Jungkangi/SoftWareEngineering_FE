@@ -5,8 +5,8 @@ export const PageWrapper = styled.div`
   padding: 2rem 2rem;
   background-color: #f9fafb;
   height: 100%;
-  overflow: auto;
-  overflow-x: hidden;
+  width: 100%;
+  overflow: hidden;
 `;
 
 export const Title = styled.h1`
@@ -48,14 +48,14 @@ export const Step = styled.div<{ active: boolean }>`
   align-items: center;
   font-size: 0.875rem;
   overflow: auto;
-  color: ${(props) => (props.active ? "#3b82f6" : "#9ca3af")};
+  color: ${(props) => (props.active ? "#50586c" : "#9ca3af")};
   font-weight: ${(props) => (props.active ? "700" : "500")};
 
   & > div {
     width: 2rem;
     height: 2rem;
     border-radius: 9999px;
-    background-color: ${(props) => (props.active ? "#3b82f6" : "#e5e7eb")};
+    background-color: ${(props) => (props.active ? "#50586c" : "#e5e7eb")};
     color: white;
     display: flex;
     align-items: center;
@@ -156,7 +156,7 @@ export const NextButton = styled.button`
   cursor: pointer;
 
   &:hover {
-    background-color: #2563eb;
+    background-color: #383d4a;
   }
 `;
 
@@ -178,77 +178,14 @@ export const SlidesContainer = styled.div<{ step: number }>`
   display: flex;
   transition: transform 0.4s ease;
   transform: translateX(${(props) => `-${props.step * 100}%`});
+  width: fit-content;
+`;
+
+export const Slide = styled.div`
   width: 100%;
-`;
-
-export const SearchBar = styled.input`
-  width: 100%;
-  padding: 0.75rem 1rem;
-  border-radius: 0.5rem;
-  border: 1px solid #d1d5db;
-  font-size: 0.875rem;
-  margin-bottom: 2rem;
-`;
-
-export const SectionTitle = styled.h2`
-  font-size: 1rem;
-  font-weight: 600;
-  margin: 2rem 0 1rem;
-`;
-
-export const UserCard = styled.div`
-  width: 150px;
-  height: 180px;
-  border: 1px solid #e5e7eb;
-  border-radius: 0.75rem;
+  flex-shrink: 0;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  font-size: 0.875rem;
-  color: #1f2937;
-  box-shadow: 0 0 0 1px #f3f4f6;
-  transition: box-shadow 0.2s;
-  background-color: white;
-
-  &:hover {
-    box-shadow: 0 0 0 2px #3b82f6;
-  }
-`;
-
-export const EmptyTeamWrapper = styled.div`
-  margin-top: 2rem;
-  text-align: center;
-  color: #374151;
-  background-color: #f9fafb;
-  padding: 2rem;
-  height: auto;
-`;
-
-export const EmptyTeamTitle = styled.h3`
-  font-size: 1rem;
-  font-weight: 700;
-  margin-bottom: 0.5rem;
-`;
-
-export const EmptyTeamDesc = styled.p`
-  font-size: 0.875rem;
-  color: #6b7280;
-  margin-bottom: 1.5rem;
-`;
-
-export const TeamCreateButton = styled.button`
-  padding: 0.5rem 1.25rem;
-  background-color: #50586c;
-  color: white;
-  font-size: 0.875rem;
-  font-weight: 600;
-  border: none;
-  border-radius: 0.375rem;
-  cursor: pointer;
-
-  &:hover {
-    background-color: #2d313c;
-  }
+  height: 350px;
+  overflow-y: auto;
 `;

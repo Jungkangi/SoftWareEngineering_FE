@@ -17,7 +17,7 @@ export const SubWrapper = styled.div`
   flex-direction: row;
   position: relative;
   width: 100%;
-  height: 93%;
+  height: 95%;
 `;
 
 export const Content = styled.div`

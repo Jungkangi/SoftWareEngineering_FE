@@ -17,7 +17,8 @@ export const ModalContent = styled.div`
   background: white;
   padding: 20px;
   border-radius: 8px;
-  width: 500px;
+  width: 1000px;
+  height: 80%;
   max-width: 90%;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   position: relative;
@@ -32,8 +33,13 @@ export const CloseButton = styled.button`
   font-size: 1.5rem;
   cursor: pointer;
   color: #333;
+  z-index: 1001;
 
   &:hover {
     color: #000;
   }
+`;
+
+export const Contents = styled.div`
+  z-index: 1000;
 `;

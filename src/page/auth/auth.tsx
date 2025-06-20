@@ -19,6 +19,7 @@ import { LayoutDashboard, ArrowLeft } from "lucide-react";
 import { useLogin } from "../../hooks/login";
 import { useCreateUser } from "../../hooks/createUser";
 import { useNavigate } from "react-router-dom";
+import { useCheckToken } from "../../hooks/checkToken";
 
 interface SprintProgress {
   percentage: number;
@@ -51,6 +52,16 @@ const Auth: React.FC = () => {
     team: ["A", "B", "C", "D", "E"],
   });
 
+  const { isLoggedIn } = useCheckToken();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (isLoggedIn) {
+      alert("로그인 되어 있습니다.");
+      navigate("/");
+    }
+  }, [isLoggedIn, navigate]);
+
   const [password, setPassword] = useState("");
   const [uid, setUid] = useState("");
   const [passwordCheck, setPasswordCheck] = useState("");
@@ -63,12 +74,11 @@ const Auth: React.FC = () => {
 
   const { login, loading, error } = useLogin();
   const { createUser } = useCreateUser();
-  const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (authMode === "login") {
-      console.log("start" + uid + password);
+      // console.log("start" + uid + password);
       const result = await login(uid, password);
       if (result) {
         alert(`반갑습니다 ${uid}님!`);
