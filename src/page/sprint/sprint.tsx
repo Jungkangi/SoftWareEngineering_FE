@@ -288,7 +288,7 @@ export default function SprintsPage() {
     null | keyof typeof boardIssues
   >(null);
   const [newIssueTitle, setNewIssueTitle] = useState("");
-  const [newIssueAssignee, setNewIssueAssignee] = useState("");
+  const [newIssueAssignee, setNewIssueAssignee] = useState<string[]>([]);
   const [newIssuePriority, setNewIssuePriority] = useState("Medium");
 
   // 이슈 추가 핸들러
@@ -315,7 +315,7 @@ export default function SprintsPage() {
     });
     setShowAddIssueModal(null);
     setNewIssueTitle("");
-    setNewIssueAssignee("");
+    setNewIssueAssignee([]);
     setNewIssuePriority("Medium");
   };
 
@@ -745,18 +745,36 @@ export default function SprintsPage() {
                                               >
                                                 #{issue.id}
                                               </div>
-                                              <Avatar
+                                              <div
                                                 style={{
-                                                  width: 24,
-                                                  height: 24,
+                                                  display: "flex",
+                                                  gap: 4,
                                                 }}
                                               >
-                                                <AvatarFallback
-                                                  style={{ fontSize: 12 }}
-                                                >
-                                                  {issue.assignee}
-                                                </AvatarFallback>
-                                              </Avatar>
+                                                {(Array.isArray(issue.assignee)
+                                                  ? issue.assignee
+                                                  : [issue.assignee]
+                                                ).map(
+                                                  (
+                                                    assignee: string,
+                                                    i: number
+                                                  ) => (
+                                                    <Avatar
+                                                      key={i}
+                                                      style={{
+                                                        width: 24,
+                                                        height: 24,
+                                                      }}
+                                                    >
+                                                      <AvatarFallback
+                                                        style={{ fontSize: 12 }}
+                                                      >
+                                                        {assignee}
+                                                      </AvatarFallback>
+                                                    </Avatar>
+                                                  )
+                                                )}
+                                              </div>
                                             </div>
                                             {/* 댓글 박스는 모달에서만 보여줌 */}
                                           </div>
@@ -1436,7 +1454,7 @@ export default function SprintsPage() {
                     border: "1px solid #e5e7eb",
                   }}
                   value={newIssueAssignee}
-                  onChange={(e) => setNewIssueAssignee(e.target.value)}
+                  onChange={(e) => setNewIssueAssignee([e.target.value])}
                   placeholder="Enter assignee (optional)"
                 />
               </label>
