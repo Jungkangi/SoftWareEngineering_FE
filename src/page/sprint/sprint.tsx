@@ -43,11 +43,20 @@ import {
   PageTitle,
   ActionButtons,
   ProjectSelectArea,
-} from "./sprintStyled";
-import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
-import BurndownChart from "./BurndownChart";
-import React from "react";
-import Modal from "../../components/modal/modal";
+} from "./sprintStyled"
+import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd"
+import BurndownChart from "./BurndownChart"
+import React from "react"
+import Modal from "../../components/modal/modal"
+import { CommentBox, CommentType } from "../../components/ui"
+import SprintWideModal from "./SprintWideModal";
+import {
+  SprintModalContent,
+  SprintModalLeft,
+  SprintModalRight,
+  SprintModalInfoList,
+  SprintModalCloseWrapper,
+} from "./sprintStyled"
 
 export default function SprintsPage() {
   const [activeProjectId, setActiveProjectId] = useState("1");
@@ -408,7 +417,66 @@ export default function SprintsPage() {
   };
 
   // View Details 모달 상태
-  const [viewSprint, setViewSprint] = useState<Sprint | null>(null);
+  const [viewSprint, setViewSprint] = useState<Sprint | null>(null)
+
+  // 이슈별 댓글 상태
+  const [issueComments, setIssueComments] = useState<{ [issueId: number]: CommentType[] }>({})
+  const [commentInputs, setCommentInputs] = useState<{ [issueId: number]: string }>({})
+  const [openCommentIssueId, setOpenCommentIssueId] = useState<number | null>(null)
+
+  // 이슈별 댓글 상태 추가
+  const [modalIssueComments, setModalIssueComments] = useState<{ [issueId: number]: CommentType[] }>({})
+
+  // 댓글 추가 함수
+  const handleAddIssueComment = (issueId: number, content: string) => {
+    if (!content.trim()) return
+    setIssueComments(prev => ({
+      ...prev,
+      [issueId]: [
+        ...(prev[issueId] || []),
+        {
+          id: Date.now(),
+          author: "Me",
+          content,
+          createdAt: new Date().toLocaleString(),
+        }
+      ]
+    }))
+    setCommentInputs(prev => ({ ...prev, [issueId]: "" }))
+  }
+
+  function handleAddModalIssueComment(issueId: number, content: string) {
+    if (!content.trim()) return
+    setModalIssueComments(prev => ({
+      ...prev,
+      [issueId]: [
+        ...(prev[issueId] || []),
+        {
+          id: Date.now(),
+          author: "Me",
+          content,
+          createdAt: new Date().toLocaleString(),
+        }
+      ]
+    }))
+  }
+
+  // 댓글 삭제 함수
+  const handleDeleteIssueComment = (issueId: number, commentId: number) => {
+    setIssueComments(prev => ({
+      ...prev,
+      [issueId]: (prev[issueId] || []).filter(c => c.id !== commentId)
+    }))
+  }
+  function handleDeleteModalIssueComment(issueId: number, commentId: number) {
+    setModalIssueComments(prev => ({
+      ...prev,
+      [issueId]: (prev[issueId] || []).filter(c => c.id !== commentId)
+    }))
+  }
+
+  // 이슈 상세 모달 상태 추가 (여기에 선언!)
+  const [viewIssue, setViewIssue] = useState<null | { issue: Issue; column: string }>(null);
 
   return (
     <PageContainer>
@@ -668,30 +736,13 @@ export default function SprintsPage() {
                                               ? "#dbeafe"
                                               : "#fff",
                                             ...provided.draggableProps.style,
+                                            cursor: "pointer",
                                           }}
+                                          onClick={() => setViewIssue({ issue, column: key })}
                                         >
-                                          <div
-                                            style={{
-                                              display: "flex",
-                                              flexDirection: "column",
-                                              gap: 8,
-                                            }}
-                                          >
-                                            <div
-                                              style={{
-                                                display: "flex",
-                                                justifyContent: "space-between",
-                                                alignItems: "flex-start",
-                                              }}
-                                            >
-                                              <div
-                                                style={{
-                                                  fontWeight: 500,
-                                                  fontSize: 14,
-                                                }}
-                                              >
-                                                {issue.title}
-                                              </div>
+                                          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+                                              <div style={{ fontWeight: 500, fontSize: 14 }}>{issue.title}</div>
                                               <Badge
                                                 variant={
                                                   issue.priority === "High"
@@ -737,6 +788,7 @@ export default function SprintsPage() {
                                                 </AvatarFallback>
                                               </Avatar>
                                             </div>
+                                            {/* 댓글 박스는 모달에서만 보여줌 */}
                                           </div>
                                         </Card>
                                       )}
@@ -1262,6 +1314,19 @@ export default function SprintsPage() {
                       <li>Done: {viewSprint.issues.done.length}</li>
                     </ul>
                   </div>
+                  {/* 예시: 스프린트 상세 모달 내 이슈별 댓글 */}
+                  {(["todo", "inProgress", "review", "done"] as const).map((col) =>
+                    viewSprint.issues[col]?.map?.((issue: any) => (
+                      <div key={issue.id} style={{ marginTop: 20, borderTop: "1px solid #e5e7eb", paddingTop: 12 }}>
+                        <div style={{ fontWeight: 500 }}>{issue.title}</div>
+                        <CommentBox
+                          comments={modalIssueComments[issue.id] || []}
+                          onAdd={content => handleAddModalIssueComment(issue.id, content)}
+                          onDelete={commentId => handleDeleteModalIssueComment(issue.id, commentId)}
+                        />
+                      </div>
+                    ))
+                  )}
                   <div style={{ marginTop: 16, textAlign: "right" }}>
                     <Button
                       variant="outline"
@@ -1273,6 +1338,49 @@ export default function SprintsPage() {
                 </div>
               )}
             </Modal>
+
+            {/* 이슈 상세 모달 */}
+            <SprintWideModal
+              isOpen={!!viewIssue}
+              onClose={() => setViewIssue(null)}
+            >
+              {viewIssue && (
+                <SprintModalContent>
+                  <SprintModalLeft>
+                    <h3>댓글</h3>
+                    <div className="comment-box-wrapper">
+                      <CommentBox
+                        comments={issueComments[viewIssue.issue.id] || []}
+                        onAdd={content => handleAddIssueComment(viewIssue.issue.id, content)}
+                        onDelete={commentId => handleDeleteIssueComment(viewIssue.issue.id, commentId)}
+                        inputPlaceholder="이 이슈에 댓글을 남겨보세요!"
+                        style={{
+                          flex: 1,
+                          minHeight: 0,
+                          height: "100%",
+                          display: "flex",
+                          flexDirection: "column",
+                          overflow: "hidden",
+                        }}
+                      />
+                    </div>
+                  </SprintModalLeft>
+                  <SprintModalRight>
+                    <h2 style={{ marginBottom: 8 }}>Issue Details</h2>
+                    <SprintModalInfoList>
+                      <div><b>Title:</b> {viewIssue.issue.title}</div>
+                      <div><b>Assignee:</b> {viewIssue.issue.assignee}</div>
+                      <div><b>Priority:</b> {viewIssue.issue.priority}</div>
+                      <div><b>Column:</b> {viewIssue.column}</div>
+                      <div><b>ID:</b> {viewIssue.issue.id}</div>
+                    </SprintModalInfoList>
+                    <SprintModalCloseWrapper>
+                      <Button onClick={() => setViewIssue(null)}>Close</Button>
+                    </SprintModalCloseWrapper>
+                  </SprintModalRight>
+                </SprintModalContent>
+              )}
+            </SprintWideModal>
           </ContentContainer>
         </Main>
         <NewSprintDialog

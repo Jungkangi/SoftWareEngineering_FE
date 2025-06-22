@@ -342,6 +342,69 @@ export const SprintMetricsLabel = styled.div`
   color: ${({ theme }) => theme.colors.mutedForeground};
 `;
 
+// Sprint 상세/이슈 모달 내부 레이아웃
+export const SprintModalContent = styled.div`
+  display: flex;
+  flex-direction: row;
+  gap: 32px;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  box-sizing: border-box;
+`;
+
+export const SprintModalLeft = styled.div`
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  > h3 {
+    margin: 0 0 8px 0;
+    font-size: 18px;
+  }
+  > .comment-box-wrapper {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+  }
+`;
+
+export const SprintModalRight = styled.div`
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  overflow-y: auto;
+  padding-right: 8px;
+`;
+
+export const SprintModalInfoList = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  font-size: 1rem;
+  margin-bottom: 24px;
+  > div {
+    word-break: break-all;
+  }
+`;
+
+export const SprintModalCloseWrapper = styled.div`
+  margin-top: auto;
+  display: flex;
+  justify-content: flex-end;
+`;
+
 // 유틸리티 훅
 export function useIsMobile() {
   const [isMobile, setIsMobile] = useState(false);

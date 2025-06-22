@@ -71,6 +71,15 @@ import CreateProjectForm from "./createProject";
 
 // api import
 import { useGetMyProjects } from "../../hooks/project/getProjectData";
+import {  ProjectModalContent,
+  ProjectModalLeft,
+  ProjectModalRight,
+  ProjectModalInfoList,
+  ProjectModalCloseWrapper,
+} from "./projectStyled"
+import { CommentBox, CommentType } from "../../components/ui"
+import React from "react";
+import ProjectWideModal from "./ProjectWideModal";
 
 // Main Component
 export default function ProjectsPage() {
@@ -129,12 +138,38 @@ export default function ProjectsPage() {
 
   // Filter projects based on selected tab
   const filteredProjects = projects.filter((project) => {
-    if (selectedTab === "all") return true;
-    if (selectedTab === "in-progress") return project.status === "In Progress";
-    if (selectedTab === "completed") return project.status === "Completed";
-    if (selectedTab === "planning") return project.status === "Planning";
-    return true;
-  });
+    if (selectedTab === "all") return true
+    if (selectedTab === "in-progress") return project.status === "In Progress"
+    if (selectedTab === "completed") return project.status === "Completed"
+    if (selectedTab === "planning") return project.status === "Planning"
+    return true
+  })
+
+  // 프로젝트별 댓글 상태 (각 프로젝트별로 개별 관리)
+  const [projectComments, setProjectComments] = useState<{ [projectId: number]: CommentType[] }>({})
+
+  // 댓글 추가/삭제 함수
+  function handleAddProjectComment(projectId: number, content: string) {
+    if (!content.trim()) return
+    setProjectComments(prev => ({
+      ...prev,
+      [projectId]: [
+        ...(prev[projectId] || []),
+        {
+          id: Date.now(),
+          author: "Me",
+          content,
+          createdAt: new Date().toLocaleString(),
+        }
+      ]
+    }))
+  }
+  function handleDeleteProjectComment(projectId: number, commentId: number) {
+    setProjectComments(prev => ({
+      ...prev,
+      [projectId]: (prev[projectId] || []).filter(c => c.id !== commentId)
+    }))
+  }
 
   return (
     <PageContainer>
@@ -228,180 +263,128 @@ export default function ProjectsPage() {
                       </TableHeader>
                       <TableBody>
                         {filteredProjects.map((project) => (
-                          <TableRow key={project.id}>
-                            <TableCell>
-                              <div style={{ fontWeight: "500" }}>
-                                {project.name}
-                              </div>
-                              <div
-                                style={{
-                                  fontSize: "0.75rem",
-                                  color: "#6b7280",
-                                }}
-                              >
-                                {project.status} • Due {project.dueDate}
-                              </div>
-                            </TableCell>
-                            <ResponsiveTableCell>
-                              <Badge
-                                variant={
-                                  project.status === "Completed"
-                                    ? "success"
-                                    : project.status === "Planning"
-                                    ? "secondary"
-                                    : "default"
-                                }
-                              >
-                                {project.status}
-                              </Badge>
-                            </ResponsiveTableCell>
-                            <ResponsiveTableCell>
-                              <div
-                                style={{
-                                  display: "flex",
-                                  alignItems: "center",
-                                  gap: "0.5rem",
-                                }}
-                              >
-                                <Progress value={project.progress} />
-                                <span
-                                  style={{
-                                    fontSize: "0.75rem",
-                                    color: "#6b7280",
-                                  }}
-                                >
-                                  {project.progress}%
-                                </span>
-                              </div>
-                            </ResponsiveTableCell>
-                            <ResponsiveTableCell>
-                              {project.dueDate}
-                            </ResponsiveTableCell>
-                            <ResponsiveTableCellLg>
-                              <AvatarGroup>
-                                {project.team.map((member, i) => (
-                                  <Avatar key={i}>
-                                    <AvatarFallback>{member}</AvatarFallback>
-                                  </Avatar>
-                                ))}
-                              </AvatarGroup>
-                            </ResponsiveTableCellLg>
-                            <TableCell>
-                              <Badge
-                                variant={
-                                  project.priority === "High"
-                                    ? "destructive"
-                                    : project.priority === "Medium"
-                                    ? "default"
-                                    : "secondary"
-                                }
-                              >
-                                {project.priority}
-                              </Badge>
-                            </TableCell>
-                            <TableCell>
-                              <DropdownContainer>
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  ref={(el) =>
-                                    (actionBtnRefs.current[project.id] = el)
+                          <React.Fragment key={project.id}>
+                            <TableRow>
+                              <TableCell>
+                                <div style={{ fontWeight: "500" }}>{project.name}</div>
+                                <div style={{ fontSize: "0.75rem", color: "#6b7280" }}>
+                                  {project.status} • Due {project.dueDate}
+                                </div>
+                              </TableCell>
+                              <ResponsiveTableCell>
+                                <Badge
+                                  variant={
+                                    project.status === "Completed"
+                                      ? "success"
+                                      : project.status === "Planning"
+                                      ? "secondary"
+                                      : "default"
                                   }
-                                  onClick={() => {
-                                    if (project.id === showActionDropdown) {
-                                      setShowActionDropdown(null);
-                                      setDropdownPosition(null);
-                                    } else {
-                                      // 위치 계산
-                                      const btn =
-                                        actionBtnRefs.current[project.id];
-                                      if (btn) {
-                                        const rect =
-                                          btn.getBoundingClientRect();
-                                        const dropdownHeight = 180; // 예상 드롭다운 높이(px)
-                                        const spaceBelow =
-                                          window.innerHeight - rect.bottom;
-                                        const spaceAbove = rect.top;
-                                        let top = rect.bottom;
-                                        if (
-                                          spaceBelow < dropdownHeight &&
-                                          spaceAbove > dropdownHeight
-                                        ) {
-                                          // 위로 띄움
-                                          top = rect.top - dropdownHeight;
-                                        }
-                                        setDropdownPosition({
-                                          top,
-                                          left: rect.left,
-                                          width: rect.width,
-                                        });
-                                      }
-                                      setShowActionDropdown(project.id);
-                                    }
-                                  }}
                                 >
-                                  <ChevronDown size={16} />
-                                </Button>
-                                {showActionDropdown === project.id && (
-                                  <DropdownContent
-                                    $fixedTop={dropdownPosition?.top}
-                                    $fixedLeft={dropdownPosition?.left}
-                                    $fixedWidth={dropdownPosition?.width}
+                                  {project.status}
+                                </Badge>
+                              </ResponsiveTableCell>
+                              <ResponsiveTableCell>
+                                <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                                  <Progress value={project.progress} />
+                                  <span style={{ fontSize: "0.75rem", color: "#6b7280" }}>
+                                    {project.progress}%
+                                  </span>
+                                </div>
+                              </ResponsiveTableCell>
+                              <ResponsiveTableCell>
+                                {project.dueDate}
+                              </ResponsiveTableCell>
+                              <ResponsiveTableCellLg>
+                                <AvatarGroup>
+                                  {project.team.map((member, i) => (
+                                    <Avatar key={i}>
+                                      <AvatarFallback>{member}</AvatarFallback>
+                                    </Avatar>
+                                  ))}
+                                </AvatarGroup>
+                              </ResponsiveTableCellLg>
+                              <TableCell>
+                                <Badge
+                                  variant={
+                                    project.priority === "High"
+                                      ? "destructive"
+                                      : project.priority === "Medium"
+                                      ? "default"
+                                      : "secondary"
+                                  }
+                                >
+                                  {project.priority}
+                                </Badge>
+                              </TableCell>
+                              <TableCell>
+                                <DropdownContainer>
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    ref={el => (actionBtnRefs.current[project.id] = el)}
+                                    onClick={() => {
+                                      if (project.id === showActionDropdown) {
+                                        setShowActionDropdown(null)
+                                        setDropdownPosition(null)
+                                      } else {
+                                        // 위치 계산
+                                        const btn = actionBtnRefs.current[project.id]
+                                        if (btn) {
+                                          const rect = btn.getBoundingClientRect()
+                                          const dropdownHeight = 180 // 예상 드롭다운 높이(px)
+                                          const spaceBelow = window.innerHeight - rect.bottom
+                                          const spaceAbove = rect.top
+                                          let top = rect.bottom
+                                          if (spaceBelow < dropdownHeight && spaceAbove > dropdownHeight) {
+                                            // 위로 띄움
+                                            top = rect.top - dropdownHeight
+                                          }
+                                          setDropdownPosition({
+                                            top,
+                                            left: rect.left,
+                                            width: rect.width,
+                                          })
+                                        }
+                                        setShowActionDropdown(project.id)
+                                      }
+                                    }}
                                   >
-                                    <DropdownItem
-                                      onClick={() => {
-                                        setModalState({
-                                          type: "view",
-                                          project,
-                                        });
-                                        setShowActionDropdown(null);
-                                        setDropdownPosition(null);
-                                      }}
+                                    <ChevronDown size={16} />
+                                  </Button>
+                                  {showActionDropdown === project.id && (
+                                    <DropdownContent
+                                      $fixedTop={dropdownPosition?.top}
+                                      $fixedLeft={dropdownPosition?.left}
+                                      $fixedWidth={dropdownPosition?.width}
                                     >
-                                      View Project
-                                    </DropdownItem>
-                                    <DropdownItem
-                                      onClick={() => {
-                                        setModalState({
-                                          type: "edit",
-                                          project,
-                                        });
-                                        setShowActionDropdown(null);
-                                        setDropdownPosition(null);
-                                      }}
-                                    >
-                                      Edit Project
-                                    </DropdownItem>
-                                    <DropdownItem
-                                      onClick={() => {
-                                        setModalState({
-                                          type: "team",
-                                          project,
-                                        });
-                                        setShowActionDropdown(null);
-                                        setDropdownPosition(null);
-                                      }}
-                                    >
-                                      Manage Team
-                                    </DropdownItem>
-                                    <DropdownSeparator />
-                                    <DropdownItemDestructive
-                                      onClick={() => {
-                                        setModalState({
-                                          type: "delete",
-                                          project,
-                                        });
-                                        setShowActionDropdown(null);
-                                        setDropdownPosition(null);
-                                      }}
-                                    >
-                                      Delete Project
-                                    </DropdownItemDestructive>
-                                  </DropdownContent>
-                                )}
-                              </DropdownContainer>
-                            </TableCell>
-                          </TableRow>
+                                      <DropdownItem onClick={() => {
+                                        setModalState({ type: "view", project })
+                                        setShowActionDropdown(null)
+                                        setDropdownPosition(null)
+                                      }}>View Project</DropdownItem>
+                                      <DropdownItem onClick={() => {
+                                        setModalState({ type: "edit", project })
+                                        setShowActionDropdown(null)
+                                        setDropdownPosition(null)
+                                      }}>Edit Project</DropdownItem>
+                                      <DropdownItem onClick={() => {
+                                        setModalState({ type: "team", project })
+                                        setShowActionDropdown(null)
+                                        setDropdownPosition(null)
+                                      }}>Manage Team</DropdownItem>
+                                      <DropdownSeparator />
+                                      <DropdownItemDestructive onClick={() => {
+                                        setModalState({ type: "delete", project })
+                                        setShowActionDropdown(null)
+                                        setDropdownPosition(null)
+                                      }}>Delete Project</DropdownItemDestructive>
+                                    </DropdownContent>
+                                  )}
+                                </DropdownContainer>
+                              </TableCell>
+                            </TableRow>
+                          </React.Fragment>
                         ))}
                       </TableBody>
                     </Table>
@@ -575,11 +558,8 @@ export default function ProjectsPage() {
 
       {/* 모달 구현 */}
       <Modal
-        isOpen={modalState.type !== null}
-        onClose={() => {
-          setModalState({ type: null, project: null });
-          setDeleteConfirmInput("");
-        }}
+        isOpen={modalState.type !== null && modalState.type !== "view"}
+        onClose={() => setModalState({ type: null, project: null })}
       >
         {modalState.type === "view" && modalState.project && (
           <div>
@@ -711,6 +691,52 @@ export default function ProjectsPage() {
           </div>
         )}
       </Modal>
+
+      <ProjectWideModal
+        isOpen={modalState.type === "view" && !!modalState.project}
+        onClose={() => setModalState({ type: null, project: null })}
+      >
+        {modalState.type === "view" && modalState.project && (
+          <ProjectModalContent>
+            {/* 왼쪽: 댓글 */}
+            <ProjectModalLeft>
+              <h3>댓글</h3>
+              <div className="comment-box-wrapper">
+                <CommentBox
+                  comments={projectComments[modalState.project.id] || []}
+                  onAdd={content => handleAddProjectComment(modalState.project.id, content)}
+                  onDelete={commentId => handleDeleteProjectComment(modalState.project.id, commentId)}
+                  inputPlaceholder="이 프로젝트에 댓글을 남겨보세요!"
+                  style={{
+                    flex: 1,
+                    minHeight: 0,
+                    height: "100%",
+                    display: "flex",
+                    flexDirection: "column",
+                    overflow: "hidden",
+                  }}
+                />
+              </div>
+            </ProjectModalLeft>
+            {/* 오른쪽: 프로젝트 정보 */}
+            <ProjectModalRight>
+              <h2 style={{ marginBottom: 8 }}>Project Details</h2>
+              <ProjectModalInfoList>
+                <div><b>Name:</b> {modalState.project.name}</div>
+                <div><b>Description:</b> {modalState.project.description}</div>
+                <div><b>Status:</b> {modalState.project.status}</div>
+                <div><b>Progress:</b> {modalState.project.progress}%</div>
+                <div><b>Due Date:</b> {modalState.project.dueDate}</div>
+                <div><b>Priority:</b> {modalState.project.priority}</div>
+                <div><b>Category:</b> {modalState.project.category}</div>
+              </ProjectModalInfoList>
+              <ProjectModalCloseWrapper>
+                <Button onClick={() => setModalState({ type: null, project: null })}>Close</Button>
+              </ProjectModalCloseWrapper>
+            </ProjectModalRight>
+          </ProjectModalContent>
+        )}
+      </ProjectWideModal>
 
       {/* 전체 팀원 모달 */}
       <Modal
