@@ -1222,3 +1222,17 @@ export const EditModal = styled.div`
   width: 80vw;
   height: fit-content;
 `;
+
+export const DeleteButton = styled.button`
+  background-color: #fef2f2;
+  color: #dc2626;
+  border: 1px solid #fecaca;
+  border-radius: 6px;
+  padding: 6px 10px;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &:hover {
+    background-color: #fee2e2;
+  }
+`;

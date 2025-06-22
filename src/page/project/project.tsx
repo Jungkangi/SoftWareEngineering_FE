@@ -55,6 +55,7 @@ import {
   ResponsiveTableCellLg,
   EditModal,
 } from "./projectStyled";
+import * as S from "./projectStyled";
 import Modal from "../../components/modal/modal";
 import CreateProjectForm from "./createProject";
 import ProjectDetail from "./projectDetail";
@@ -62,6 +63,7 @@ import ProjectDetail from "./projectDetail";
 // api import
 import { useGetMyProjects } from "../../hooks/project/getProjectData";
 import { putProjectData } from "../../hooks/project/putProjectData";
+import { deleteProjectData } from "../../hooks/project/DeleteProjectData";
 
 // Main Component
 export default function ProjectsPage() {
@@ -372,94 +374,13 @@ export default function ProjectsPage() {
                               </Badge>
                             </TableCell>
                             <TableCell>
-                              <DropdownContainer>
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  ref={(el) =>
-                                    (actionBtnRefs.current[project.id] = el)
-                                  }
-                                  onClick={() => {
-                                    if (project.id === showActionDropdown) {
-                                      setShowActionDropdown(null);
-                                      setDropdownPosition(null);
-                                    } else {
-                                      // 위치 계산
-                                      const btn =
-                                        actionBtnRefs.current[project.id];
-                                      if (btn) {
-                                        const rect =
-                                          btn.getBoundingClientRect();
-                                        const dropdownHeight = 180; // 예상 드롭다운 높이(px)
-                                        const spaceBelow =
-                                          window.innerHeight - rect.bottom;
-                                        const spaceAbove = rect.top;
-                                        let top = rect.bottom;
-                                        if (
-                                          spaceBelow < dropdownHeight &&
-                                          spaceAbove > dropdownHeight
-                                        ) {
-                                          // 위로 띄움
-                                          top = rect.top - dropdownHeight;
-                                        }
-                                        setDropdownPosition({
-                                          top,
-                                          left: rect.left,
-                                          width: rect.width,
-                                        });
-                                      }
-                                      setShowActionDropdown(project.id);
-                                    }
-                                  }}
-                                >
-                                  <ChevronDown size={16} />
-                                </Button>
-                                {showActionDropdown === project.id && (
-                                  <DropdownContent
-                                    $fixedTop={dropdownPosition?.top}
-                                    $fixedLeft={dropdownPosition?.left}
-                                    $fixedWidth={dropdownPosition?.width}
-                                  >
-                                    <DropdownItem
-                                      onClick={() => {
-                                        setModalState({
-                                          type: "edit",
-                                          project,
-                                        });
-                                        setShowActionDropdown(null);
-                                        setDropdownPosition(null);
-                                      }}
-                                    >
-                                      Edit Project
-                                    </DropdownItem>
-                                    <DropdownItem
-                                      onClick={() => {
-                                        setModalState({
-                                          type: "team",
-                                          project,
-                                        });
-                                        setShowActionDropdown(null);
-                                        setDropdownPosition(null);
-                                      }}
-                                    >
-                                      Manage Team
-                                    </DropdownItem>
-                                    <DropdownSeparator />
-                                    <DropdownItemDestructive
-                                      onClick={() => {
-                                        setModalState({
-                                          type: "delete",
-                                          project,
-                                        });
-                                        setShowActionDropdown(null);
-                                        setDropdownPosition(null);
-                                      }}
-                                    >
-                                      Delete Project
-                                    </DropdownItemDestructive>
-                                  </DropdownContent>
-                                )}
-                              </DropdownContainer>
+                              <S.DeleteButton
+                                onClick={() =>
+                                  setModalState({ type: "delete", project })
+                                }
+                              >
+                                Delete
+                              </S.DeleteButton>
                             </TableCell>
                           </TableRow>
                         ))}
@@ -730,8 +651,15 @@ export default function ProjectsPage() {
             <div style={{ marginTop: 16 }}>
               <Button
                 variant="destructive"
-                onClick={() => {
-                  setDeleteConfirmInput("");
+                onClick={async () => {
+                  try {
+                    await deleteProjectData(modalState.project.P_ID);
+                    setModalState({ type: null, project: null });
+                    setDeleteConfirmInput("");
+                    setRefreshTrigger((prev) => prev + 1);
+                  } catch (err) {
+                    console.error("Failed to delete project", err);
+                  }
                 }}
                 style={{
                   marginRight: 8,
