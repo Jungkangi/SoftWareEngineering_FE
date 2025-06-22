@@ -1,5 +1,4 @@
-import { useState } from "react";
-import { useGetMyProjects } from "../../hooks/project/getProjectData";
+import { useState, useEffect } from "react";
 import { ChevronLeft, ChevronRight, Plus } from "lucide-react";
 import {
   Avatar,
@@ -49,8 +48,12 @@ import BurndownChart from "./BurndownChart";
 import React from "react";
 import Modal from "../../components/modal/modal";
 
+//import api
+import { getSprintsByProject } from "../../hooks/sprint/getSprintsByProject";
+import { useGetMyProjects } from "../../hooks/project/getProjectData";
+
 export default function SprintsPage() {
-  const [activeProjectId, setActiveProjectId] = useState("1");
+  const [activeProjectId, setActiveProjectId] = useState(1);
   const [activeTab, setActiveTab] = useState("board");
   const [isProjectSelectOpen, setIsProjectSelectOpen] = useState(false);
   const [showNewSprintDialog, setShowNewSprintDialog] = useState(false);
@@ -58,193 +61,80 @@ export default function SprintsPage() {
 
   const { projects: apiProjects } = useGetMyProjects();
   const projects = [
-    { id: "0", name: "All" },
+    { id: 0, name: "All" },
     ...apiProjects.map((p, index) => ({
-      id: String(index + 1),
+      id: index + 1,
       name: p.P_NAME,
     })),
   ];
 
-  const sprints = [
-    {
-      id: 1,
-      projectId: "1",
-      name: "Sprint 4",
-      startDate: "Oct 15, 2023",
-      endDate: "Oct 29, 2023",
-      status: "In Progress",
-      progress: 45,
-      issues: {
-        todo: [
-          {
-            id: 101,
-            title: "Implement user settings page",
-            assignee: "AB",
-            priority: "Medium",
+  // Replace react-query useQuery with manual fetch using useEffect/useState
+  const [sprints, setSprints] = useState<Sprint[]>([]);
+  const [sprintsLoading, setSprintsLoading] = useState<boolean>(true);
+
+  useEffect(() => {
+    const fetchSprints = async () => {
+      setSprintsLoading(true);
+      try {
+        const data = await getSprintsByProject(Number(activeProjectId));
+        // Map issues into columns by STAT
+        const issues = data.reduce(
+          (acc: any, issue: any) => {
+            const status = issue.STAT;
+            const newIssue = {
+              id: issue.S_ID,
+              title: issue.TITLE,
+              assignee: issue.ASSIGNEE || "NY", // 기본값 설정 (걸려있는 사람)
+              priority: issue.PRIORITY || "Medium",
+              stat: issue.STAT,
+            };
+            if (!acc[status]) acc[status] = [];
+            acc[status].push(newIssue);
+            return acc;
           },
           {
-            id: 102,
-            title: "Fix navigation responsiveness",
-            assignee: "CD",
-            priority: "High",
-          },
-        ],
-        inProgress: [
+            TODO: [],
+            PROCESSING: [],
+            REVIEW: [],
+            DONE: [],
+          }
+        );
+        setSprints([
           {
-            id: 103,
-            title: "Redesign homepage hero section",
-            assignee: "EF",
-            priority: "High",
+            id: 1,
+            projectId: Number(activeProjectId),
+            name: "Sample Sprint",
+            startDate: "2025-06-22",
+            endDate: "",
+            status: "PROCESSING",
+            progress: 0,
+            issues,
           },
-          {
-            id: 104,
-            title: "Add dark mode support",
-            assignee: "AB",
-            priority: "Medium",
-          },
-        ],
-        review: [
-          {
-            id: 105,
-            title: "Optimize image loading",
-            assignee: "CD",
-            priority: "Low",
-          },
-        ],
-        done: [
-          {
-            id: 106,
-            title: "Create new logo variations",
-            assignee: "EF",
-            priority: "Medium",
-          },
-          {
-            id: 107,
-            title: "Update footer links",
-            assignee: "GH",
-            priority: "Low",
-          },
-        ],
-      },
-    },
-    {
-      id: 2,
-      projectId: "1",
-      name: "Sprint 3",
-      startDate: "Oct 1, 2023",
-      endDate: "Oct 15, 2023",
-      status: "Completed",
-      progress: 100,
-      issues: {
-        todo: [],
-        inProgress: [],
-        review: [],
-        done: [
-          {
-            id: 201,
-            title: "Setup CI/CD pipeline",
-            assignee: "AB",
-            priority: "High",
-          },
-          {
-            id: 202,
-            title: "Implement authentication",
-            assignee: "CD",
-            priority: "High",
-          },
-          {
-            id: 203,
-            title: "Create basic page layouts",
-            assignee: "EF",
-            priority: "Medium",
-          },
-          {
-            id: 204,
-            title: "Design system foundation",
-            assignee: "GH",
-            priority: "Medium",
-          },
-        ],
-      },
-    },
-    {
-      id: 3,
-      projectId: "2",
-      name: "Sprint 2",
-      startDate: "Oct 15, 2023",
-      endDate: "Oct 29, 2023",
-      status: "In Progress",
-      progress: 65,
-      issues: {
-        todo: [
-          {
-            id: 301,
-            title: "Implement push notifications",
-            assignee: "IJ",
-            priority: "Medium",
-          },
-        ],
-        inProgress: [
-          {
-            id: 302,
-            title: "Build user profile screen",
-            assignee: "CD",
-            priority: "Medium",
-          },
-          {
-            id: 303,
-            title: "Create onboarding flow",
-            assignee: "GH",
-            priority: "High",
-          },
-        ],
-        review: [
-          {
-            id: 304,
-            title: "Fix login issues on Android",
-            assignee: "AB",
-            priority: "High",
-          },
-        ],
-        done: [
-          {
-            id: 305,
-            title: "Setup app navigation",
-            assignee: "CD",
-            priority: "Medium",
-          },
-          {
-            id: 306,
-            title: "Design app icon",
-            assignee: "EF",
-            priority: "Low",
-          },
-        ],
-      },
-    },
-  ];
+        ]);
+      } catch (error) {
+        console.error("Failed to fetch sprints", error);
+      } finally {
+        setSprintsLoading(false);
+      }
+    };
+
+    fetchSprints();
+  }, [activeProjectId]);
 
   // Sprint 타입 정의
-  type Issue = {
-    id: number;
-    title: string;
-    assignee: string;
-    priority: string;
-  };
-
   type Sprint = {
     id: number;
-    projectId: string;
+    projectId: number;
     name: string;
     startDate: string;
     endDate: string;
     status: string;
     progress: number;
     issues: {
-      todo: Issue[];
-      inProgress: Issue[];
-      review: Issue[];
-      done: Issue[];
+      TODO: any[];
+      PROCESSING: any[];
+      REVIEW: any[];
+      DONE: any[];
     };
   };
 
@@ -274,10 +164,10 @@ export default function SprintsPage() {
     }
 
     return {
-      todo: sprint.issues.todo?.length || 0,
-      inProgress: sprint.issues.inProgress?.length || 0,
-      review: sprint.issues.review?.length || 0,
-      done: sprint.issues.done?.length || 0,
+      todo: sprint.issues.TODO?.length || 0,
+      inProgress: sprint.issues.PROCESSING?.length || 0,
+      review: sprint.issues.REVIEW?.length || 0,
+      done: sprint.issues.DONE?.length || 0,
     };
   };
 
@@ -296,7 +186,7 @@ export default function SprintsPage() {
   };
 
   // 프로젝트 변경 시 인덱스 초기화
-  const handleProjectChange = (projectId: string) => {
+  const handleProjectChange = (projectId: number) => {
     setActiveProjectId(projectId);
     setCurrentSprintIndex(0);
   };
@@ -306,13 +196,23 @@ export default function SprintsPage() {
     if (!activeSprint) return [];
     const start = new Date(activeSprint.startDate);
     const end = new Date(activeSprint.endDate);
+
+    if (isNaN(start.getTime()) || isNaN(end.getTime())) return [];
+
     const days = Math.round(
       (end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)
     );
-    const total = Object.values(activeSprint.issues).reduce(
-      (sum, arr) => sum + arr.length,
-      0
-    );
+    const total = activeSprint.issues
+      ? (Object.values(activeSprint.issues) as any[]).reduce(
+          (sum: number, arr) => {
+            if (Array.isArray(arr)) {
+              return sum + arr.length;
+            }
+            return sum;
+          },
+          0
+        )
+      : 0;
     // 예시: 매일 1개씩 완료된다고 가정
     return Array.from({ length: days + 1 }, (_, i) => ({
       date: new Date(start.getTime() + i * 24 * 60 * 60 * 1000)
@@ -326,10 +226,10 @@ export default function SprintsPage() {
   const [boardIssues, setBoardIssues] = useState(() =>
     activeSprint
       ? {
-          todo: [...activeSprint.issues.todo],
-          inProgress: [...activeSprint.issues.inProgress],
-          review: [...activeSprint.issues.review],
-          done: [...activeSprint.issues.done],
+          todo: [...activeSprint.issues.TODO],
+          inProgress: [...activeSprint.issues.PROCESSING],
+          review: [...activeSprint.issues.REVIEW],
+          done: [...activeSprint.issues.DONE],
         }
       : { todo: [], inProgress: [], review: [], done: [] }
   );
@@ -338,10 +238,10 @@ export default function SprintsPage() {
   React.useEffect(() => {
     if (activeSprint) {
       setBoardIssues({
-        todo: [...activeSprint.issues.todo],
-        inProgress: [...activeSprint.issues.inProgress],
-        review: [...activeSprint.issues.review],
-        done: [...activeSprint.issues.done],
+        todo: [...activeSprint.issues.TODO],
+        inProgress: [...activeSprint.issues.PROCESSING],
+        review: [...activeSprint.issues.REVIEW],
+        done: [...activeSprint.issues.DONE],
       });
     }
   }, [activeSprint]);
@@ -941,7 +841,9 @@ export default function SprintsPage() {
                             justifyContent: "center",
                           }}
                         >
-                          {activeSprint ? (
+                          {activeSprint &&
+                          !isNaN(new Date(activeSprint.startDate).getTime()) &&
+                          !isNaN(new Date(activeSprint.endDate).getTime()) ? (
                             <BurndownChart
                               startDate={new Date(activeSprint.startDate)
                                 .toISOString()
@@ -1017,14 +919,14 @@ export default function SprintsPage() {
                         >
                           {["AB", "CD", "EF", "GH"].map((member) => {
                             const assignedIssues = [
-                              ...(activeSprint?.issues?.todo || []),
-                              ...(activeSprint?.issues?.inProgress || []),
-                              ...(activeSprint?.issues?.review || []),
-                              ...(activeSprint?.issues?.done || []),
+                              ...(activeSprint?.issues?.TODO || []),
+                              ...(activeSprint?.issues?.PROCESSING || []),
+                              ...(activeSprint?.issues?.REVIEW || []),
+                              ...(activeSprint?.issues?.DONE || []),
                             ].filter((issue) => issue.assignee === member);
 
                             const completedIssues = (
-                              activeSprint?.issues.done || []
+                              activeSprint?.issues.DONE || []
                             ).filter((issue) => issue.assignee === member);
 
                             const completionRate =
@@ -1254,12 +1156,12 @@ export default function SprintsPage() {
                   <div style={{ marginBottom: 8 }}>
                     <b>Issues:</b>
                     <ul style={{ margin: "8px 0 0 16px", fontSize: 14 }}>
-                      <li>To Do: {viewSprint.issues.todo.length}</li>
+                      <li>To Do: {viewSprint.issues.TODO.length}</li>
                       <li>
-                        In Progress: {viewSprint.issues.inProgress.length}
+                        In Progress: {viewSprint.issues.PROCESSING.length}
                       </li>
-                      <li>Review: {viewSprint.issues.review.length}</li>
-                      <li>Done: {viewSprint.issues.done.length}</li>
+                      <li>Review: {viewSprint.issues.REVIEW.length}</li>
+                      <li>Done: {viewSprint.issues.DONE.length}</li>
                     </ul>
                   </div>
                   <div style={{ marginTop: 16, textAlign: "right" }}>
