@@ -80,6 +80,7 @@ const Auth: React.FC = () => {
     if (authMode === "login") {
       // console.log("start" + uid + password);
       const result = await login(uid, password);
+      console.log("result", result);
       if (result) {
         alert(`반갑습니다 ${uid}님!`);
         localStorage.setItem("access_token", result.access_token);
