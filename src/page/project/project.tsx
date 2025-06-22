@@ -1,16 +1,5 @@
 import { useState, useRef } from "react";
-import {
-  Calendar,
-  ChevronDown,
-  Filter,
-  Home,
-  LayoutDashboard,
-  LineChart,
-  Plus,
-  Search,
-  Settings,
-  Users,
-} from "lucide-react";
+import { ChevronDown, Filter, Plus, Search } from "lucide-react";
 import {
   Avatar,
   AvatarFallback,
@@ -109,23 +98,25 @@ export default function ProjectsPage() {
 
   const { projects: apiProjects, loading, error } = useGetMyProjects();
 
-  const projects = apiProjects.map((p, index) => ({
-    id: index,
-    name: p.P_NAME,
-    description: "",
-    progress: 0,
-    team: [],
-    issues: { total: 0, completed: 0 },
-    priority: "Medium",
-    dueDate: new Date(p.P_CDATE).toLocaleDateString(),
-    status:
-      p.P_STATUS === "IN_PROGRESS"
-        ? "In Progress"
-        : p.P_STATUS === "COMPLETED"
-        ? "Completed"
-        : "Planning",
-    category: "Uncategorized",
-  }));
+  const projects = Array.isArray(apiProjects)
+    ? apiProjects.map((p, index) => ({
+        id: index,
+        name: p.P_NAME,
+        description: "",
+        progress: 0,
+        team: [],
+        issues: { total: 0, completed: 0 },
+        priority: "Medium",
+        dueDate: new Date(p.P_CDATE).toLocaleDateString(),
+        status:
+          p.P_STATUS === "IN_PROGRESS"
+            ? "In Progress"
+            : p.P_STATUS === "COMPLETED"
+            ? "Completed"
+            : "Planning",
+        category: "Uncategorized",
+      }))
+    : [];
 
   // Filter projects based on selected tab
   const filteredProjects = projects.filter((project) => {
