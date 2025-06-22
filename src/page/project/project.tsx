@@ -65,6 +65,16 @@ import { useGetMyProjects } from "../../hooks/project/getProjectData";
 import { putProjectData } from "../../hooks/project/putProjectData";
 import { deleteProjectData } from "../../hooks/project/DeleteProjectData";
 
+import {  ProjectModalContent,
+  ProjectModalLeft,
+  ProjectModalRight,
+  ProjectModalInfoList,
+  ProjectModalCloseWrapper,
+} from "./projectStyled"
+import { CommentBox, CommentType } from "../../components/ui"
+import React from "react";
+import ProjectWideModal from "./ProjectWideModal";
+
 // Main Component
 export default function ProjectsPage() {
   // const isMobile = useIsMobile()
@@ -139,12 +149,38 @@ export default function ProjectsPage() {
 
   // Filter projects based on selected tab
   const filteredProjects = projects.filter((project) => {
-    if (selectedTab === "all") return true;
-    if (selectedTab === "in-progress") return project.status === "In Progress";
-    if (selectedTab === "completed") return project.status === "Completed";
-    if (selectedTab === "planning") return project.status === "Planning";
-    return true;
-  });
+    if (selectedTab === "all") return true
+    if (selectedTab === "in-progress") return project.status === "In Progress"
+    if (selectedTab === "completed") return project.status === "Completed"
+    if (selectedTab === "planning") return project.status === "Planning"
+    return true
+  })
+
+  // 프로젝트별 댓글 상태 (각 프로젝트별로 개별 관리)
+  const [projectComments, setProjectComments] = useState<{ [projectId: number]: CommentType[] }>({})
+
+  // 댓글 추가/삭제 함수
+  function handleAddProjectComment(projectId: number, content: string) {
+    if (!content.trim()) return
+    setProjectComments(prev => ({
+      ...prev,
+      [projectId]: [
+        ...(prev[projectId] || []),
+        {
+          id: Date.now(),
+          author: "Me",
+          content,
+          createdAt: new Date().toLocaleString(),
+        }
+      ]
+    }))
+  }
+  function handleDeleteProjectComment(projectId: number, commentId: number) {
+    setProjectComments(prev => ({
+      ...prev,
+      [projectId]: (prev[projectId] || []).filter(c => c.id !== commentId)
+    }))
+  }
 
   return (
     <PageContainer>
@@ -556,11 +592,8 @@ export default function ProjectsPage() {
 
       {/* 모달 구현 */}
       <Modal
-        isOpen={modalState.type !== null}
-        onClose={() => {
-          setModalState({ type: null, project: null });
-          setDeleteConfirmInput("");
-        }}
+        isOpen={modalState.type !== null && modalState.type !== "view"}
+        onClose={() => setModalState({ type: null, project: null })}
       >
         {modalState.type === "view" && modalState.project && (
           <ProjectDetail
@@ -683,6 +716,52 @@ export default function ProjectsPage() {
           </div>
         )}
       </Modal>
+
+      <ProjectWideModal
+        isOpen={modalState.type === "view" && !!modalState.project}
+        onClose={() => setModalState({ type: null, project: null })}
+      >
+        {modalState.type === "view" && modalState.project && (
+          <ProjectModalContent>
+            {/* 왼쪽: 댓글 */}
+            <ProjectModalLeft>
+              <h3>댓글</h3>
+              <div className="comment-box-wrapper">
+                <CommentBox
+                  comments={projectComments[modalState.project.id] || []}
+                  onAdd={content => handleAddProjectComment(modalState.project.id, content)}
+                  onDelete={commentId => handleDeleteProjectComment(modalState.project.id, commentId)}
+                  inputPlaceholder="이 프로젝트에 댓글을 남겨보세요!"
+                  style={{
+                    flex: 1,
+                    minHeight: 0,
+                    height: "100%",
+                    display: "flex",
+                    flexDirection: "column",
+                    overflow: "hidden",
+                  }}
+                />
+              </div>
+            </ProjectModalLeft>
+            {/* 오른쪽: 프로젝트 정보 */}
+            <ProjectModalRight>
+              <h2 style={{ marginBottom: 8 }}>Project Details</h2>
+              <ProjectModalInfoList>
+                <div><b>Name:</b> {modalState.project.name}</div>
+                <div><b>Description:</b> {modalState.project.description}</div>
+                <div><b>Status:</b> {modalState.project.status}</div>
+                <div><b>Progress:</b> {modalState.project.progress}%</div>
+                <div><b>Due Date:</b> {modalState.project.dueDate}</div>
+                <div><b>Priority:</b> {modalState.project.priority}</div>
+                <div><b>Category:</b> {modalState.project.category}</div>
+              </ProjectModalInfoList>
+              <ProjectModalCloseWrapper>
+                <Button onClick={() => setModalState({ type: null, project: null })}>Close</Button>
+              </ProjectModalCloseWrapper>
+            </ProjectModalRight>
+          </ProjectModalContent>
+        )}
+      </ProjectWideModal>
 
       {/* 전체 팀원 모달 */}
       <Modal
