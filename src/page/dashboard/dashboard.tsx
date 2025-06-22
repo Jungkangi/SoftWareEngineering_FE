@@ -71,11 +71,11 @@ const Dashboard = () => {
       <DashboardHeader>
         <Title>Dashboard</Title>
         <HeaderActions>
-          <FilterButton>
+          {/* <FilterButton>
             <Funnel />
             Filter
-          </FilterButton>
-          <NewProjectButton>+ New Project</NewProjectButton>
+          </FilterButton> */}
+          {/* <NewProjectButton>+ New Project</NewProjectButton> */}
         </HeaderActions>
       </DashboardHeader>
 

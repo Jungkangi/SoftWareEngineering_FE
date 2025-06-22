@@ -1,5 +1,6 @@
-import { useState } from "react"
-import { ChevronLeft, ChevronRight, Plus } from 'lucide-react'
+import { useState } from "react";
+import { useGetMyProjects } from "../../hooks/project/getProjectData";
+import { ChevronLeft, ChevronRight, Plus } from "lucide-react";
 import {
   Avatar,
   AvatarFallback,
@@ -31,7 +32,7 @@ import {
   FormRow,
   Label,
   Textarea,
-} from "../../components/ui"
+} from "../../components/ui";
 import {
   PageContainer,
   MainContent,
@@ -41,26 +42,28 @@ import {
   PageHeader,
   PageTitle,
   ActionButtons,
-} from "./sprintStyled"
-import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd"
-import BurndownChart from "./BurndownChart"
-import React from "react"
-import Modal from "../../components/modal/modal"
-
-
+  ProjectSelectArea,
+} from "./sprintStyled";
+import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
+import BurndownChart from "./BurndownChart";
+import React from "react";
+import Modal from "../../components/modal/modal";
 
 export default function SprintsPage() {
-  const [activeProjectId, setActiveProjectId] = useState("1")
-  const [activeTab, setActiveTab] = useState("board")
-  const [isProjectSelectOpen, setIsProjectSelectOpen] = useState(false)
-  const [showNewSprintDialog, setShowNewSprintDialog] = useState(false)
-  const [currentSprintIndex, setCurrentSprintIndex] = useState(0) // 추가: 현재 sprint 인덱스
+  const [activeProjectId, setActiveProjectId] = useState("1");
+  const [activeTab, setActiveTab] = useState("board");
+  const [isProjectSelectOpen, setIsProjectSelectOpen] = useState(false);
+  const [showNewSprintDialog, setShowNewSprintDialog] = useState(false);
+  const [currentSprintIndex, setCurrentSprintIndex] = useState(0); // 추가: 현재 sprint 인덱스
 
+  const { projects: apiProjects } = useGetMyProjects();
   const projects = [
-    { id: "1", name: "Website Redesign" },
-    { id: "2", name: "Mobile App Development" },
-    { id: "3", name: "API Integration" },
-  ]
+    { id: "0", name: "All" },
+    ...apiProjects.map((p, index) => ({
+      id: String(index + 1),
+      name: p.P_NAME,
+    })),
+  ];
 
   const sprints = [
     {
@@ -73,17 +76,54 @@ export default function SprintsPage() {
       progress: 45,
       issues: {
         todo: [
-          { id: 101, title: "Implement user settings page", assignee: "AB", priority: "Medium" },
-          { id: 102, title: "Fix navigation responsiveness", assignee: "CD", priority: "High" },
+          {
+            id: 101,
+            title: "Implement user settings page",
+            assignee: "AB",
+            priority: "Medium",
+          },
+          {
+            id: 102,
+            title: "Fix navigation responsiveness",
+            assignee: "CD",
+            priority: "High",
+          },
         ],
         inProgress: [
-          { id: 103, title: "Redesign homepage hero section", assignee: "EF", priority: "High" },
-          { id: 104, title: "Add dark mode support", assignee: "AB", priority: "Medium" },
+          {
+            id: 103,
+            title: "Redesign homepage hero section",
+            assignee: "EF",
+            priority: "High",
+          },
+          {
+            id: 104,
+            title: "Add dark mode support",
+            assignee: "AB",
+            priority: "Medium",
+          },
         ],
-        review: [{ id: 105, title: "Optimize image loading", assignee: "CD", priority: "Low" }],
+        review: [
+          {
+            id: 105,
+            title: "Optimize image loading",
+            assignee: "CD",
+            priority: "Low",
+          },
+        ],
         done: [
-          { id: 106, title: "Create new logo variations", assignee: "EF", priority: "Medium" },
-          { id: 107, title: "Update footer links", assignee: "GH", priority: "Low" },
+          {
+            id: 106,
+            title: "Create new logo variations",
+            assignee: "EF",
+            priority: "Medium",
+          },
+          {
+            id: 107,
+            title: "Update footer links",
+            assignee: "GH",
+            priority: "Low",
+          },
         ],
       },
     },
@@ -100,10 +140,30 @@ export default function SprintsPage() {
         inProgress: [],
         review: [],
         done: [
-          { id: 201, title: "Setup CI/CD pipeline", assignee: "AB", priority: "High" },
-          { id: 202, title: "Implement authentication", assignee: "CD", priority: "High" },
-          { id: 203, title: "Create basic page layouts", assignee: "EF", priority: "Medium" },
-          { id: 204, title: "Design system foundation", assignee: "GH", priority: "Medium" },
+          {
+            id: 201,
+            title: "Setup CI/CD pipeline",
+            assignee: "AB",
+            priority: "High",
+          },
+          {
+            id: 202,
+            title: "Implement authentication",
+            assignee: "CD",
+            priority: "High",
+          },
+          {
+            id: 203,
+            title: "Create basic page layouts",
+            assignee: "EF",
+            priority: "Medium",
+          },
+          {
+            id: 204,
+            title: "Design system foundation",
+            assignee: "GH",
+            priority: "Medium",
+          },
         ],
       },
     },
@@ -116,19 +176,53 @@ export default function SprintsPage() {
       status: "In Progress",
       progress: 65,
       issues: {
-        todo: [{ id: 301, title: "Implement push notifications", assignee: "IJ", priority: "Medium" }],
-        inProgress: [
-          { id: 302, title: "Build user profile screen", assignee: "CD", priority: "Medium" },
-          { id: 303, title: "Create onboarding flow", assignee: "GH", priority: "High" },
+        todo: [
+          {
+            id: 301,
+            title: "Implement push notifications",
+            assignee: "IJ",
+            priority: "Medium",
+          },
         ],
-        review: [{ id: 304, title: "Fix login issues on Android", assignee: "AB", priority: "High" }],
+        inProgress: [
+          {
+            id: 302,
+            title: "Build user profile screen",
+            assignee: "CD",
+            priority: "Medium",
+          },
+          {
+            id: 303,
+            title: "Create onboarding flow",
+            assignee: "GH",
+            priority: "High",
+          },
+        ],
+        review: [
+          {
+            id: 304,
+            title: "Fix login issues on Android",
+            assignee: "AB",
+            priority: "High",
+          },
+        ],
         done: [
-          { id: 305, title: "Setup app navigation", assignee: "CD", priority: "Medium" },
-          { id: 306, title: "Design app icon", assignee: "EF", priority: "Low" },
+          {
+            id: 305,
+            title: "Setup app navigation",
+            assignee: "CD",
+            priority: "Medium",
+          },
+          {
+            id: 306,
+            title: "Design app icon",
+            assignee: "EF",
+            priority: "Low",
+          },
         ],
       },
     },
-  ]
+  ];
 
   // Sprint 타입 정의
   type Issue = {
@@ -155,13 +249,18 @@ export default function SprintsPage() {
   };
 
   // Filter sprints by active project
-  const filteredSprints = sprints.filter((sprint: Sprint) => sprint.projectId === activeProjectId)
+  const filteredSprints = sprints.filter(
+    (sprint: Sprint) => sprint.projectId === activeProjectId
+  );
 
   // 현재 보고 있는 sprint 인덱스가 범위를 벗어나면 0으로 리셋
-  const safeSprintIndex = Math.min(currentSprintIndex, Math.max(filteredSprints.length - 1, 0))
+  const safeSprintIndex = Math.min(
+    currentSprintIndex,
+    Math.max(filteredSprints.length - 1, 0)
+  );
 
   // Current active sprint (이제 인덱스로 관리)
-  const activeSprint = filteredSprints[safeSprintIndex] || undefined
+  const activeSprint = filteredSprints[safeSprintIndex] || undefined;
 
   // Get sprint column counts
   const getColumnCounts = (sprint: Sprint | undefined) => {
@@ -171,7 +270,7 @@ export default function SprintsPage() {
         inProgress: 0,
         review: 0,
         done: 0,
-      }
+      };
     }
 
     return {
@@ -179,37 +278,49 @@ export default function SprintsPage() {
       inProgress: sprint.issues.inProgress?.length || 0,
       review: sprint.issues.review?.length || 0,
       done: sprint.issues.done?.length || 0,
-    }
-  }
+    };
+  };
 
-  const columnCounts = getColumnCounts(activeSprint)
+  const columnCounts = getColumnCounts(activeSprint);
 
   // 새 스프린트 생성 핸들러 (실제 데이터 추가는 필요에 따라 구현)
-  const handleCreateSprint = (data: { name: string; startDate: string; endDate: string; goal: string }) => {
+  const handleCreateSprint = (data: {
+    name: string;
+    startDate: string;
+    endDate: string;
+    goal: string;
+  }) => {
     // 예시: alert(JSON.stringify(data))
     // 실제로는 setSprints([...sprints, ...]) 등으로 추가
-    alert(`Sprint created: ${JSON.stringify(data)}`)
-  }
+    alert(`Sprint created: ${JSON.stringify(data)}`);
+  };
 
   // 프로젝트 변경 시 인덱스 초기화
   const handleProjectChange = (projectId: string) => {
-    setActiveProjectId(projectId)
-    setCurrentSprintIndex(0)
-  }
+    setActiveProjectId(projectId);
+    setCurrentSprintIndex(0);
+  };
 
   // Burndown chart용 예시 데이터 생성 (실제 서비스에서는 백엔드에서 받아오거나 이슈 완료일로 계산)
   const getBurndownData = () => {
-    if (!activeSprint) return []
-    const start = new Date(activeSprint.startDate)
-    const end = new Date(activeSprint.endDate)
-    const days = Math.round((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24))
-    const total = Object.values(activeSprint.issues).reduce((sum, arr) => sum + arr.length, 0)
+    if (!activeSprint) return [];
+    const start = new Date(activeSprint.startDate);
+    const end = new Date(activeSprint.endDate);
+    const days = Math.round(
+      (end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)
+    );
+    const total = Object.values(activeSprint.issues).reduce(
+      (sum, arr) => sum + arr.length,
+      0
+    );
     // 예시: 매일 1개씩 완료된다고 가정
     return Array.from({ length: days + 1 }, (_, i) => ({
-      date: new Date(start.getTime() + i * 24 * 60 * 60 * 1000).toISOString().slice(0, 10),
+      date: new Date(start.getTime() + i * 24 * 60 * 60 * 1000)
+        .toISOString()
+        .slice(0, 10),
       remaining: Math.max(total - i, 0),
-    }))
-  }
+    }));
+  };
 
   // 칸반 이슈 상태 관리
   const [boardIssues, setBoardIssues] = useState(() =>
@@ -221,7 +332,7 @@ export default function SprintsPage() {
           done: [...activeSprint.issues.done],
         }
       : { todo: [], inProgress: [], review: [], done: [] }
-  )
+  );
 
   // activeSprint가 바뀌면 boardIssues도 동기화
   React.useEffect(() => {
@@ -231,80 +342,88 @@ export default function SprintsPage() {
         inProgress: [...activeSprint.issues.inProgress],
         review: [...activeSprint.issues.review],
         done: [...activeSprint.issues.done],
-      })
+      });
     }
-  }, [activeSprint])
+  }, [activeSprint]);
 
   // 드래그 완료 시 이슈 상태 변경
   const onDragEnd = (result: any) => {
-    const { source, destination } = result
-    if (!destination) return
-    if (source.droppableId === destination.droppableId && source.index === destination.index) return
+    const { source, destination } = result;
+    if (!destination) return;
+    if (
+      source.droppableId === destination.droppableId &&
+      source.index === destination.index
+    )
+      return;
 
-    const sourceCol = source.droppableId as keyof typeof boardIssues
-    const destCol = destination.droppableId as keyof typeof boardIssues
+    const sourceCol = source.droppableId as keyof typeof boardIssues;
+    const destCol = destination.droppableId as keyof typeof boardIssues;
 
-    const sourceList = Array.from(boardIssues[sourceCol])
-    const [removed] = sourceList.splice(source.index, 1)
-    const destList = Array.from(boardIssues[destCol])
-    destList.splice(destination.index, 0, removed)
+    const sourceList = Array.from(boardIssues[sourceCol]);
+    const [removed] = sourceList.splice(source.index, 1);
+    const destList = Array.from(boardIssues[destCol]);
+    destList.splice(destination.index, 0, removed);
 
-    setBoardIssues(prev => ({
+    setBoardIssues((prev) => ({
       ...prev,
       [sourceCol]: sourceList,
       [destCol]: destList,
-    }))
-  }
+    }));
+  };
 
   // Add Todo Modal 상태
-  const [showAddIssueModal, setShowAddIssueModal] = useState<null | keyof typeof boardIssues>(null)
-  const [newIssueTitle, setNewIssueTitle] = useState("")
-  const [newIssueAssignee, setNewIssueAssignee] = useState("")
-  const [newIssuePriority, setNewIssuePriority] = useState("Medium")
+  const [showAddIssueModal, setShowAddIssueModal] = useState<
+    null | keyof typeof boardIssues
+  >(null);
+  const [newIssueTitle, setNewIssueTitle] = useState("");
+  const [newIssueAssignee, setNewIssueAssignee] = useState("");
+  const [newIssuePriority, setNewIssuePriority] = useState("Medium");
 
   // 이슈 추가 핸들러
   const handleAddIssue = () => {
-    if (!showAddIssueModal || !newIssueTitle.trim()) return
-    setBoardIssues(prev => {
+    if (!showAddIssueModal || !newIssueTitle.trim()) return;
+    setBoardIssues((prev) => {
       const newId =
         Math.max(
           ...Object.values(prev)
             .flat()
-            .map(issue => issue.id),
+            .map((issue) => issue.id),
           0
-        ) + 1
+        ) + 1;
       const newIssue = {
         id: newId,
         title: newIssueTitle,
         assignee: newIssueAssignee || "Unassigned",
         priority: newIssuePriority,
-      }
+      };
       return {
         ...prev,
         [showAddIssueModal]: [...prev[showAddIssueModal], newIssue],
-      }
-    })
-    setShowAddIssueModal(null)
-    setNewIssueTitle("")
-    setNewIssueAssignee("")
-    setNewIssuePriority("Medium")
-  }
+      };
+    });
+    setShowAddIssueModal(null);
+    setNewIssueTitle("");
+    setNewIssueAssignee("");
+    setNewIssuePriority("Medium");
+  };
 
   // View Details 모달 상태
-  const [viewSprint, setViewSprint] = useState<Sprint | null>(null)
+  const [viewSprint, setViewSprint] = useState<Sprint | null>(null);
 
   return (
     <PageContainer>
       <MainContent>
         <Header>
-          <div style={{ width: "100%", maxWidth: 400 }}>
+          <ProjectSelectArea style={{ width: "100%", maxWidth: 400 }}>
+            <h4>Selected Project</h4>
             <Select>
               <SelectTrigger
                 onClick={() => setIsProjectSelectOpen((open) => !open)}
                 tabIndex={0}
               >
                 <SelectValue>
-                  {projects.find((p) => p.id === activeProjectId)?.name || "Select project"}
+                  {projects.find((p) => p.id === activeProjectId)?.name ||
+                    "Select project"}
                 </SelectValue>
               </SelectTrigger>
               {isProjectSelectOpen && (
@@ -314,8 +433,8 @@ export default function SprintsPage() {
                       key={project.id}
                       value={project.id}
                       onClick={() => {
-                        handleProjectChange(project.id)
-                        setIsProjectSelectOpen(false)
+                        handleProjectChange(project.id);
+                        setIsProjectSelectOpen(false);
                       }}
                     >
                       {project.name}
@@ -324,7 +443,7 @@ export default function SprintsPage() {
                 </SelectContent>
               )}
             </Select>
-          </div>
+          </ProjectSelectArea>
           <div>
             <Button size="sm" onClick={() => setShowNewSprintDialog(true)}>
               <Plus size={16} style={{ marginRight: 6 }} />
@@ -340,7 +459,9 @@ export default function SprintsPage() {
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => setCurrentSprintIndex((idx) => Math.max(idx - 1, 0))}
+                  onClick={() =>
+                    setCurrentSprintIndex((idx) => Math.max(idx - 1, 0))
+                  }
                   disabled={safeSprintIndex === 0}
                 >
                   <ChevronLeft size={16} style={{ marginRight: 4 }} />
@@ -349,8 +470,15 @@ export default function SprintsPage() {
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => setCurrentSprintIndex((idx) => Math.min(idx + 1, filteredSprints.length - 1))}
-                  disabled={safeSprintIndex === filteredSprints.length - 1 || filteredSprints.length === 0}
+                  onClick={() =>
+                    setCurrentSprintIndex((idx) =>
+                      Math.min(idx + 1, filteredSprints.length - 1)
+                    )
+                  }
+                  disabled={
+                    safeSprintIndex === filteredSprints.length - 1 ||
+                    filteredSprints.length === 0
+                  }
                 >
                   Next
                   <ChevronRight size={16} style={{ marginLeft: 4 }} />
@@ -359,43 +487,72 @@ export default function SprintsPage() {
             </PageHeader>
 
             {/* 카드 4분할 */}
-            <div style={{ display: "grid", gap: 16, gridTemplateColumns: "repeat(4, 1fr)" }}>
+            <div
+              style={{
+                display: "grid",
+                gap: 16,
+                gridTemplateColumns: "repeat(4, 1fr)",
+              }}
+            >
               <Card>
                 <CardHeader style={{ paddingBottom: 8 }}>
-                  <CardTitle style={{ fontSize: 14, fontWeight: 500 }}>Current Sprint</CardTitle>
+                  <CardTitle style={{ fontSize: 14, fontWeight: 500 }}>
+                    Current Sprint
+                  </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div style={{ fontSize: 22, fontWeight: 700 }}>{activeSprint?.name || "No active sprint"}</div>
+                  <div style={{ fontSize: 22, fontWeight: 700 }}>
+                    {activeSprint?.name || "No active sprint"}
+                  </div>
                   <p style={{ fontSize: 12, color: "#888" }}>
-                    {activeSprint ? `${activeSprint.startDate} - ${activeSprint.endDate}` : "No dates available"}
+                    {activeSprint
+                      ? `${activeSprint.startDate} - ${activeSprint.endDate}`
+                      : "No dates available"}
                   </p>
                 </CardContent>
               </Card>
               <Card>
                 <CardHeader style={{ paddingBottom: 8 }}>
-                  <CardTitle style={{ fontSize: 14, fontWeight: 500 }}>Sprint Progress</CardTitle>
+                  <CardTitle style={{ fontSize: 14, fontWeight: 500 }}>
+                    Sprint Progress
+                  </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div style={{ fontSize: 22, fontWeight: 700 }}>{activeSprint?.progress || 0}%</div>
-                  <Progress value={activeSprint?.progress || 0} style={{ marginTop: 8, height: 8 }} />
+                  <div style={{ fontSize: 22, fontWeight: 700 }}>
+                    {activeSprint?.progress || 0}%
+                  </div>
+                  <Progress
+                    value={activeSprint?.progress || 0}
+                    style={{ marginTop: 8, height: 8 }}
+                  />
                 </CardContent>
               </Card>
               <Card>
                 <CardHeader style={{ paddingBottom: 8 }}>
-                  <CardTitle style={{ fontSize: 14, fontWeight: 500 }}>Total Issues</CardTitle>
+                  <CardTitle style={{ fontSize: 14, fontWeight: 500 }}>
+                    Total Issues
+                  </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div style={{ fontSize: 22, fontWeight: 700 }}>{Object.values(columnCounts).reduce((a, b) => a + b, 0)}</div>
-                  <p style={{ fontSize: 12, color: "#888" }}>{columnCounts.done} completed</p>
+                  <div style={{ fontSize: 22, fontWeight: 700 }}>
+                    {Object.values(columnCounts).reduce((a, b) => a + b, 0)}
+                  </div>
+                  <p style={{ fontSize: 12, color: "#888" }}>
+                    {columnCounts.done} completed
+                  </p>
                 </CardContent>
               </Card>
               <Card>
                 <CardHeader style={{ paddingBottom: 8 }}>
-                  <CardTitle style={{ fontSize: 14, fontWeight: 500 }}>Velocity</CardTitle>
+                  <CardTitle style={{ fontSize: 14, fontWeight: 500 }}>
+                    Velocity
+                  </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div style={{ fontSize: 22, fontWeight: 700 }}>24 points</div>
-                  <p style={{ fontSize: 12, color: "#888" }}>+3 from last sprint</p>
+                  <p style={{ fontSize: 12, color: "#888" }}>
+                    +3 from last sprint
+                  </p>
                 </CardContent>
               </Card>
             </div>
@@ -421,15 +578,28 @@ export default function SprintsPage() {
                   Analytics
                 </TabsTrigger>
               </TabsList>
-              <TabsContent style={{ display: activeTab === "board" ? "block" : "none" }}>
+              <TabsContent
+                style={{ display: activeTab === "board" ? "block" : "none" }}
+              >
                 <Card>
                   <CardHeader>
-                    <CardTitle>{activeSprint?.name || "Sprint Board"}</CardTitle>
-                    <CardDescription>Drag and drop issues between columns to update their status</CardDescription>
+                    <CardTitle>
+                      {activeSprint?.name || "Sprint Board"}
+                    </CardTitle>
+                    <CardDescription>
+                      Drag and drop issues between columns to update their
+                      status
+                    </CardDescription>
                   </CardHeader>
                   <CardContent>
                     <DragDropContext onDragEnd={onDragEnd}>
-                      <div style={{ display: "grid", gap: 16, gridTemplateColumns: "repeat(4, 1fr)" }}>
+                      <div
+                        style={{
+                          display: "grid",
+                          gap: 16,
+                          gridTemplateColumns: "repeat(4, 1fr)",
+                        }}
+                      >
                         {Object.entries({
                           todo: "To Do",
                           inProgress: "In Progress",
@@ -445,18 +615,47 @@ export default function SprintsPage() {
                                   border: "1px solid #e5e7eb",
                                   borderRadius: 12,
                                   padding: 16,
-                                  background: snapshot.isDraggingOver ? "#e0e7ff" : "#f9fafb",
+                                  background: snapshot.isDraggingOver
+                                    ? "#e0e7ff"
+                                    : "#f9fafb",
                                   minHeight: 120,
                                   transition: "background 0.2s",
                                 }}
                               >
-                                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
-                                  <h3 style={{ fontWeight: 500, fontSize: 14 }}>{label}</h3>
-                                  <Badge variant="outline">{boardIssues[key as keyof typeof boardIssues].length}</Badge>
+                                <div
+                                  style={{
+                                    display: "flex",
+                                    justifyContent: "space-between",
+                                    alignItems: "center",
+                                    marginBottom: 16,
+                                  }}
+                                >
+                                  <h3 style={{ fontWeight: 500, fontSize: 14 }}>
+                                    {label}
+                                  </h3>
+                                  <Badge variant="outline">
+                                    {
+                                      boardIssues[
+                                        key as keyof typeof boardIssues
+                                      ].length
+                                    }
+                                  </Badge>
                                 </div>
-                                <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                                  {boardIssues[key as keyof typeof boardIssues].map((issue, idx) => (
-                                    <Draggable draggableId={String(issue.id)} index={idx} key={issue.id}>
+                                <div
+                                  style={{
+                                    display: "flex",
+                                    flexDirection: "column",
+                                    gap: 8,
+                                  }}
+                                >
+                                  {boardIssues[
+                                    key as keyof typeof boardIssues
+                                  ].map((issue, idx) => (
+                                    <Draggable
+                                      draggableId={String(issue.id)}
+                                      index={idx}
+                                      key={issue.id}
+                                    >
                                       {(provided: any, snapshot: any) => (
                                         <Card
                                           ref={provided.innerRef}
@@ -465,30 +664,77 @@ export default function SprintsPage() {
                                           style={{
                                             padding: 12,
                                             marginBottom: 8,
-                                            background: snapshot.isDragging ? "#dbeafe" : "#fff",
+                                            background: snapshot.isDragging
+                                              ? "#dbeafe"
+                                              : "#fff",
                                             ...provided.draggableProps.style,
                                           }}
                                         >
-                                          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
-                                              <div style={{ fontWeight: 500, fontSize: 14 }}>{issue.title}</div>
+                                          <div
+                                            style={{
+                                              display: "flex",
+                                              flexDirection: "column",
+                                              gap: 8,
+                                            }}
+                                          >
+                                            <div
+                                              style={{
+                                                display: "flex",
+                                                justifyContent: "space-between",
+                                                alignItems: "flex-start",
+                                              }}
+                                            >
+                                              <div
+                                                style={{
+                                                  fontWeight: 500,
+                                                  fontSize: 14,
+                                                }}
+                                              >
+                                                {issue.title}
+                                              </div>
                                               <Badge
                                                 variant={
                                                   issue.priority === "High"
                                                     ? "destructive"
-                                                    : issue.priority === "Medium"
+                                                    : issue.priority ===
+                                                      "Medium"
                                                     ? "default"
                                                     : "secondary"
                                                 }
-                                                style={{ marginLeft: 8, fontSize: 12 }}
+                                                style={{
+                                                  marginLeft: 8,
+                                                  fontSize: 12,
+                                                }}
                                               >
                                                 {issue.priority}
                                               </Badge>
                                             </div>
-                                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                                              <div style={{ fontSize: 12, color: "#888" }}>#{issue.id}</div>
-                                              <Avatar style={{ width: 24, height: 24 }}>
-                                                <AvatarFallback style={{ fontSize: 12 }}>{issue.assignee}</AvatarFallback>
+                                            <div
+                                              style={{
+                                                display: "flex",
+                                                justifyContent: "space-between",
+                                                alignItems: "center",
+                                              }}
+                                            >
+                                              <div
+                                                style={{
+                                                  fontSize: 12,
+                                                  color: "#888",
+                                                }}
+                                              >
+                                                #{issue.id}
+                                              </div>
+                                              <Avatar
+                                                style={{
+                                                  width: 24,
+                                                  height: 24,
+                                                }}
+                                              >
+                                                <AvatarFallback
+                                                  style={{ fontSize: 12 }}
+                                                >
+                                                  {issue.assignee}
+                                                </AvatarFallback>
                                               </Avatar>
                                             </div>
                                           </div>
@@ -497,8 +743,16 @@ export default function SprintsPage() {
                                     </Draggable>
                                   ))}
                                   {provided.placeholder}
-                                  {boardIssues[key as keyof typeof boardIssues].length === 0 && (
-                                    <div style={{ fontSize: 12, color: "#888", textAlign: "center", padding: "16px 0" }}>
+                                  {boardIssues[key as keyof typeof boardIssues]
+                                    .length === 0 && (
+                                    <div
+                                      style={{
+                                        fontSize: 12,
+                                        color: "#888",
+                                        textAlign: "center",
+                                        padding: "16px 0",
+                                      }}
+                                    >
                                       No issues in {label}
                                     </div>
                                   )}
@@ -506,9 +760,16 @@ export default function SprintsPage() {
                                     variant="ghost"
                                     size="sm"
                                     style={{ width: "100%", marginTop: 8 }}
-                                    onClick={() => setShowAddIssueModal(key as keyof typeof boardIssues)}
+                                    onClick={() =>
+                                      setShowAddIssueModal(
+                                        key as keyof typeof boardIssues
+                                      )
+                                    }
                                   >
-                                    <Plus size={16} style={{ marginRight: 4 }} />
+                                    <Plus
+                                      size={16}
+                                      style={{ marginRight: 4 }}
+                                    />
                                     Add Todo
                                   </Button>
                                 </div>
@@ -521,142 +782,302 @@ export default function SprintsPage() {
                   </CardContent>
                 </Card>
               </TabsContent>
-              <TabsContent style={{ display: activeTab === "list" ? "block" : "none" }}>
+              <TabsContent
+                style={{ display: activeTab === "list" ? "block" : "none" }}
+              >
                 <Card>
                   <CardHeader>
-                    <CardTitle>{activeSprint?.name || "Sprint Issues"}</CardTitle>
-                    <CardDescription>View and manage all issues in this sprint</CardDescription>
+                    <CardTitle>
+                      {activeSprint?.name || "Sprint Issues"}
+                    </CardTitle>
+                    <CardDescription>
+                      View and manage all issues in this sprint
+                    </CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
-                      {["To Do", "In Progress", "Review", "Done"].map((column, index) => {
-                        const issueKey = column.toLowerCase().replace(" ", "") as keyof typeof activeSprint.issues
-                        const issues = activeSprint?.issues?.[issueKey] || []
+                    <div
+                      style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: 24,
+                      }}
+                    >
+                      {["To Do", "In Progress", "Review", "Done"].map(
+                        (column, index) => {
+                          const issueKey = column
+                            .toLowerCase()
+                            .replace(
+                              " ",
+                              ""
+                            ) as keyof typeof activeSprint.issues;
+                          const issues = activeSprint?.issues?.[issueKey] || [];
 
-                        return (
-                          <div key={column} style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                              <h3 style={{ fontWeight: 500 }}>{column}</h3>
-                              <Badge variant="outline">{issues.length}</Badge>
-                            </div>
-                            {issues.length > 0 ? (
-                              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                                {issues.map((issue) => (
-                                  <Card key={issue.id} style={{ padding: 12 }}>
-                                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                                      <div>
-                                        <div style={{ fontWeight: 500 }}>{issue.title}</div>
-                                        <div style={{ fontSize: 12, color: "#888" }}>
-                                          #{issue.id} • Assigned to {issue.assignee}
+                          return (
+                            <div
+                              key={column}
+                              style={{
+                                display: "flex",
+                                flexDirection: "column",
+                                gap: 8,
+                              }}
+                            >
+                              <div
+                                style={{
+                                  display: "flex",
+                                  alignItems: "center",
+                                  gap: 8,
+                                }}
+                              >
+                                <h3 style={{ fontWeight: 500 }}>{column}</h3>
+                                <Badge variant="outline">{issues.length}</Badge>
+                              </div>
+                              {issues.length > 0 ? (
+                                <div
+                                  style={{
+                                    display: "flex",
+                                    flexDirection: "column",
+                                    gap: 8,
+                                  }}
+                                >
+                                  {issues.map((issue) => (
+                                    <Card
+                                      key={issue.id}
+                                      style={{ padding: 12 }}
+                                    >
+                                      <div
+                                        style={{
+                                          display: "flex",
+                                          justifyContent: "space-between",
+                                          alignItems: "center",
+                                        }}
+                                      >
+                                        <div>
+                                          <div style={{ fontWeight: 500 }}>
+                                            {issue.title}
+                                          </div>
+                                          <div
+                                            style={{
+                                              fontSize: 12,
+                                              color: "#888",
+                                            }}
+                                          >
+                                            #{issue.id} • Assigned to{" "}
+                                            {issue.assignee}
+                                          </div>
                                         </div>
-                                      </div>
-                                      <Badge
-                                        variant={
-                                          issue.priority === "High"
-                                            ? "destructive"
-                                            : issue.priority === "Medium"
+                                        <Badge
+                                          variant={
+                                            issue.priority === "High"
+                                              ? "destructive"
+                                              : issue.priority === "Medium"
                                               ? "default"
                                               : "secondary"
-                                        }
-                                      >
-                                        {issue.priority}
-                                      </Badge>
-                                    </div>
-                                  </Card>
-                                ))}
-                              </div>
-                            ) : (
-                              <div style={{ fontSize: 14, color: "#888", padding: 8 }}>
-                                No issues in {column.toLowerCase()}
-                              </div>
-                            )}
-                          </div>
-                        )
-                      })}
+                                          }
+                                        >
+                                          {issue.priority}
+                                        </Badge>
+                                      </div>
+                                    </Card>
+                                  ))}
+                                </div>
+                              ) : (
+                                <div
+                                  style={{
+                                    fontSize: 14,
+                                    color: "#888",
+                                    padding: 8,
+                                  }}
+                                >
+                                  No issues in {column.toLowerCase()}
+                                </div>
+                              )}
+                            </div>
+                          );
+                        }
+                      )}
                     </div>
                   </CardContent>
                 </Card>
               </TabsContent>
-              <TabsContent style={{ display: activeTab === "analytics" ? "block" : "none" }}>
+              <TabsContent
+                style={{
+                  display: activeTab === "analytics" ? "block" : "none",
+                }}
+              >
                 <Card>
                   <CardHeader>
                     <CardTitle>Sprint Analytics</CardTitle>
-                    <CardDescription>Track progress and performance metrics for this sprint</CardDescription>
+                    <CardDescription>
+                      Track progress and performance metrics for this sprint
+                    </CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <div style={{ display: "flex", flexDirection: "column", gap: 32 }}>
+                    <div
+                      style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: 32,
+                      }}
+                    >
                       <div>
-                        <h3 style={{ fontSize: 14, fontWeight: 500, marginBottom: 8 }}>Burndown Chart</h3>
-                        <div style={{
-                          height: 200, width: "100%", border: "1px solid #e5e7eb", borderRadius: 12,
-                          background: "#f9fafb", display: "flex", alignItems: "center", justifyContent: "center"
-                        }}>
+                        <h3
+                          style={{
+                            fontSize: 14,
+                            fontWeight: 500,
+                            marginBottom: 8,
+                          }}
+                        >
+                          Burndown Chart
+                        </h3>
+                        <div
+                          style={{
+                            height: 200,
+                            width: "100%",
+                            border: "1px solid #e5e7eb",
+                            borderRadius: 12,
+                            background: "#f9fafb",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                          }}
+                        >
                           {activeSprint ? (
                             <BurndownChart
-                              startDate={new Date(activeSprint.startDate).toISOString().slice(0, 10)}
-                              endDate={new Date(activeSprint.endDate).toISOString().slice(0, 10)}
-                              totalIssues={Object.values(activeSprint.issues).reduce((sum, arr) => sum + arr.length, 0)}
+                              startDate={new Date(activeSprint.startDate)
+                                .toISOString()
+                                .slice(0, 10)}
+                              endDate={new Date(activeSprint.endDate)
+                                .toISOString()
+                                .slice(0, 10)}
+                              totalIssues={Object.values(
+                                activeSprint.issues
+                              ).reduce((sum, arr) => sum + arr.length, 0)}
                               dailyRemaining={getBurndownData()}
                             />
                           ) : (
-                            <p style={{ color: "#888", fontSize: 14 }}>No data</p>
+                            <p style={{ color: "#888", fontSize: 14 }}>
+                              No data
+                            </p>
                           )}
                         </div>
                       </div>
                       <div>
-                        <h3 style={{ fontSize: 14, fontWeight: 500, marginBottom: 8 }}>Issue Distribution</h3>
-                        <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 8 }}>
+                        <h3
+                          style={{
+                            fontSize: 14,
+                            fontWeight: 500,
+                            marginBottom: 8,
+                          }}
+                        >
+                          Issue Distribution
+                        </h3>
+                        <div
+                          style={{
+                            display: "grid",
+                            gridTemplateColumns: "repeat(4, 1fr)",
+                            gap: 8,
+                          }}
+                        >
                           {Object.entries({
                             "To Do": columnCounts.todo,
                             "In Progress": columnCounts.inProgress,
                             Review: columnCounts.review,
                             Done: columnCounts.done,
                           }).map(([status, count]) => (
-                            <Card key={status} style={{ padding: 12, textAlign: "center" }}>
-                              <div style={{ fontSize: 22, fontWeight: 700 }}>{count}</div>
-                              <div style={{ fontSize: 12, color: "#888" }}>{status}</div>
+                            <Card
+                              key={status}
+                              style={{ padding: 12, textAlign: "center" }}
+                            >
+                              <div style={{ fontSize: 22, fontWeight: 700 }}>
+                                {count}
+                              </div>
+                              <div style={{ fontSize: 12, color: "#888" }}>
+                                {status}
+                              </div>
                             </Card>
                           ))}
                         </div>
                       </div>
                       <div>
-                        <h3 style={{ fontSize: 14, fontWeight: 500, marginBottom: 8 }}>Team Performance</h3>
-                        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                        <h3
+                          style={{
+                            fontSize: 14,
+                            fontWeight: 500,
+                            marginBottom: 8,
+                          }}
+                        >
+                          Team Performance
+                        </h3>
+                        <div
+                          style={{
+                            display: "flex",
+                            flexDirection: "column",
+                            gap: 8,
+                          }}
+                        >
                           {["AB", "CD", "EF", "GH"].map((member) => {
                             const assignedIssues = [
                               ...(activeSprint?.issues?.todo || []),
                               ...(activeSprint?.issues?.inProgress || []),
                               ...(activeSprint?.issues?.review || []),
                               ...(activeSprint?.issues?.done || []),
-                            ].filter((issue) => issue.assignee === member)
+                            ].filter((issue) => issue.assignee === member);
 
-                            const completedIssues = (activeSprint?.issues.done || []).filter(
-                              (issue) => issue.assignee === member,
-                            )
+                            const completedIssues = (
+                              activeSprint?.issues.done || []
+                            ).filter((issue) => issue.assignee === member);
 
                             const completionRate =
                               assignedIssues.length > 0
-                                ? Math.round((completedIssues.length / assignedIssues.length) * 100)
-                                : 0
+                                ? Math.round(
+                                    (completedIssues.length /
+                                      assignedIssues.length) *
+                                      100
+                                  )
+                                : 0;
 
                             return (
-                              <div key={member} style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                              <div
+                                key={member}
+                                style={{
+                                  display: "flex",
+                                  alignItems: "center",
+                                  gap: 12,
+                                }}
+                              >
                                 <Avatar style={{ width: 32, height: 32 }}>
-                                  <AvatarFallback style={{ background: "#6366f1", color: "#fff", fontSize: 12 }}>
+                                  <AvatarFallback
+                                    style={{
+                                      background: "#6366f1",
+                                      color: "#fff",
+                                      fontSize: 12,
+                                    }}
+                                  >
                                     {member}
                                   </AvatarFallback>
                                 </Avatar>
                                 <div style={{ flex: 1, minWidth: 0 }}>
-                                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 4 }}>
+                                  <div
+                                    style={{
+                                      display: "flex",
+                                      justifyContent: "space-between",
+                                      alignItems: "center",
+                                      marginBottom: 4,
+                                    }}
+                                  >
                                     <p style={{ fontSize: 14 }}>{member}</p>
                                     <p style={{ fontSize: 12, color: "#888" }}>
-                                      {completedIssues.length}/{assignedIssues.length} issues
+                                      {completedIssues.length}/
+                                      {assignedIssues.length} issues
                                     </p>
                                   </div>
-                                  <Progress value={completionRate} style={{ height: 8 }} />
+                                  <Progress
+                                    value={completionRate}
+                                    style={{ height: 8 }}
+                                  />
                                 </div>
                               </div>
-                            )
+                            );
                           })}
                         </div>
                       </div>
@@ -670,14 +1091,23 @@ export default function SprintsPage() {
               <CardHeader>
                 <CardTitle>Project Sprints</CardTitle>
                 <CardDescription>
-                  All sprints for {projects.find((p) => p.id === activeProjectId)?.name || "this project"}
+                  All sprints for{" "}
+                  {projects.find((p) => p.id === activeProjectId)?.name ||
+                    "this project"}
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+                <div
+                  style={{ display: "flex", flexDirection: "column", gap: 16 }}
+                >
                   {filteredSprints.map((sprint: Sprint) => (
                     <Card key={sprint.id} style={{ overflow: "hidden" }}>
-                      <div style={{ display: "flex", borderBottom: "1px solid #e5e7eb" }}>
+                      <div
+                        style={{
+                          display: "flex",
+                          borderBottom: "1px solid #e5e7eb",
+                        }}
+                      >
                         <div
                           style={{
                             width: 4,
@@ -685,20 +1115,28 @@ export default function SprintsPage() {
                               sprint.status === "Completed"
                                 ? "#22c55e"
                                 : sprint.status === "In Progress"
-                                  ? "#3b82f6"
-                                  : "#d1d5db"
+                                ? "#3b82f6"
+                                : "#d1d5db",
                           }}
                         ></div>
                         <CardHeader style={{ flex: 1 }}>
-                          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                            <CardTitle style={{ fontSize: 18 }}>{sprint.name}</CardTitle>
+                          <div
+                            style={{
+                              display: "flex",
+                              justifyContent: "space-between",
+                              alignItems: "center",
+                            }}
+                          >
+                            <CardTitle style={{ fontSize: 18 }}>
+                              {sprint.name}
+                            </CardTitle>
                             <Badge
                               variant={
                                 sprint.status === "Completed"
                                   ? "success"
                                   : sprint.status === "In Progress"
-                                    ? "default"
-                                    : "secondary"
+                                  ? "default"
+                                  : "secondary"
                               }
                             >
                               {sprint.status}
@@ -710,31 +1148,84 @@ export default function SprintsPage() {
                         </CardHeader>
                       </div>
                       <CardContent style={{ padding: 16 }}>
-                        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                        <div
+                          style={{
+                            display: "flex",
+                            flexDirection: "column",
+                            gap: 12,
+                          }}
+                        >
                           <div>
-                            <div style={{ display: "flex", justifyContent: "space-between", fontSize: 14, marginBottom: 4 }}>
+                            <div
+                              style={{
+                                display: "flex",
+                                justifyContent: "space-between",
+                                fontSize: 14,
+                                marginBottom: 4,
+                              }}
+                            >
                               <span>Progress</span>
                               <span>{sprint.progress}%</span>
                             </div>
-                            <Progress value={sprint.progress} style={{ height: 8 }} />
+                            <Progress
+                              value={sprint.progress}
+                              style={{ height: 8 }}
+                            />
                           </div>
                           <div style={{ display: "flex", gap: 12 }}>
-                            {["Todo", "In Progress", "Review", "Done"].map((status) => {
-                              const key = status.toLowerCase().replace(" ", "") as keyof typeof sprint.issues
-                              const count = sprint.issues && sprint.issues[key] ? sprint.issues[key].length : 0
+                            {["Todo", "In Progress", "Review", "Done"].map(
+                              (status) => {
+                                const key = status
+                                  .toLowerCase()
+                                  .replace(
+                                    " ",
+                                    ""
+                                  ) as keyof typeof sprint.issues;
+                                const count =
+                                  sprint.issues && sprint.issues[key]
+                                    ? sprint.issues[key].length
+                                    : 0;
 
-                              return (
-                                <div key={status} style={{ flex: 1 }}>
-                                  <div style={{ textAlign: "center", padding: 8, border: "1px solid #e5e7eb", borderRadius: 8 }}>
-                                    <div style={{ fontSize: 16, fontWeight: 600 }}>{count}</div>
-                                    <div style={{ fontSize: 12, color: "#888" }}>{status}</div>
+                                return (
+                                  <div key={status} style={{ flex: 1 }}>
+                                    <div
+                                      style={{
+                                        textAlign: "center",
+                                        padding: 8,
+                                        border: "1px solid #e5e7eb",
+                                        borderRadius: 8,
+                                      }}
+                                    >
+                                      <div
+                                        style={{
+                                          fontSize: 16,
+                                          fontWeight: 600,
+                                        }}
+                                      >
+                                        {count}
+                                      </div>
+                                      <div
+                                        style={{ fontSize: 12, color: "#888" }}
+                                      >
+                                        {status}
+                                      </div>
+                                    </div>
                                   </div>
-                                </div>
-                              )
-                            })}
+                                );
+                              }
+                            )}
                           </div>
-                          <div style={{ display: "flex", justifyContent: "flex-end" }}>
-                            <Button variant="outline" size="sm" onClick={() => setViewSprint(sprint)}>
+                          <div
+                            style={{
+                              display: "flex",
+                              justifyContent: "flex-end",
+                            }}
+                          >
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => setViewSprint(sprint)}
+                            >
                               View Details
                             </Button>
                           </div>
@@ -748,7 +1239,9 @@ export default function SprintsPage() {
             <Modal isOpen={!!viewSprint} onClose={() => setViewSprint(null)}>
               {viewSprint && (
                 <div>
-                  <h2 style={{ marginBottom: 12 }}>{viewSprint.name} Details</h2>
+                  <h2 style={{ marginBottom: 12 }}>
+                    {viewSprint.name} Details
+                  </h2>
                   <div style={{ marginBottom: 8 }}>
                     <b>Status:</b> {viewSprint.status}
                   </div>
@@ -762,13 +1255,18 @@ export default function SprintsPage() {
                     <b>Issues:</b>
                     <ul style={{ margin: "8px 0 0 16px", fontSize: 14 }}>
                       <li>To Do: {viewSprint.issues.todo.length}</li>
-                      <li>In Progress: {viewSprint.issues.inProgress.length}</li>
+                      <li>
+                        In Progress: {viewSprint.issues.inProgress.length}
+                      </li>
                       <li>Review: {viewSprint.issues.review.length}</li>
                       <li>Done: {viewSprint.issues.done.length}</li>
                     </ul>
                   </div>
                   <div style={{ marginTop: 16, textAlign: "right" }}>
-                    <Button variant="outline" onClick={() => setViewSprint(null)}>
+                    <Button
+                      variant="outline"
+                      onClick={() => setViewSprint(null)}
+                    >
                       Close
                     </Button>
                   </div>
@@ -783,34 +1281,58 @@ export default function SprintsPage() {
           onSubmit={handleCreateSprint}
         />
         {/* Add Todo Modal */}
-        <Modal isOpen={!!showAddIssueModal} onClose={() => setShowAddIssueModal(null)}>
+        <Modal
+          isOpen={!!showAddIssueModal}
+          onClose={() => setShowAddIssueModal(null)}
+        >
           <div>
             <h2 style={{ marginBottom: 16 }}>Add Todo</h2>
             <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
               <label>
                 Title
                 <input
-                  style={{ width: "100%", marginTop: 4, marginBottom: 8, padding: 8, borderRadius: 6, border: "1px solid #e5e7eb" }}
+                  style={{
+                    width: "100%",
+                    marginTop: 4,
+                    marginBottom: 8,
+                    padding: 8,
+                    borderRadius: 6,
+                    border: "1px solid #e5e7eb",
+                  }}
                   value={newIssueTitle}
-                  onChange={e => setNewIssueTitle(e.target.value)}
+                  onChange={(e) => setNewIssueTitle(e.target.value)}
                   placeholder="Enter issue title"
                 />
               </label>
               <label>
                 Assignee
                 <input
-                  style={{ width: "100%", marginTop: 4, marginBottom: 8, padding: 8, borderRadius: 6, border: "1px solid #e5e7eb" }}
+                  style={{
+                    width: "100%",
+                    marginTop: 4,
+                    marginBottom: 8,
+                    padding: 8,
+                    borderRadius: 6,
+                    border: "1px solid #e5e7eb",
+                  }}
                   value={newIssueAssignee}
-                  onChange={e => setNewIssueAssignee(e.target.value)}
+                  onChange={(e) => setNewIssueAssignee(e.target.value)}
                   placeholder="Enter assignee (optional)"
                 />
               </label>
               <label>
                 Priority
                 <select
-                  style={{ width: "100%", marginTop: 4, marginBottom: 8, padding: 8, borderRadius: 6, border: "1px solid #e5e7eb" }}
+                  style={{
+                    width: "100%",
+                    marginTop: 4,
+                    marginBottom: 8,
+                    padding: 8,
+                    borderRadius: 6,
+                    border: "1px solid #e5e7eb",
+                  }}
                   value={newIssuePriority}
-                  onChange={e => setNewIssuePriority(e.target.value)}
+                  onChange={(e) => setNewIssuePriority(e.target.value)}
                 >
                   <option value="High">High</option>
                   <option value="Medium">Medium</option>
@@ -818,8 +1340,18 @@ export default function SprintsPage() {
                 </select>
               </label>
             </div>
-            <div style={{ marginTop: 24, display: "flex", justifyContent: "flex-end", gap: 8 }}>
-              <Button variant="ghost" onClick={() => setShowAddIssueModal(null)}>
+            <div
+              style={{
+                marginTop: 24,
+                display: "flex",
+                justifyContent: "flex-end",
+                gap: 8,
+              }}
+            >
+              <Button
+                variant="ghost"
+                onClick={() => setShowAddIssueModal(null)}
+              >
                 Cancel
               </Button>
               <Button onClick={handleAddIssue} disabled={!newIssueTitle.trim()}>
@@ -830,7 +1362,7 @@ export default function SprintsPage() {
         </Modal>
       </MainContent>
     </PageContainer>
-  )
+  );
 }
 
 // NewSprintDialog 로직 분리
@@ -839,30 +1371,35 @@ function NewSprintDialog({
   onClose,
   onSubmit,
 }: {
-  open: boolean
-  onClose: () => void
-  onSubmit: (data: { name: string; startDate: string; endDate: string; goal: string }) => void
+  open: boolean;
+  onClose: () => void;
+  onSubmit: (data: {
+    name: string;
+    startDate: string;
+    endDate: string;
+    goal: string;
+  }) => void;
 }) {
-  const [name, setName] = useState("")
-  const [startDate, setStartDate] = useState("")
-  const [endDate, setEndDate] = useState("")
-  const [goal, setGoal] = useState("")
+  const [name, setName] = useState("");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+  const [goal, setGoal] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    onSubmit({ name, startDate, endDate, goal })
-    setName("")
-    setStartDate("")
-    setEndDate("")
-    setGoal("")
-    onClose()
-  }
+    e.preventDefault();
+    onSubmit({ name, startDate, endDate, goal });
+    setName("");
+    setStartDate("");
+    setEndDate("");
+    setGoal("");
+    onClose();
+  };
 
-  if (!open) return null
+  if (!open) return null;
 
   return (
     <DialogOverlay onClick={onClose}>
-      <DialogContent onClick={e => e.stopPropagation()}>
+      <DialogContent onClick={(e) => e.stopPropagation()}>
         <form onSubmit={handleSubmit}>
           <DialogHeader>
             <DialogTitle>Create new sprint</DialogTitle>
@@ -877,7 +1414,7 @@ function NewSprintDialog({
                 id="sprint-name"
                 placeholder="Enter sprint name"
                 value={name}
-                onChange={e => setName(e.target.value)}
+                onChange={(e) => setName(e.target.value)}
                 required
                 style={{
                   width: "100%",
@@ -898,7 +1435,7 @@ function NewSprintDialog({
                   type="date"
                   id="sprint-start-date"
                   value={startDate}
-                  onChange={e => setStartDate(e.target.value)}
+                  onChange={(e) => setStartDate(e.target.value)}
                   required
                   style={{
                     width: "100%",
@@ -918,7 +1455,7 @@ function NewSprintDialog({
                   type="date"
                   id="sprint-end-date"
                   value={endDate}
-                  onChange={e => setEndDate(e.target.value)}
+                  onChange={(e) => setEndDate(e.target.value)}
                   required
                   style={{
                     width: "100%",
@@ -939,13 +1476,23 @@ function NewSprintDialog({
                 id="sprint-goal"
                 placeholder="Describe the sprint goal"
                 value={goal}
-                onChange={e => setGoal(e.target.value)}
-                style={{ borderRadius: 8, border: "1px solid #e5e7eb", padding: 8, fontSize: 14 }}
+                onChange={(e) => setGoal(e.target.value)}
+                style={{
+                  borderRadius: 8,
+                  border: "1px solid #e5e7eb",
+                  padding: 8,
+                  fontSize: 14,
+                }}
               />
             </FormGroup>
           </FormGrid>
           <DialogFooter>
-            <Button type="button" variant="ghost" onClick={onClose} style={{ marginRight: 8 }}>
+            <Button
+              type="button"
+              variant="ghost"
+              onClick={onClose}
+              style={{ marginRight: 8 }}
+            >
               Cancel
             </Button>
             <Button type="submit">Create Sprint</Button>
@@ -953,5 +1500,5 @@ function NewSprintDialog({
         </form>
       </DialogContent>
     </DialogOverlay>
-  )
+  );
 }

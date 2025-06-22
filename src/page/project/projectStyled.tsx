@@ -1,215 +1,214 @@
-import styled, { css } from "styled-components"
-import * as React from "react"
-import { useEffect, useState } from "react"
+import styled, { css } from "styled-components";
+import * as React from "react";
+import { useEffect, useState } from "react";
 
 export const lightTheme = {
-	colors: {
-	  background: "#ffffff",
-	  foreground: "#111827",
-	  backgroundSecondary: "#f9fafb",
-  
-	  primary: "#111827",
-	  primaryForeground: "#ffffff",
-  
-	  secondary: "#f3f4f6",
-	  secondaryForeground: "#111827",
-  
-	  muted: "#f3f4f6",
-	  mutedForeground: "#6b7280",
-  
-	  accent: "#f3f4f6",
-	  accentForeground: "#111827",
-  
-	  destructive: "#ef4444",
-	  destructiveForeground: "#ffffff",
-  
-	  success: "#10b981",
-	  successForeground: "#ffffff",
-  
-	  border: "#e5e7eb",
-	  input: "#e5e7eb",
-  
-	  card: "#ffffff",
-	  cardForeground: "#111827",
-	},
-  
-	fontSizes: {
-	  xs: "0.75rem",
-	  sm: "0.875rem",
-	  md: "1rem",
-	  lg: "1.125rem",
-	  xl: "1.25rem",
-	  "2xl": "1.5rem",
-	  "3xl": "1.875rem",
-	  "4xl": "2.25rem",
-	},
-  
-	space: {
-	  1: "0.25rem",
-	  2: "0.5rem",
-	  3: "0.75rem",
-	  4: "1rem",
-	  5: "1.25rem",
-	  6: "1.5rem",
-	  8: "2rem",
-	  10: "2.5rem",
-	  12: "3rem",
-	  16: "4rem",
-	  20: "5rem",
-	},
-  
-	radii: {
-	  sm: "0.125rem",
-	  md: "0.375rem",
-	  lg: "0.5rem",
-	  xl: "0.75rem",
-	  full: "9999px",
-	},
-  
-	shadows: {
-	  sm: "0 1px 2px 0 rgba(0, 0, 0, 0.05)",
-	  md: "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)",
-	  lg: "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)",
-	},
-  
-	breakpoints: {
-	  sm: "640px",
-	  md: "768px",
-	  lg: "1024px",
-	  xl: "1280px",
-	  "2xl": "1536px",
-	},
-  
-	transitions: {
-	  default: "0.15s ease",
-	  fast: "0.1s ease",
-	  slow: "0.3s ease",
-	},
-  }
-  
-  export const darkTheme = {
-	colors: {
-	  background: "#111827",
-	  foreground: "#f9fafb",
-	  backgroundSecondary: "#1f2937",
-  
-	  primary: "#f9fafb",
-	  primaryForeground: "#111827",
-  
-	  secondary: "#1f2937",
-	  secondaryForeground: "#f9fafb",
-  
-	  muted: "#1f2937",
-	  mutedForeground: "#9ca3af",
-  
-	  accent: "#1f2937",
-	  accentForeground: "#f9fafb",
-  
-	  destructive: "#ef4444",
-	  destructiveForeground: "#f9fafb",
-  
-	  success: "#10b981",
-	  successForeground: "#f9fafb",
-  
-	  border: "#374151",
-	  input: "#374151",
-  
-	  card: "#1f2937",
-	  cardForeground: "#f9fafb",
-	},
-  
-	fontSizes: {
-	  xs: "0.75rem",
-	  sm: "0.875rem",
-	  md: "1rem",
-	  lg: "1.125rem",
-	  xl: "1.25rem",
-	  "2xl": "1.5rem",
-	  "3xl": "1.875rem",
-	  "4xl": "2.25rem",
-	},
-  
-	space: {
-	  1: "0.25rem",
-	  2: "0.5rem",
-	  3: "0.75rem",
-	  4: "1rem",
-	  5: "1.25rem",
-	  6: "1.5rem",
-	  8: "2rem",
-	  10: "2.5rem",
-	  12: "3rem",
-	  16: "4rem",
-	  20: "5rem",
-	},
-  
-	radii: {
-	  sm: "0.125rem",
-	  md: "0.375rem",
-	  lg: "0.5rem",
-	  xl: "0.75rem",
-	  full: "9999px",
-	},
-  
-	shadows: {
-	  sm: "0 1px 2px 0 rgba(0, 0, 0, 0.25)",
-	  md: "0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.26)",
-	  lg: "0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.25)",
-	},
-  
-	breakpoints: {
-	  sm: "640px",
-	  md: "768px",
-	  lg: "1024px",
-	  xl: "1280px",
-	  "2xl": "1536px",
-	},
-  
-	transitions: {
-	  default: "0.15s ease",
-	  fast: "0.1s ease",
-	  slow: "0.3s ease",
-	},
-  }
-  
-  export type Theme = typeof lightTheme
-  
-  declare module "styled-components" {
+  colors: {
+    background: "#ffffff",
+    foreground: "#111827",
+    backgroundSecondary: "#f9fafb",
+
+    primary: "#111827",
+    primaryForeground: "#ffffff",
+
+    secondary: "#f3f4f6",
+    secondaryForeground: "#111827",
+
+    muted: "#f3f4f6",
+    mutedForeground: "#6b7280",
+
+    accent: "#f3f4f6",
+    accentForeground: "#111827",
+
+    destructive: "#ef4444",
+    destructiveForeground: "#ffffff",
+
+    success: "#10b981",
+    successForeground: "#ffffff",
+
+    border: "#e5e7eb",
+    input: "#e5e7eb",
+
+    card: "#ffffff",
+    cardForeground: "#111827",
+  },
+
+  fontSizes: {
+    xs: "0.75rem",
+    sm: "0.875rem",
+    md: "1rem",
+    lg: "1.125rem",
+    xl: "1.25rem",
+    "2xl": "1.5rem",
+    "3xl": "1.875rem",
+    "4xl": "2.25rem",
+  },
+
+  space: {
+    1: "0.25rem",
+    2: "0.5rem",
+    3: "0.75rem",
+    4: "1rem",
+    5: "1.25rem",
+    6: "1.5rem",
+    8: "2rem",
+    10: "2.5rem",
+    12: "3rem",
+    16: "4rem",
+    20: "5rem",
+  },
+
+  radii: {
+    sm: "0.125rem",
+    md: "0.375rem",
+    lg: "0.5rem",
+    xl: "0.75rem",
+    full: "9999px",
+  },
+
+  shadows: {
+    sm: "0 1px 2px 0 rgba(0, 0, 0, 0.05)",
+    md: "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)",
+    lg: "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)",
+  },
+
+  breakpoints: {
+    sm: "640px",
+    md: "768px",
+    lg: "1024px",
+    xl: "1280px",
+    "2xl": "1536px",
+  },
+
+  transitions: {
+    default: "0.15s ease",
+    fast: "0.1s ease",
+    slow: "0.3s ease",
+  },
+};
+
+export const darkTheme = {
+  colors: {
+    background: "#111827",
+    foreground: "#f9fafb",
+    backgroundSecondary: "#1f2937",
+
+    primary: "#f9fafb",
+    primaryForeground: "#111827",
+
+    secondary: "#1f2937",
+    secondaryForeground: "#f9fafb",
+
+    muted: "#1f2937",
+    mutedForeground: "#9ca3af",
+
+    accent: "#1f2937",
+    accentForeground: "#f9fafb",
+
+    destructive: "#ef4444",
+    destructiveForeground: "#f9fafb",
+
+    success: "#10b981",
+    successForeground: "#f9fafb",
+
+    border: "#374151",
+    input: "#374151",
+
+    card: "#1f2937",
+    cardForeground: "#f9fafb",
+  },
+
+  fontSizes: {
+    xs: "0.75rem",
+    sm: "0.875rem",
+    md: "1rem",
+    lg: "1.125rem",
+    xl: "1.25rem",
+    "2xl": "1.5rem",
+    "3xl": "1.875rem",
+    "4xl": "2.25rem",
+  },
+
+  space: {
+    1: "0.25rem",
+    2: "0.5rem",
+    3: "0.75rem",
+    4: "1rem",
+    5: "1.25rem",
+    6: "1.5rem",
+    8: "2rem",
+    10: "2.5rem",
+    12: "3rem",
+    16: "4rem",
+    20: "5rem",
+  },
+
+  radii: {
+    sm: "0.125rem",
+    md: "0.375rem",
+    lg: "0.5rem",
+    xl: "0.75rem",
+    full: "9999px",
+  },
+
+  shadows: {
+    sm: "0 1px 2px 0 rgba(0, 0, 0, 0.25)",
+    md: "0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.26)",
+    lg: "0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.25)",
+  },
+
+  breakpoints: {
+    sm: "640px",
+    md: "768px",
+    lg: "1024px",
+    xl: "1280px",
+    "2xl": "1536px",
+  },
+
+  transitions: {
+    default: "0.15s ease",
+    fast: "0.1s ease",
+    slow: "0.3s ease",
+  },
+};
+
+export type Theme = typeof lightTheme;
+
+declare module "styled-components" {
   export interface DefaultTheme extends Theme {}
 }
 
 export function useIsMobile() {
-  const [isMobile, setIsMobile] = useState(false)
+  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
     const checkIfMobile = () => {
-      setIsMobile(window.innerWidth < 768)
-    }
+      setIsMobile(window.innerWidth < 768);
+    };
 
     // 초기 체크
-    checkIfMobile()
+    checkIfMobile();
 
     // 리사이즈 이벤트 리스너
-    window.addEventListener("resize", checkIfMobile)
+    window.addEventListener("resize", checkIfMobile);
 
     // 클린업 함수
     return () => {
-      window.removeEventListener("resize", checkIfMobile)
-    }
-  }, [])
+      window.removeEventListener("resize", checkIfMobile);
+    };
+  }, []);
 
-  return isMobile
+  return isMobile;
 }
 
-
 // Button 컴포넌트
-type ButtonVariant = "default" | "outline" | "ghost" | "destructive" | "link"
-type ButtonSize = "default" | "sm" | "lg" | "icon"
+type ButtonVariant = "default" | "outline" | "ghost" | "destructive" | "link";
+type ButtonSize = "default" | "sm" | "lg" | "icon";
 
 interface ButtonProps {
-  variant?: ButtonVariant
-  size?: ButtonSize
-  disabled?: boolean
+  variant?: ButtonVariant;
+  size?: ButtonSize;
+  disabled?: boolean;
 }
 
 const getVariantStyles = (variant: ButtonVariant = "default") => {
@@ -221,7 +220,7 @@ const getVariantStyles = (variant: ButtonVariant = "default") => {
         &:hover:not(:disabled) {
           background-color: ${({ theme }) => theme.colors.primary}dd;
         }
-      `
+      `;
     case "outline":
       return css`
         background-color: transparent;
@@ -231,7 +230,7 @@ const getVariantStyles = (variant: ButtonVariant = "default") => {
           background-color: ${({ theme }) => theme.colors.accent};
           color: ${({ theme }) => theme.colors.accentForeground};
         }
-      `
+      `;
     case "ghost":
       return css`
         background-color: transparent;
@@ -239,7 +238,7 @@ const getVariantStyles = (variant: ButtonVariant = "default") => {
           background-color: ${({ theme }) => theme.colors.accent};
           color: ${({ theme }) => theme.colors.accentForeground};
         }
-      `
+      `;
     case "destructive":
       return css`
         background-color: ${({ theme }) => theme.colors.destructive};
@@ -247,7 +246,7 @@ const getVariantStyles = (variant: ButtonVariant = "default") => {
         &:hover:not(:disabled) {
           background-color: ${({ theme }) => theme.colors.destructive}dd;
         }
-      `
+      `;
     case "link":
       return css`
         background-color: transparent;
@@ -256,9 +255,9 @@ const getVariantStyles = (variant: ButtonVariant = "default") => {
         &:hover:not(:disabled) {
           text-decoration: none;
         }
-      `
+      `;
   }
-}
+};
 
 const getSizeStyles = (size: ButtonSize = "default") => {
   switch (size) {
@@ -267,19 +266,19 @@ const getSizeStyles = (size: ButtonSize = "default") => {
         height: 2.5rem;
         padding: 0 1rem;
         font-size: ${({ theme }) => theme.fontSizes.sm};
-      `
+      `;
     case "sm":
       return css`
         height: 2rem;
         padding: 0 0.75rem;
         font-size: ${({ theme }) => theme.fontSizes.xs};
-      `
+      `;
     case "lg":
       return css`
         height: 3rem;
         padding: 0 1.5rem;
         font-size: ${({ theme }) => theme.fontSizes.md};
-      `
+      `;
     case "icon":
       return css`
         height: 2.5rem;
@@ -288,9 +287,9 @@ const getSizeStyles = (size: ButtonSize = "default") => {
         display: inline-flex;
         align-items: center;
         justify-content: center;
-      `
+      `;
   }
-}
+};
 
 export const Button = styled.button<ButtonProps>`
   display: inline-flex;
@@ -299,8 +298,9 @@ export const Button = styled.button<ButtonProps>`
   border-radius: ${({ theme }) => theme.radii.md};
   font-weight: 500;
   transition: all ${({ theme }) => theme.transitions.default};
+  margin: 0.2em;
   cursor: pointer;
-  
+
   ${({ variant }) => getVariantStyles(variant)}
   ${({ size }) => getSizeStyles(size)}
   
@@ -308,12 +308,12 @@ export const Button = styled.button<ButtonProps>`
     opacity: 0.5;
     cursor: not-allowed;
   }
-  
+
   &:focus-visible {
     outline: 2px solid ${({ theme }) => theme.colors.primary};
     outline-offset: 2px;
   }
-`
+`;
 
 // Card 컴포넌트
 export const Card = styled.div`
@@ -322,31 +322,31 @@ export const Card = styled.div`
   border: 1px solid ${({ theme }) => theme.colors.border};
   box-shadow: ${({ theme }) => theme.shadows.sm};
   overflow: hidden;
-`
+`;
 
 export const CardHeader = styled.div`
   display: flex;
   flex-direction: column;
   padding: ${({ theme }) => theme.space[6]};
   padding-bottom: ${({ theme }) => theme.space[4]};
-`
+`;
 
 export const CardTitle = styled.h3`
   font-size: ${({ theme }) => theme.fontSizes.lg};
   font-weight: 600;
   margin-bottom: ${({ theme }) => theme.space[1]};
   color: ${({ theme }) => theme.colors.cardForeground};
-`
+`;
 
 export const CardDescription = styled.p`
   font-size: ${({ theme }) => theme.fontSizes.sm};
   color: ${({ theme }) => theme.colors.mutedForeground};
-`
+`;
 
 export const CardContent = styled.div`
   padding: ${({ theme }) => theme.space[6]};
   padding-top: 0;
-`
+`;
 
 export const CardFooter = styled.div`
   display: flex;
@@ -354,13 +354,18 @@ export const CardFooter = styled.div`
   padding: ${({ theme }) => theme.space[6]};
   padding-top: 0;
   gap: ${({ theme }) => theme.space[2]};
-`
+`;
 
 // Badge 컴포넌트
-type BadgeVariant = "default" | "secondary" | "outline" | "destructive" | "success"
+type BadgeVariant =
+  | "default"
+  | "secondary"
+  | "outline"
+  | "destructive"
+  | "success";
 
 interface BadgeProps {
-  variant?: BadgeVariant
+  variant?: BadgeVariant;
 }
 
 const getVariantStylesBadge = (variant: BadgeVariant = "default") => {
@@ -369,30 +374,30 @@ const getVariantStylesBadge = (variant: BadgeVariant = "default") => {
       return css`
         background-color: ${({ theme }) => theme.colors.primary};
         color: ${({ theme }) => theme.colors.primaryForeground};
-      `
+      `;
     case "secondary":
       return css`
         background-color: ${({ theme }) => theme.colors.secondary};
         color: ${({ theme }) => theme.colors.secondaryForeground};
-      `
+      `;
     case "outline":
       return css`
         background-color: transparent;
         border: 1px solid ${({ theme }) => theme.colors.border};
         color: ${({ theme }) => theme.colors.foreground};
-      `
+      `;
     case "destructive":
       return css`
         background-color: ${({ theme }) => theme.colors.destructive};
         color: ${({ theme }) => theme.colors.destructiveForeground};
-      `
+      `;
     case "success":
       return css`
         background-color: ${({ theme }) => theme.colors.success};
         color: ${({ theme }) => theme.colors.successForeground};
-      `
+      `;
   }
-}
+};
 
 export const Badge = styled.span<BadgeProps>`
   display: inline-flex;
@@ -403,9 +408,9 @@ export const Badge = styled.span<BadgeProps>`
   padding: 0 ${({ theme }) => theme.space[2]};
   height: 1.25rem;
   white-space: nowrap;
-  
+
   ${({ variant }) => getVariantStylesBadge(variant)}
-`
+`;
 
 // Avatar 컴포넌트
 export const Avatar = styled.div`
@@ -418,13 +423,13 @@ export const Avatar = styled.div`
   width: 2.5rem;
   height: 2.5rem;
   background-color: ${({ theme }) => theme.colors.muted};
-`
+`;
 
 export const AvatarImage = styled.img`
   width: 100%;
   height: 100%;
   object-fit: cover;
-`
+`;
 
 export const AvatarFallback = styled.div`
   width: 100%;
@@ -436,11 +441,11 @@ export const AvatarFallback = styled.div`
   font-weight: 500;
   background-color: ${({ theme }) => theme.colors.primary};
   color: ${({ theme }) => theme.colors.primaryForeground};
-`
+`;
 
 // Progress 컴포넌트
 interface ProgressProps {
-  value?: number
+  value?: number;
 }
 
 export const ProgressContainer = styled.div`
@@ -450,48 +455,48 @@ export const ProgressContainer = styled.div`
   border-radius: ${({ theme }) => theme.radii.full};
   height: 0.5rem;
   width: 100%;
-`
+`;
 
 export const ProgressIndicator = styled.div<ProgressProps>`
   background-color: ${({ theme }) => theme.colors.primary};
   height: 100%;
   transition: width 0.2s ease;
   width: ${({ value }) => `${value || 0}%`};
-`
+`;
 
 export const Progress: React.FC<ProgressProps> = ({ value = 0 }) => {
   return (
     <ProgressContainer>
       <ProgressIndicator value={value} />
     </ProgressContainer>
-  )
-}
+  );
+};
 
 // Table 컴포넌트
 export const Table = styled.table`
   width: 100%;
   border-collapse: collapse;
   caption-side: bottom;
-`
+`;
 
 export const TableHeader = styled.thead`
   border-bottom: 1px solid ${({ theme }) => theme.colors.border};
-`
+`;
 
 export const TableBody = styled.tbody`
   & > tr:last-child {
     border-bottom: none;
   }
-`
+`;
 
 export const TableRow = styled.tr`
   border-bottom: 1px solid ${({ theme }) => theme.colors.border};
   transition: background-color ${({ theme }) => theme.transitions.fast};
-  
+
   &:hover {
     background-color: ${({ theme }) => theme.colors.accent}50;
   }
-`
+`;
 
 export const TableHead = styled.th`
   text-align: left;
@@ -499,13 +504,13 @@ export const TableHead = styled.th`
   font-size: ${({ theme }) => theme.fontSizes.sm};
   font-weight: 500;
   color: ${({ theme }) => theme.colors.mutedForeground};
-`
+`;
 
 export const TableCell = styled.td`
   padding: ${({ theme }) => theme.space[4]};
   font-size: ${({ theme }) => theme.fontSizes.sm};
   vertical-align: middle;
-`
+`;
 
 // Input 컴포넌트
 export const Input = styled.input`
@@ -517,22 +522,22 @@ export const Input = styled.input`
   background-color: transparent;
   padding: 0 ${({ theme }) => theme.space[3]};
   font-size: ${({ theme }) => theme.fontSizes.sm};
-  
+
   &:focus {
     outline: none;
     border-color: ${({ theme }) => theme.colors.primary};
     box-shadow: 0 0 0 1px ${({ theme }) => theme.colors.primary};
   }
-  
+
   &::placeholder {
     color: ${({ theme }) => theme.colors.mutedForeground};
   }
-  
+
   &:disabled {
     opacity: 0.5;
     cursor: not-allowed;
   }
-`
+`;
 
 // Textarea 컴포넌트
 export const Textarea = styled.textarea`
@@ -545,54 +550,58 @@ export const Textarea = styled.textarea`
   font-size: ${({ theme }) => theme.fontSizes.sm};
   min-height: 5rem;
   resize: vertical;
-  
+
   &:focus {
     outline: none;
     border-color: ${({ theme }) => theme.colors.primary};
     box-shadow: 0 0 0 1px ${({ theme }) => theme.colors.primary};
   }
-  
+
   &::placeholder {
     color: ${({ theme }) => theme.colors.mutedForeground};
   }
-  
+
   &:disabled {
     opacity: 0.5;
     cursor: not-allowed;
   }
-`
+`;
 
 // Label 컴포넌트
 export const Label = styled.label`
   font-size: ${({ theme }) => theme.fontSizes.sm};
   font-weight: 500;
-`
+`;
 
 // Sidebar 컴포넌트
 // Context
 interface SidebarContextValue {
-  open: boolean
-  setOpen: React.Dispatch<React.SetStateAction<boolean>>
-  collapsible: boolean
-  collapsibleState: "icon" | "expanded"
-  setCollapsibleState: React.Dispatch<React.SetStateAction<"icon" | "expanded">>
+  open: boolean;
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  collapsible: boolean;
+  collapsibleState: "icon" | "expanded";
+  setCollapsibleState: React.Dispatch<
+    React.SetStateAction<"icon" | "expanded">
+  >;
 }
 
-const SidebarContext = React.createContext<SidebarContextValue | undefined>(undefined)
+const SidebarContext = React.createContext<SidebarContextValue | undefined>(
+  undefined
+);
 
 function useSidebarContext() {
-  const context = React.useContext(SidebarContext)
+  const context = React.useContext(SidebarContext);
   if (!context) {
-    throw new Error("useSidebarContext must be used within a SidebarProvider")
+    throw new Error("useSidebarContext must be used within a SidebarProvider");
   }
-  return context
+  return context;
 }
 
 interface SidebarProviderProps {
-  children: React.ReactNode
-  defaultOpen?: boolean
-  defaultCollapsibleState?: "icon" | "expanded"
-  collapsible?: boolean
+  children: React.ReactNode;
+  defaultOpen?: boolean;
+  defaultCollapsibleState?: "icon" | "expanded";
+  collapsible?: boolean;
 }
 
 export const SidebarProvider: React.FC<SidebarProviderProps> = ({
@@ -601,8 +610,10 @@ export const SidebarProvider: React.FC<SidebarProviderProps> = ({
   defaultCollapsibleState = "expanded",
   collapsible = true,
 }) => {
-  const [open, setOpen] = React.useState(defaultOpen)
-  const [collapsibleState, setCollapsibleState] = React.useState<"icon" | "expanded">(defaultCollapsibleState)
+  const [open, setOpen] = React.useState(defaultOpen);
+  const [collapsibleState, setCollapsibleState] = React.useState<
+    "icon" | "expanded"
+  >(defaultCollapsibleState);
 
   return (
     <SidebarContext.Provider
@@ -616,12 +627,12 @@ export const SidebarProvider: React.FC<SidebarProviderProps> = ({
     >
       {children}
     </SidebarContext.Provider>
-  )
-}
+  );
+};
 
 // Styled Components
 interface SidebarStyledProps {
-  $collapsibleState?: "icon" | "expanded"
+  $collapsibleState?: "icon" | "expanded";
 }
 
 export const SidebarContainer = styled.div<SidebarStyledProps>`
@@ -632,9 +643,10 @@ export const SidebarContainer = styled.div<SidebarStyledProps>`
   overflow: hidden;
   background-color: ${({ theme }) => theme.colors.background};
   border-right: 1px solid ${({ theme }) => theme.colors.border};
-  width: ${({ $collapsibleState }) => ($collapsibleState === "icon" ? "4rem" : "16rem")};
+  width: ${({ $collapsibleState }) =>
+    $collapsibleState === "icon" ? "4rem" : "16rem"};
   transition: width ${({ theme }) => theme.transitions.default};
-`
+`;
 
 export const SidebarHeader = styled.div`
   display: flex;
@@ -642,34 +654,34 @@ export const SidebarHeader = styled.div`
   align-items: center;
   border-bottom: 1px solid ${({ theme }) => theme.colors.border};
   padding: 0 ${({ theme }) => theme.space[6]};
-`
+`;
 
 export const SidebarContent = styled.div`
   flex: 1;
   overflow: auto;
-`
+`;
 
 export const SidebarFooter = styled.div`
   border-top: 1px solid ${({ theme }) => theme.colors.border};
   padding: ${({ theme }) => theme.space[4]};
-`
+`;
 
 export const SidebarMenu = styled.div`
   display: flex;
   flex-direction: column;
   gap: ${({ theme }) => theme.space[1]};
   padding: ${({ theme }) => theme.space[2]};
-`
+`;
 
-export const SidebarMenuItem = styled.div``
+export const SidebarMenuItem = styled.div``;
 
 interface SidebarMenuButtonProps {
-  isActive?: boolean
+  isActive?: boolean;
 }
 
 export const SidebarMenuButtonContainer = styled.div`
   position: relative;
-`
+`;
 
 export const SidebarMenuButtonStyled = styled.button<SidebarMenuButtonProps>`
   display: flex;
@@ -681,14 +693,16 @@ export const SidebarMenuButtonStyled = styled.button<SidebarMenuButtonProps>`
   font-size: ${({ theme }) => theme.fontSizes.sm};
   font-weight: 500;
   transition: all ${({ theme }) => theme.transitions.default};
-  color: ${({ isActive, theme }) => (isActive ? theme.colors.accentForeground : theme.colors.mutedForeground)};
-  background-color: ${({ isActive, theme }) => (isActive ? theme.colors.accent : "transparent")};
-  
+  color: ${({ isActive, theme }) =>
+    isActive ? theme.colors.accentForeground : theme.colors.mutedForeground};
+  background-color: ${({ isActive, theme }) =>
+    isActive ? theme.colors.accent : "transparent"};
+
   &:hover {
     background-color: ${({ theme }) => theme.colors.accent};
     color: ${({ theme }) => theme.colors.accentForeground};
   }
-`
+`;
 
 export const SidebarTooltip = styled.div`
   position: absolute;
@@ -701,11 +715,11 @@ export const SidebarTooltip = styled.div`
   padding: ${({ theme }) => theme.space[1]} ${({ theme }) => theme.space[2]};
   font-size: ${({ theme }) => theme.fontSizes.xs};
   color: ${({ theme }) => theme.colors.accentForeground};
-  
+
   .sidebar-icon-mode &:hover {
     display: block;
   }
-`
+`;
 
 export const SidebarTriggerButton = styled.button`
   display: inline-flex;
@@ -716,40 +730,43 @@ export const SidebarTriggerButton = styled.button`
   border-radius: ${({ theme }) => theme.radii.md};
   color: ${({ theme }) => theme.colors.mutedForeground};
   transition: all ${({ theme }) => theme.transitions.default};
-  
+
   &:hover {
     background-color: ${({ theme }) => theme.colors.accent};
     color: ${({ theme }) => theme.colors.accentForeground};
   }
-`
+`;
 
 // Component Implementations
 interface SidebarProps extends React.HTMLAttributes<HTMLDivElement> {
-  variant?: "default" | "bordered"
+  variant?: "default" | "bordered";
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({ children, ...props }) => {
-  const { open, collapsible, collapsibleState } = useSidebarContext()
+  const { open, collapsible, collapsibleState } = useSidebarContext();
 
   if (!open) {
-    return null
+    return null;
   }
 
   return (
     <SidebarContainer
       $collapsibleState={collapsible ? collapsibleState : undefined}
-      className={collapsible && collapsibleState === "icon" ? "sidebar-icon-mode" : ""}
+      className={
+        collapsible && collapsibleState === "icon" ? "sidebar-icon-mode" : ""
+      }
       {...props}
     >
       {children}
     </SidebarContainer>
-  )
-}
+  );
+};
 
-interface SidebarMenuButtonCompProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  isActive?: boolean
-  tooltip?: string
-  asChild?: boolean
+interface SidebarMenuButtonCompProps
+  extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  isActive?: boolean;
+  tooltip?: string;
+  asChild?: boolean;
 }
 
 export const SidebarMenuButton: React.FC<SidebarMenuButtonCompProps> = ({
@@ -768,7 +785,7 @@ export const SidebarMenuButton: React.FC<SidebarMenuButtonCompProps> = ({
         })}
         {tooltip && <SidebarTooltip>{tooltip}</SidebarTooltip>}
       </SidebarMenuButtonContainer>
-    )
+    );
   }
 
   return (
@@ -778,11 +795,11 @@ export const SidebarMenuButton: React.FC<SidebarMenuButtonCompProps> = ({
       </SidebarMenuButtonStyled>
       {tooltip && <SidebarTooltip>{tooltip}</SidebarTooltip>}
     </SidebarMenuButtonContainer>
-  )
-}
+  );
+};
 
 export const SidebarTrigger: React.FC = () => {
-  const { setOpen } = useSidebarContext()
+  const { setOpen } = useSidebarContext();
 
   return (
     <SidebarTriggerButton onClick={() => setOpen((prev) => !prev)}>
@@ -804,21 +821,21 @@ export const SidebarTrigger: React.FC = () => {
       </svg>
       <span className="sr-only">Toggle Sidebar</span>
     </SidebarTriggerButton>
-  )
-}
+  );
+};
 
 // 페이지 레이아웃
 export const PageContainer = styled.div`
   display: flex;
   min-height: 100vh;
   background-color: ${({ theme }) => theme.colors.backgroundSecondary};
-`
+`;
 
 export const MainContent = styled.div`
   display: flex;
   flex-direction: column;
   flex: 1;
-`
+`;
 
 export const Header = styled.header`
   display: flex;
@@ -828,7 +845,7 @@ export const Header = styled.header`
   border-bottom: 1px solid ${({ theme }) => theme.colors.border};
   background-color: ${({ theme }) => theme.colors.background};
   padding: 0 ${({ theme }) => theme.space[6]};
-`
+`;
 
 export const SearchContainer = styled.div`
   display: flex;
@@ -841,19 +858,19 @@ export const SearchContainer = styled.div`
   @media (min-width: ${({ theme }) => theme.breakpoints.lg}) {
     width: 24rem;
   }
-`
+`;
 
 export const Main = styled.main`
   flex: 1;
   overflow: auto;
   padding: ${({ theme }) => theme.space[6]};
-`
+`;
 
 export const ContentContainer = styled.div`
   display: flex;
   flex-direction: column;
   gap: ${({ theme }) => theme.space[6]};
-`
+`;
 
 export const PageHeader = styled.div`
   display: flex;
@@ -864,45 +881,47 @@ export const PageHeader = styled.div`
     align-items: center;
     justify-content: space-between;
   }
-`
+`;
 
 export const PageTitle = styled.h1`
   font-size: ${({ theme }) => theme.fontSizes["2xl"]};
   font-weight: 700;
   letter-spacing: -0.025em;
-`
+`;
 
 export const ActionButtons = styled.div`
   display: flex;
   align-items: center;
   gap: ${({ theme }) => theme.space[2]};
-`
+`;
 
 export const TabsContainer = styled.div`
   display: flex;
   flex-direction: column;
   gap: ${({ theme }) => theme.space[2]};
-`
+`;
 
 export const TabsList = styled.div`
   display: flex;
   border-bottom: 1px solid ${({ theme }) => theme.colors.border};
-`
+`;
 
 export const Tab = styled.button<{ active?: boolean }>`
   padding: ${({ theme }) => theme.space[2]} ${({ theme }) => theme.space[4]};
   font-size: ${({ theme }) => theme.fontSizes.sm};
   font-weight: 500;
-  border-bottom: 2px solid ${({ active, theme }) => (active ? theme.colors.primary : "transparent")};
-  color: ${({ active, theme }) => (active ? theme.colors.primary : theme.colors.mutedForeground)};
+  border-bottom: 2px solid
+    ${({ active, theme }) => (active ? theme.colors.primary : "transparent")};
+  color: ${({ active, theme }) =>
+    active ? theme.colors.primary : theme.colors.mutedForeground};
   &:hover {
     color: ${({ theme }) => theme.colors.foreground};
   }
-`
+`;
 
 export const TabContent = styled.div`
   margin-top: ${({ theme }) => theme.space[4]};
-`
+`;
 
 export const GridContainer = styled.div`
   display: grid;
@@ -913,53 +932,53 @@ export const GridContainer = styled.div`
   @media (min-width: ${({ theme }) => theme.breakpoints.lg}) {
     grid-template-columns: repeat(3, 1fr);
   }
-`
+`;
 
 export const CategoryItem = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-`
+`;
 
 export const StatusItem = styled.div`
   display: flex;
   flex-direction: column;
   gap: ${({ theme }) => theme.space[2]};
-`
+`;
 
 export const StatusHeader = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-`
+`;
 
 export const TeamMemberItem = styled.div`
   display: flex;
   align-items: center;
   gap: ${({ theme }) => theme.space[3]};
-`
+`;
 
 export const TeamMemberInfo = styled.div`
   flex: 1;
   min-width: 0;
-`
+`;
 
 export const TeamMemberName = styled.p`
   font-size: ${({ theme }) => theme.fontSizes.sm};
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-`
+`;
 
 export const TeamMemberRole = styled.p`
   font-size: ${({ theme }) => theme.fontSizes.xs};
   color: ${({ theme }) => theme.colors.mutedForeground};
-`
+`;
 
 export const AvatarGroup = styled.div`
   display: flex;
   margin-left: -0.5rem;
-`
+`;
 
 // Dialog
 export const DialogOverlay = styled.div`
@@ -970,7 +989,7 @@ export const DialogOverlay = styled.div`
   align-items: center;
   justify-content: center;
   z-index: 50;
-`
+`;
 
 export const DialogContent = styled.div`
   background-color: ${({ theme }) => theme.colors.background};
@@ -984,47 +1003,52 @@ export const DialogContent = styled.div`
   @media (min-width: ${({ theme }) => theme.breakpoints.sm}) {
     max-width: 32.5rem;
   }
-`
+`;
 
 export const DialogHeader = styled.div`
   margin-bottom: ${({ theme }) => theme.space[4]};
-`
+`;
 
 export const DialogTitle = styled.h2`
   font-size: ${({ theme }) => theme.fontSizes.lg};
   font-weight: 600;
   margin-bottom: ${({ theme }) => theme.space[1]};
-`
+`;
 
 export const DialogDescription = styled.p`
   font-size: ${({ theme }) => theme.fontSizes.sm};
   color: ${({ theme }) => theme.colors.mutedForeground};
-`
+`;
 
 export const FormGrid = styled.div`
   display: grid;
   gap: ${({ theme }) => theme.space[4]};
   padding: ${({ theme }) => theme.space[4]} 0;
-`
+`;
 
 export const FormGroup = styled.div`
   display: grid;
   gap: ${({ theme }) => theme.space[2]};
-`
+`;
 
 export const FormRow = styled.div`
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: ${({ theme }) => theme.space[4]};
-`
+`;
 
 // Dropdown
 export const DropdownContainer = styled.div`
   position: relative;
-`
+`;
 
-export const DropdownContent = styled.div<{ $fixedTop?: number; $fixedLeft?: number; $fixedWidth?: number }>`
-  position: ${({ $fixedTop }) => ($fixedTop !== undefined ? "fixed" : "absolute")};
+export const DropdownContent = styled.div<{
+  $fixedTop?: number;
+  $fixedLeft?: number;
+  $fixedWidth?: number;
+}>`
+  position: ${({ $fixedTop }) =>
+    $fixedTop !== undefined ? "fixed" : "absolute"};
   right: 0;
   z-index: 10;
   min-width: 8rem;
@@ -1042,20 +1066,20 @@ export const DropdownContent = styled.div<{ $fixedTop?: number; $fixedLeft?: num
     right: auto;
   `
       : ""}
-`
+`;
 
 export const DropdownLabel = styled.div`
   padding: ${({ theme }) => theme.space[2]} ${({ theme }) => theme.space[3]};
   font-size: ${({ theme }) => theme.fontSizes.sm};
   font-weight: 500;
   color: ${({ theme }) => theme.colors.mutedForeground};
-`
+`;
 
 export const DropdownSeparator = styled.div`
   height: 1px;
   background-color: ${({ theme }) => theme.colors.border};
   margin: ${({ theme }) => theme.space[1]} 0;
-`
+`;
 
 export const DropdownItem = styled.button`
   display: flex;
@@ -1067,19 +1091,19 @@ export const DropdownItem = styled.button`
   &:hover {
     background-color: ${({ theme }) => theme.colors.accent};
   }
-`
+`;
 
 export const DropdownItemDestructive = styled(DropdownItem)`
   color: ${({ theme }) => theme.colors.destructive};
   &:hover {
     background-color: ${({ theme }) => theme.colors.destructive}10;
   }
-`
+`;
 
 // Select
 export const SelectContainer = styled.div`
   position: relative;
-`
+`;
 
 export const SelectTriggerContainer = styled.button`
   display: flex;
@@ -1097,13 +1121,13 @@ export const SelectTriggerContainer = styled.button`
     border-color: ${({ theme }) => theme.colors.primary};
     box-shadow: 0 0 0 1px ${({ theme }) => theme.colors.primary};
   }
-`
+`;
 
 export const SelectValue = styled.span`
   display: flex;
   align-items: center;
   gap: ${({ theme }) => theme.space[2]};
-`
+`;
 
 export const SelectContent = styled.div`
   position: absolute;
@@ -1117,7 +1141,7 @@ export const SelectContent = styled.div`
   background-color: ${({ theme }) => theme.colors.background};
   box-shadow: ${({ theme }) => theme.shadows.md};
   margin-top: ${({ theme }) => theme.space[1]};
-`
+`;
 
 export const SelectItem = styled.button`
   display: flex;
@@ -1129,13 +1153,13 @@ export const SelectItem = styled.button`
   &:hover {
     background-color: ${({ theme }) => theme.colors.accent};
   }
-`
+`;
 
 export const DialogFooter = styled.div`
   display: flex;
   justify-content: flex-end;
   margin-top: ${({ theme }) => theme.space[4]};
-`
+`;
 
 // Responsive Table
 export const ResponsiveTableHead = styled(TableHead)`
@@ -1143,25 +1167,30 @@ export const ResponsiveTableHead = styled(TableHead)`
   @media (min-width: 768px) {
     display: table-cell;
   }
-`
+`;
 
 export const ResponsiveTableHeadLg = styled(TableHead)`
   display: none;
   @media (min-width: 1024px) {
     display: table-cell;
   }
-`
+`;
 
 export const ResponsiveTableCell = styled(TableCell)`
   display: none;
   @media (min-width: 768px) {
     display: table-cell;
   }
-`
+`;
 
 export const ResponsiveTableCellLg = styled(TableCell)`
   display: none;
   @media (min-width: 1024px) {
     display: table-cell;
   }
-`
+`;
+
+export const EditModal = styled.div`
+  width: 80vw;
+  height: fit-content;
+`;
