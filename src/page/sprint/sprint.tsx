@@ -59,7 +59,8 @@ export default function SprintsPage() {
   const [showNewSprintDialog, setShowNewSprintDialog] = useState(false);
   const [currentSprintIndex, setCurrentSprintIndex] = useState(0); // 추가: 현재 sprint 인덱스
 
-  const { projects: apiProjects } = useGetMyProjects();
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
+  const { projects: apiProjects } = useGetMyProjects(refreshTrigger);
   const projects = [
     { id: 0, name: "All" },
     ...apiProjects.map((p, index) => ({
@@ -344,18 +345,18 @@ export default function SprintsPage() {
               )}
             </Select>
           </ProjectSelectArea>
-          <div>
+          {/* <div>
             <Button size="sm" onClick={() => setShowNewSprintDialog(true)}>
               <Plus size={16} style={{ marginRight: 6 }} />
               New Sprint
             </Button>
-          </div>
+          </div> */}
         </Header>
         <Main>
           <ContentContainer>
             <PageHeader>
               <PageTitle>Sprints</PageTitle>
-              <ActionButtons>
+              {/* <ActionButtons>
                 <Button
                   variant="outline"
                   size="sm"
@@ -383,7 +384,7 @@ export default function SprintsPage() {
                   Next
                   <ChevronRight size={16} style={{ marginLeft: 4 }} />
                 </Button>
-              </ActionButtons>
+              </ActionButtons> */}
             </PageHeader>
 
             {/* 카드 4분할 */}
@@ -419,10 +420,37 @@ export default function SprintsPage() {
                 </CardHeader>
                 <CardContent>
                   <div style={{ fontSize: 22, fontWeight: 700 }}>
-                    {activeSprint?.progress || 0}%
+                    {(() => {
+                      const doneCount = activeSprint?.issues?.DONE?.length || 0;
+                      const totalCount = activeSprint?.issues
+                        ? Object.values(activeSprint.issues).reduce(
+                            (sum, arr) => sum + arr.length,
+                            0
+                          )
+                        : 0;
+                      const progress =
+                        totalCount > 0
+                          ? Math.round((doneCount / totalCount) * 100)
+                          : 0;
+                      return progress;
+                    })()}
+                    %
                   </div>
                   <Progress
-                    value={activeSprint?.progress || 0}
+                    value={(() => {
+                      const doneCount = activeSprint?.issues?.DONE?.length || 0;
+                      const totalCount = activeSprint?.issues
+                        ? Object.values(activeSprint.issues).reduce(
+                            (sum, arr) => sum + arr.length,
+                            0
+                          )
+                        : 0;
+                      const progress =
+                        totalCount > 0
+                          ? Math.round((doneCount / totalCount) * 100)
+                          : 0;
+                      return progress;
+                    })()}
                     style={{ marginTop: 8, height: 8 }}
                   />
                 </CardContent>
@@ -704,12 +732,16 @@ export default function SprintsPage() {
                     >
                       {["To Do", "In Progress", "Review", "Done"].map(
                         (column, index) => {
-                          const issueKey = column
-                            .toLowerCase()
-                            .replace(
-                              " ",
-                              ""
-                            ) as keyof typeof activeSprint.issues;
+                          const issueStatusMap = {
+                            "To Do": "TODO",
+                            "In Progress": "PROCESSING",
+                            Review: "REVIEW",
+                            Done: "DONE",
+                          } as const;
+                          const issueKey =
+                            issueStatusMap[
+                              column as keyof typeof issueStatusMap
+                            ];
                           const issues = activeSprint?.issues?.[issueKey] || [];
 
                           return (

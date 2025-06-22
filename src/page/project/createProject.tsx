@@ -29,6 +29,7 @@ const CreateProjectForm: React.FC<CreateProjectFormProps> = ({ onClose }) => {
   const [projectName, setProjectName] = useState("");
   const [priority, setPriority] = useState("Medium");
   const [category, setCategory] = useState("Web Development");
+  const [Description, setDescription] = useState("");
   const [showPrioritySelect, setShowPrioritySelect] = useState(false);
   const [showCategorySelect, setShowCategorySelect] = useState(false);
 
@@ -55,6 +56,7 @@ const CreateProjectForm: React.FC<CreateProjectFormProps> = ({ onClose }) => {
           <Textarea
             id="project-description"
             placeholder="Enter project description"
+            onChange={(e) => setDescription(e.target.value)}
           />
         </FormGroup>
         <FormRow>
@@ -124,13 +126,18 @@ const CreateProjectForm: React.FC<CreateProjectFormProps> = ({ onClose }) => {
         <Button
           type="button"
           onClick={async () => {
-            const today = new Date().toISOString().split("T")[0];
-            console.log(today);
             try {
-              await createProjectAsPM({
+              const payload = {
                 P_NAME: projectName,
                 P_STATUS: "IN_PROGRESS",
-              });
+                DISCRIPTION: Description || "",
+                PRIORITY: priority,
+                CATEGORY:
+                  category && category.trim() !== ""
+                    ? category
+                    : "Uncategorized",
+              };
+              await createProjectAsPM(payload);
               onClose();
             } catch (error) {
               console.error("Failed to create project:", error);

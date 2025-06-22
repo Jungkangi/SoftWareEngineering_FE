@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { ChevronDown, Filter, Plus, Search } from "lucide-react";
 import {
   Avatar,
@@ -57,15 +57,18 @@ import {
 } from "./projectStyled";
 import Modal from "../../components/modal/modal";
 import CreateProjectForm from "./createProject";
+import ProjectDetail from "./projectDetail";
 
 // api import
 import { useGetMyProjects } from "../../hooks/project/getProjectData";
+import { putProjectData } from "../../hooks/project/putProjectData";
 
 // Main Component
 export default function ProjectsPage() {
   // const isMobile = useIsMobile()
   const [selectedTab, setSelectedTab] = useState("all");
   const [showNewProjectDialog, setShowNewProjectDialog] = useState(false);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [showFilterDropdown, setShowFilterDropdown] = useState(false);
   const [showActionDropdown, setShowActionDropdown] = useState<number | null>(
     null
@@ -74,6 +77,8 @@ export default function ProjectsPage() {
     type: null | "view" | "edit" | "team" | "delete";
     project: any | null;
   }>({ type: null, project: null });
+  // 상태 드롭다운 오픈을 위한 상태
+  const [openDropdownId, setOpenDropdownId] = useState<number | null>(null);
 
   // 삭제 확인 입력 상태 추가
   const [deleteConfirmInput, setDeleteConfirmInput] = useState("");
@@ -96,13 +101,24 @@ export default function ProjectsPage() {
     { name: "Ivan Jones", initials: "IJ", projects: 2, tasks: 7 },
   ];
 
-  const { projects: apiProjects, loading, error } = useGetMyProjects();
+  const {
+    projects: apiProjects,
+    loading,
+    error,
+  } = useGetMyProjects(refreshTrigger);
+
+  useEffect(() => {
+    if (!showNewProjectDialog) {
+      setRefreshTrigger((prev) => prev + 1);
+    }
+  }, [showNewProjectDialog]);
 
   const projects = Array.isArray(apiProjects)
     ? apiProjects.map((p, index) => ({
         id: index,
+        P_ID: p.P_ID,
         name: p.P_NAME,
-        description: "",
+        descript: p.DISCRIPTION || "",
         progress: 0,
         team: [],
         issues: { total: 0, completed: 0 },
@@ -114,7 +130,8 @@ export default function ProjectsPage() {
             : p.P_STATUS === "COMPLETED"
             ? "Completed"
             : "Planning",
-        category: "Uncategorized",
+        category:
+          p.CATEGORY && p.CATEGORY.trim() !== "" ? p.CATEGORY : "Uncategorized",
       }))
     : [];
 
@@ -221,7 +238,12 @@ export default function ProjectsPage() {
                         {filteredProjects.map((project) => (
                           <TableRow key={project.id}>
                             <TableCell>
-                              <div style={{ fontWeight: "500" }}>
+                              <div
+                                style={{ fontWeight: "500", cursor: "pointer" }}
+                                onClick={() => {
+                                  setModalState({ type: "view", project });
+                                }}
+                              >
                                 {project.name}
                               </div>
                               <div
@@ -234,17 +256,76 @@ export default function ProjectsPage() {
                               </div>
                             </TableCell>
                             <ResponsiveTableCell>
-                              <Badge
-                                variant={
-                                  project.status === "Completed"
-                                    ? "success"
-                                    : project.status === "Planning"
-                                    ? "secondary"
-                                    : "default"
-                                }
-                              >
-                                {project.status}
-                              </Badge>
+                              <DropdownContainer>
+                                <Badge
+                                  role="button"
+                                  tabIndex={0}
+                                  onClick={() =>
+                                    setOpenDropdownId((prev) =>
+                                      prev === project.P_ID
+                                        ? null
+                                        : project.P_ID
+                                    )
+                                  }
+                                  variant={
+                                    project.status === "Completed"
+                                      ? "success"
+                                      : project.status === "Planning"
+                                      ? "secondary"
+                                      : "default"
+                                  }
+                                  style={{ cursor: "pointer" }}
+                                >
+                                  {project.status}
+                                </Badge>
+                                {openDropdownId === project.P_ID && (
+                                  <DropdownContent>
+                                    {[
+                                      "Planning",
+                                      "In Progress",
+                                      "Completed",
+                                    ].map((option) => (
+                                      <div
+                                        key={option}
+                                        onClick={async () => {
+                                          if (option === project.status) {
+                                            setOpenDropdownId(null);
+                                            return;
+                                          }
+
+                                          try {
+                                            await putProjectData(project.P_ID, {
+                                              P_NAME: project.name,
+                                              DISCRIPTION: project.descript,
+                                              PRIORITY:
+                                                project.priority.toUpperCase(),
+                                              CATEGORY: project.category,
+                                              P_STATUS:
+                                                option === "In Progress"
+                                                  ? "IN_PROGRESS"
+                                                  : option.toUpperCase(),
+                                            });
+                                            setRefreshTrigger(
+                                              (prev) => prev + 1
+                                            );
+                                          } catch (err) {
+                                            console.error(err);
+                                          } finally {
+                                            setOpenDropdownId(null);
+                                          }
+                                        }}
+                                        style={{
+                                          padding: "6px 12px",
+                                          cursor: "pointer",
+                                          whiteSpace: "nowrap",
+                                        }}
+                                      >
+                                        {option}
+                                      </div>
+                                    ))}
+                                  </DropdownContent>
+                                )}
+                              </DropdownContainer>
                             </ResponsiveTableCell>
                             <ResponsiveTableCell>
                               <div
@@ -339,18 +420,6 @@ export default function ProjectsPage() {
                                     $fixedLeft={dropdownPosition?.left}
                                     $fixedWidth={dropdownPosition?.width}
                                   >
-                                    <DropdownItem
-                                      onClick={() => {
-                                        setModalState({
-                                          type: "view",
-                                          project,
-                                        });
-                                        setShowActionDropdown(null);
-                                        setDropdownPosition(null);
-                                      }}
-                                    >
-                                      View Project
-                                    </DropdownItem>
                                     <DropdownItem
                                       onClick={() => {
                                         setModalState({
@@ -573,37 +642,21 @@ export default function ProjectsPage() {
         }}
       >
         {modalState.type === "view" && modalState.project && (
-          <div>
-            <h2 style={{ marginBottom: 8 }}>Project Details</h2>
-            <div>
-              <b>Name:</b> {modalState.project.name}
-            </div>
-            <div>
-              <b>Description:</b> {modalState.project.description}
-            </div>
-            <div>
-              <b>Status:</b> {modalState.project.status}
-            </div>
-            <div>
-              <b>Progress:</b> {modalState.project.progress}%
-            </div>
-            <div>
-              <b>Due Date:</b> {modalState.project.dueDate}
-            </div>
-            <div>
-              <b>Priority:</b> {modalState.project.priority}
-            </div>
-            <div>
-              <b>Category:</b> {modalState.project.category}
-            </div>
-            <div style={{ marginTop: 16 }}>
-              <Button
-                onClick={() => setModalState({ type: null, project: null })}
-              >
-                Close
-              </Button>
-            </div>
-          </div>
+          <ProjectDetail
+            projectId={modalState.project.P_ID}
+            projectData={{
+              P_NAME: modalState.project.name,
+              STAT: modalState.project.status,
+              DUE_DATE: modalState.project.dueDate,
+              DISCRIPTION: modalState.project.descript,
+              PRIORITY: modalState.project.priority,
+              CATEGORY: modalState.project.category,
+            }}
+            onUpdate={() => {
+              setModalState({ type: null, project: null });
+              setRefreshTrigger((prev) => prev + 1);
+            }}
+          />
         )}
         {modalState.type === "edit" && modalState.project && (
           <EditModal>
