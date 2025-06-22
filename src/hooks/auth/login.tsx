@@ -1,5 +1,5 @@
 import { useState } from "react";
-import api from "../lib/axios";
+import api from "../axios";
 
 interface LoginResponse {
   access_token: string;

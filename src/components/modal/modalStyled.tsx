@@ -6,7 +6,7 @@ export const ModalOverlay = styled.div`
   left: 0;
   width: 100vw;
   height: 100vh;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.2);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -17,8 +17,8 @@ export const ModalContent = styled.div`
   background: white;
   padding: 20px;
   border-radius: 8px;
-  width: 1000px;
-  height: 80%;
+  width: fit-content;
+  height: fit-content;
   max-width: 90%;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   position: relative;

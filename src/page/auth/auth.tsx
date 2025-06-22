@@ -16,10 +16,10 @@ import {
   TeamAvatar,
 } from "../intro/introStyled";
 import { LayoutDashboard, ArrowLeft } from "lucide-react";
-import { useLogin } from "../../hooks/login";
-import { useCreateUser } from "../../hooks/createUser";
+import { useLogin } from "../../hooks/auth/login";
+import { useCreateUser } from "../../hooks/auth/createUser";
 import { useNavigate } from "react-router-dom";
-import { useCheckToken } from "../../hooks/checkToken";
+import { useCheckToken } from "../../hooks/auth/checkToken";
 
 interface SprintProgress {
   percentage: number;

@@ -3,7 +3,7 @@ import Sidebar from "./sidebar/sidebar";
 import * as S from "./layoutStyled";
 import Top from "./top/top";
 import { useNavigate } from "react-router-dom";
-import { useCheckToken } from "../hooks/checkToken";
+import { useCheckToken } from "../hooks/auth/checkToken";
 import { useEffect } from "react";
 
 const Layout = () => {

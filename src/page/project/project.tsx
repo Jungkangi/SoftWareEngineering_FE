@@ -1,4 +1,4 @@
-import { useState, useRef } from "react"
+import { useState, useRef } from "react";
 import {
   Calendar,
   ChevronDown,
@@ -32,7 +32,6 @@ import {
   TableRow,
   Label,
   Textarea,
-  // 아래는 스타일 컴포넌트 import
   PageContainer,
   MainContent,
   Header,
@@ -55,50 +54,49 @@ import {
   TeamMemberName,
   TeamMemberRole,
   AvatarGroup,
-  DialogOverlay,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  FormGrid,
-  FormGroup,
-  FormRow,
   DropdownContainer,
   DropdownContent,
   DropdownLabel,
   DropdownSeparator,
   DropdownItem,
   DropdownItemDestructive,
-  SelectContainer,
-  SelectTriggerContainer,
-  SelectValue,
-  SelectContent,
-  SelectItem,
-  DialogFooter,
   ResponsiveTableHead,
   ResponsiveTableHeadLg,
   ResponsiveTableCell,
   ResponsiveTableCellLg,
-} from "./projectStyled"
-import Modal from "../../components/modal/modal"
+  EditModal,
+} from "./projectStyled";
+import Modal from "../../components/modal/modal";
+import CreateProjectForm from "./createProject";
+
+// api import
+import { useGetMyProjects } from "../../hooks/project/getProjectData";
 
 // Main Component
 export default function ProjectsPage() {
   // const isMobile = useIsMobile()
-  const [selectedTab, setSelectedTab] = useState("all")
-  const [showNewProjectDialog, setShowNewProjectDialog] = useState(false)
-  const [showFilterDropdown, setShowFilterDropdown] = useState(false)
-  const [showActionDropdown, setShowActionDropdown] = useState<number | null>(null)
+  const [selectedTab, setSelectedTab] = useState("all");
+  const [showNewProjectDialog, setShowNewProjectDialog] = useState(false);
+  const [showFilterDropdown, setShowFilterDropdown] = useState(false);
+  const [showActionDropdown, setShowActionDropdown] = useState<number | null>(
+    null
+  );
   const [modalState, setModalState] = useState<{
-    type: null | "view" | "edit" | "team" | "delete",
-    project: any | null
-  }>({ type: null, project: null })
-  const [showPrioritySelect, setShowPrioritySelect] = useState(false)
-  const [showCategorySelect, setShowCategorySelect] = useState(false)
+    type: null | "view" | "edit" | "team" | "delete";
+    project: any | null;
+  }>({ type: null, project: null });
+
+  // 삭제 확인 입력 상태 추가
+  const [deleteConfirmInput, setDeleteConfirmInput] = useState("");
+
   // 추가: 전체 팀원 모달 상태
-  const [showAllTeamModal, setShowAllTeamModal] = useState(false)
-  const [dropdownPosition, setDropdownPosition] = useState<{ top: number; left: number; width: number } | null>(null)
-  const actionBtnRefs = useRef<{ [key: number]: HTMLButtonElement | null }>({})
+  const [showAllTeamModal, setShowAllTeamModal] = useState(false);
+  const [dropdownPosition, setDropdownPosition] = useState<{
+    top: number;
+    left: number;
+    width: number;
+  } | null>(null);
+  const actionBtnRefs = useRef<{ [key: number]: HTMLButtonElement | null }>({});
 
   // 팀원 데이터 분리
   const teamMembers = [
@@ -107,90 +105,39 @@ export default function ProjectsPage() {
     { name: "Emma Ford", initials: "EF", projects: 2, tasks: 6 },
     { name: "Grace Hill", initials: "GH", projects: 1, tasks: 4 },
     { name: "Ivan Jones", initials: "IJ", projects: 2, tasks: 7 },
-  ]
-  const sidebarItems = [
-    { icon: Home, label: "Home", href: "/dashboard" },
-    { icon: LayoutDashboard, label: "Projects", href: "/dashboard/projects" },
-    { icon: Calendar, label: "Sprints", href: "/dashboard/sprints" },
-    { icon: Users, label: "Team", href: "/dashboard/team" },
-    { icon: LineChart, label: "Reports", href: "/dashboard/reports" },
-    { icon: Settings, label: "Settings", href: "/dashboard/settings" },
-  ]
-
-  const projects = [
-    {
-      id: 1,
-      name: "Website Redesign",
-      description: "Redesign the company website with new branding.",
-      progress: 75,
-      team: ["AB", "CD", "EF"],
-      issues: { total: 24, completed: 18 },
-      priority: "High",
-      dueDate: "Nov 15, 2023",
-      status: "In Progress",
-      category: "Web Development",
-    },
-    {
-      id: 2,
-      name: "Mobile App Development",
-      description: "Build native mobile apps for iOS and Android.",
-      progress: 45,
-      team: ["AB", "CD", "GH"],
-      issues: { total: 36, completed: 16 },
-      priority: "Medium",
-      dueDate: "Dec 10, 2023",
-      status: "In Progress",
-      category: "Mobile Development",
-    },
-    {
-      id: 3,
-      name: "API Integration",
-      description: "Integrate third-party APIs for payment processing.",
-      progress: 90,
-      team: ["AB", "IJ"],
-      issues: { total: 18, completed: 16 },
-      priority: "Low",
-      dueDate: "Oct 30, 2023",
-      status: "In Progress",
-      category: "Backend Development",
-    },
-    {
-      id: 4,
-      name: "User Research",
-      description: "Conduct user research for the new product.",
-      progress: 100,
-      team: ["CD", "EF"],
-      issues: { total: 12, completed: 12 },
-      priority: "Medium",
-      dueDate: "Oct 15, 2023",
-      status: "Completed",
-      category: "Research",
-    },
-    {
-      id: 5,
-      name: "Database Migration",
-      description: "Migrate from MySQL to PostgreSQL.",
-      progress: 10,
-      team: ["AB", "IJ", "KL"],
-      issues: { total: 20, completed: 2 },
-      priority: "High",
-      dueDate: "Dec 30, 2023",
-      status: "Planning",
-      category: "Infrastructure",
-    },
   ];
+
+  const { projects: apiProjects, loading, error } = useGetMyProjects();
+
+  const projects = apiProjects.map((p, index) => ({
+    id: index,
+    name: p.P_NAME,
+    description: "",
+    progress: 0,
+    team: [],
+    issues: { total: 0, completed: 0 },
+    priority: "Medium",
+    dueDate: new Date(p.P_CDATE).toLocaleDateString(),
+    status:
+      p.P_STATUS === "IN_PROGRESS"
+        ? "In Progress"
+        : p.P_STATUS === "COMPLETED"
+        ? "Completed"
+        : "Planning",
+    category: "Uncategorized",
+  }));
 
   // Filter projects based on selected tab
   const filteredProjects = projects.filter((project) => {
-    if (selectedTab === "all") return true
-    if (selectedTab === "in-progress") return project.status === "In Progress"
-    if (selectedTab === "completed") return project.status === "Completed"
-    if (selectedTab === "planning") return project.status === "Planning"
-    return true
-  })
+    if (selectedTab === "all") return true;
+    if (selectedTab === "in-progress") return project.status === "In Progress";
+    if (selectedTab === "completed") return project.status === "Completed";
+    if (selectedTab === "planning") return project.status === "Planning";
+    return true;
+  });
 
   return (
-     <PageContainer>
+    <PageContainer>
       <MainContent>
         <Header>
           <SearchContainer>
@@ -204,7 +151,11 @@ export default function ProjectsPage() {
               <PageTitle>Projects</PageTitle>
               <ActionButtons>
                 <DropdownContainer>
-                  <Button variant="outline" size="sm" onClick={() => setShowFilterDropdown(!showFilterDropdown)}>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setShowFilterDropdown(!showFilterDropdown)}
+                  >
                     <Filter size={16} />
                     <span>Filter</span>
                     <ChevronDown size={16} />
@@ -229,16 +180,28 @@ export default function ProjectsPage() {
 
             <TabsContainer>
               <TabsList>
-                <Tab active={selectedTab === "all"} onClick={() => setSelectedTab("all")}>
+                <Tab
+                  active={selectedTab === "all"}
+                  onClick={() => setSelectedTab("all")}
+                >
                   All Projects
                 </Tab>
-                <Tab active={selectedTab === "in-progress"} onClick={() => setSelectedTab("in-progress")}>
+                <Tab
+                  active={selectedTab === "in-progress"}
+                  onClick={() => setSelectedTab("in-progress")}
+                >
                   In Progress
                 </Tab>
-                <Tab active={selectedTab === "completed"} onClick={() => setSelectedTab("completed")}>
+                <Tab
+                  active={selectedTab === "completed"}
+                  onClick={() => setSelectedTab("completed")}
+                >
                   Completed
                 </Tab>
-                <Tab active={selectedTab === "planning"} onClick={() => setSelectedTab("planning")}>
+                <Tab
+                  active={selectedTab === "planning"}
+                  onClick={() => setSelectedTab("planning")}
+                >
                   Planning
                 </Tab>
               </TabsList>
@@ -246,7 +209,9 @@ export default function ProjectsPage() {
                 <Card>
                   <CardHeader>
                     <CardTitle>Projects ({filteredProjects.length})</CardTitle>
-                    <CardDescription>Manage and monitor your team's projects</CardDescription>
+                    <CardDescription>
+                      Manage and monitor your team's projects
+                    </CardDescription>
                   </CardHeader>
                   <CardContent>
                     <Table>
@@ -265,8 +230,15 @@ export default function ProjectsPage() {
                         {filteredProjects.map((project) => (
                           <TableRow key={project.id}>
                             <TableCell>
-                              <div style={{ fontWeight: "500" }}>{project.name}</div>
-                              <div style={{ fontSize: "0.75rem", color: "#6b7280" }}>
+                              <div style={{ fontWeight: "500" }}>
+                                {project.name}
+                              </div>
+                              <div
+                                style={{
+                                  fontSize: "0.75rem",
+                                  color: "#6b7280",
+                                }}
+                              >
                                 {project.status} • Due {project.dueDate}
                               </div>
                             </TableCell>
@@ -284,9 +256,20 @@ export default function ProjectsPage() {
                               </Badge>
                             </ResponsiveTableCell>
                             <ResponsiveTableCell>
-                              <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                              <div
+                                style={{
+                                  display: "flex",
+                                  alignItems: "center",
+                                  gap: "0.5rem",
+                                }}
+                              >
                                 <Progress value={project.progress} />
-                                <span style={{ fontSize: "0.75rem", color: "#6b7280" }}>
+                                <span
+                                  style={{
+                                    fontSize: "0.75rem",
+                                    color: "#6b7280",
+                                  }}
+                                >
                                   {project.progress}%
                                 </span>
                               </div>
@@ -321,31 +304,39 @@ export default function ProjectsPage() {
                                 <Button
                                   variant="ghost"
                                   size="sm"
-                                  ref={el => (actionBtnRefs.current[project.id] = el)}
+                                  ref={(el) =>
+                                    (actionBtnRefs.current[project.id] = el)
+                                  }
                                   onClick={() => {
                                     if (project.id === showActionDropdown) {
-                                      setShowActionDropdown(null)
-                                      setDropdownPosition(null)
+                                      setShowActionDropdown(null);
+                                      setDropdownPosition(null);
                                     } else {
                                       // 위치 계산
-                                      const btn = actionBtnRefs.current[project.id]
+                                      const btn =
+                                        actionBtnRefs.current[project.id];
                                       if (btn) {
-                                        const rect = btn.getBoundingClientRect()
-                                        const dropdownHeight = 180 // 예상 드롭다운 높이(px)
-                                        const spaceBelow = window.innerHeight - rect.bottom
-                                        const spaceAbove = rect.top
-                                        let top = rect.bottom
-                                        if (spaceBelow < dropdownHeight && spaceAbove > dropdownHeight) {
+                                        const rect =
+                                          btn.getBoundingClientRect();
+                                        const dropdownHeight = 180; // 예상 드롭다운 높이(px)
+                                        const spaceBelow =
+                                          window.innerHeight - rect.bottom;
+                                        const spaceAbove = rect.top;
+                                        let top = rect.bottom;
+                                        if (
+                                          spaceBelow < dropdownHeight &&
+                                          spaceAbove > dropdownHeight
+                                        ) {
                                           // 위로 띄움
-                                          top = rect.top - dropdownHeight
+                                          top = rect.top - dropdownHeight;
                                         }
                                         setDropdownPosition({
                                           top,
                                           left: rect.left,
                                           width: rect.width,
-                                        })
+                                        });
                                       }
-                                      setShowActionDropdown(project.id)
+                                      setShowActionDropdown(project.id);
                                     }
                                   }}
                                 >
@@ -357,27 +348,55 @@ export default function ProjectsPage() {
                                     $fixedLeft={dropdownPosition?.left}
                                     $fixedWidth={dropdownPosition?.width}
                                   >
-                                    <DropdownItem onClick={() => {
-                                      setModalState({ type: "view", project })
-                                      setShowActionDropdown(null)
-                                      setDropdownPosition(null)
-                                    }}>View Project</DropdownItem>
-                                    <DropdownItem onClick={() => {
-                                      setModalState({ type: "edit", project })
-                                      setShowActionDropdown(null)
-                                      setDropdownPosition(null)
-                                    }}>Edit Project</DropdownItem>
-                                    <DropdownItem onClick={() => {
-                                      setModalState({ type: "team", project })
-                                      setShowActionDropdown(null)
-                                      setDropdownPosition(null)
-                                    }}>Manage Team</DropdownItem>
+                                    <DropdownItem
+                                      onClick={() => {
+                                        setModalState({
+                                          type: "view",
+                                          project,
+                                        });
+                                        setShowActionDropdown(null);
+                                        setDropdownPosition(null);
+                                      }}
+                                    >
+                                      View Project
+                                    </DropdownItem>
+                                    <DropdownItem
+                                      onClick={() => {
+                                        setModalState({
+                                          type: "edit",
+                                          project,
+                                        });
+                                        setShowActionDropdown(null);
+                                        setDropdownPosition(null);
+                                      }}
+                                    >
+                                      Edit Project
+                                    </DropdownItem>
+                                    <DropdownItem
+                                      onClick={() => {
+                                        setModalState({
+                                          type: "team",
+                                          project,
+                                        });
+                                        setShowActionDropdown(null);
+                                        setDropdownPosition(null);
+                                      }}
+                                    >
+                                      Manage Team
+                                    </DropdownItem>
                                     <DropdownSeparator />
-                                    <DropdownItemDestructive onClick={() => {
-                                      setModalState({ type: "delete", project })
-                                      setShowActionDropdown(null)
-                                      setDropdownPosition(null)
-                                    }}>Delete Project</DropdownItemDestructive>
+                                    <DropdownItemDestructive
+                                      onClick={() => {
+                                        setModalState({
+                                          type: "delete",
+                                          project,
+                                        });
+                                        setShowActionDropdown(null);
+                                        setDropdownPosition(null);
+                                      }}
+                                    >
+                                      Delete Project
+                                    </DropdownItemDestructive>
                                   </DropdownContent>
                                 )}
                               </DropdownContainer>
@@ -394,60 +413,126 @@ export default function ProjectsPage() {
             <GridContainer>
               <Card>
                 <CardHeader>
-                  <CardTitle style={{ fontSize: "0.875rem" }}>Project Categories</CardTitle>
+                  <CardTitle style={{ fontSize: "0.875rem" }}>
+                    Project Categories
+                  </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
-                    {[
-                      { name: "Web Development", count: 2 },
-                      { name: "Mobile Development", count: 1 },
-                      { name: "Backend Development", count: 1 },
-                      { name: "Research", count: 1 },
-                      { name: "Infrastructure", count: 1 },
-                    ].map((category) => (
-                      <CategoryItem key={category.name}>
-                        <span style={{ fontSize: "0.875rem" }}>{category.name}</span>
-                        <Badge variant="outline">{category.count}</Badge>
-                      </CategoryItem>
-                    ))}
+                  <div
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: "0.5rem",
+                    }}
+                  >
+                    {(() => {
+                      const categoryCountMap = new Map<string, number>();
+                      projects.forEach((p) => {
+                        const category = p.category || "Uncategorized";
+                        categoryCountMap.set(
+                          category,
+                          (categoryCountMap.get(category) || 0) + 1
+                        );
+                      });
+                      const categoryList = Array.from(
+                        categoryCountMap.entries()
+                      );
+
+                      return categoryList.map(([name, count]) => (
+                        <CategoryItem key={name}>
+                          <span style={{ fontSize: "0.875rem" }}>{name}</span>
+                          <Badge variant="outline">{count}</Badge>
+                        </CategoryItem>
+                      ));
+                    })()}
                   </div>
                 </CardContent>
               </Card>
 
               <Card>
                 <CardHeader>
-                  <CardTitle style={{ fontSize: "0.875rem" }}>Project Status</CardTitle>
+                  <CardTitle style={{ fontSize: "0.875rem" }}>
+                    Project Status
+                  </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-                    {[
-                      { status: "Planning", count: 1, percentage: 20 },
-                      { status: "In Progress", count: 3, percentage: 60 },
-                      { status: "Completed", count: 1, percentage: 20 },
-                    ].map((status) => (
-                      <StatusItem key={status.status}>
-                        <StatusHeader>
-                          <span style={{ fontSize: "0.875rem" }}>{status.status}</span>
-                          <span style={{ fontSize: "0.875rem", color: "#6b7280" }}>{status.count}</span>
-                        </StatusHeader>
-                        <Progress value={status.percentage} />
-                      </StatusItem>
-                    ))}
+                  <div
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: "1rem",
+                    }}
+                  >
+                    {(() => {
+                      const baseStatuses = [
+                        "Planning",
+                        "In Progress",
+                        "Completed",
+                      ];
+                      const statusMap: Record<string, { count: number }> = {
+                        Planning: { count: 0 },
+                        "In Progress": { count: 0 },
+                        Completed: { count: 0 },
+                      };
+
+                      projects.forEach((p) => {
+                        if (statusMap[p.status]) {
+                          statusMap[p.status].count += 1;
+                        }
+                      });
+
+                      const total = projects.length;
+                      return baseStatuses.map((status) => {
+                        const count = statusMap[status].count;
+                        const percentage =
+                          total > 0 ? Math.round((count / total) * 100) : 0;
+                        return (
+                          <StatusItem key={status}>
+                            <StatusHeader>
+                              <span style={{ fontSize: "0.875rem" }}>
+                                {status}
+                              </span>
+                              <span
+                                style={{
+                                  fontSize: "0.875rem",
+                                  color: "#6b7280",
+                                }}
+                              >
+                                {count}
+                              </span>
+                            </StatusHeader>
+                            <Progress value={percentage} />
+                          </StatusItem>
+                        );
+                      });
+                    })()}
                   </div>
                 </CardContent>
               </Card>
 
               <Card>
                 <CardHeader>
-                  <CardTitle style={{ fontSize: "0.875rem" }}>Team Workload</CardTitle>
+                  <CardTitle style={{ fontSize: "0.875rem" }}>
+                    Team Workload
+                  </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+                  <div
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: "0.5rem",
+                    }}
+                  >
                     {teamMembers.slice(0, 5).map((member) => (
                       <TeamMemberItem key={member.initials}>
                         <Avatar style={{ height: "2rem", width: "2rem" }}>
                           <AvatarFallback
-                            style={{ backgroundColor: "#111827", color: "#ffffff", fontSize: "0.75rem" }}
+                            style={{
+                              backgroundColor: "#111827",
+                              color: "#ffffff",
+                              fontSize: "0.75rem",
+                            }}
                           >
                             {member.initials}
                           </AvatarFallback>
@@ -480,91 +565,57 @@ export default function ProjectsPage() {
 
       {/* New Project Dialog */}
       {showNewProjectDialog && (
-        <DialogOverlay onClick={() => setShowNewProjectDialog(false)}>
-          <DialogContent onClick={(e) => e.stopPropagation()}>
-            <DialogHeader>
-              <DialogTitle>Create new project</DialogTitle>
-              <DialogDescription>Fill in the details below to create a new project for your team.</DialogDescription>
-            </DialogHeader>
-            <FormGrid>
-              <FormGroup>
-                <Label htmlFor="project-name">Project name</Label>
-                <Input id="project-name" placeholder="Enter project name" />
-              </FormGroup>
-              <FormGroup>
-                <Label htmlFor="project-description">Description</Label>
-                <Textarea id="project-description" placeholder="Enter project description" />
-              </FormGroup>
-              <FormRow>
-                <FormGroup>
-                  <Label htmlFor="priority">Priority</Label>
-                  <SelectContainer>
-                    <SelectTriggerContainer onClick={() => setShowPrioritySelect(!showPrioritySelect)}>
-                      <SelectValue>Medium</SelectValue>
-                      <ChevronDown size={16} />
-                    </SelectTriggerContainer>
-                    {showPrioritySelect && (
-                      <SelectContent>
-                        <SelectItem>High</SelectItem>
-                        <SelectItem>Medium</SelectItem>
-                        <SelectItem>Low</SelectItem>
-                      </SelectContent>
-                    )}
-                  </SelectContainer>
-                </FormGroup>
-                <FormGroup>
-                  <Label htmlFor="category">Category</Label>
-                  <SelectContainer>
-                    <SelectTriggerContainer onClick={() => setShowCategorySelect(!showCategorySelect)}>
-                      <SelectValue>Web Development</SelectValue>
-                      <ChevronDown size={16} />
-                    </SelectTriggerContainer>
-                    {showCategorySelect && (
-                      <SelectContent>
-                        <SelectItem>Web Development</SelectItem>
-                        <SelectItem>Mobile Development</SelectItem>
-                        <SelectItem>Backend Development</SelectItem>
-                        <SelectItem>Research</SelectItem>
-                        <SelectItem>Infrastructure</SelectItem>
-                      </SelectContent>
-                    )}
-                  </SelectContainer>
-                </FormGroup>
-              </FormRow>
-              <FormGroup>
-                <Label htmlFor="due-date">Due date</Label>
-                <Input type="date" id="due-date" />
-              </FormGroup>
-            </FormGrid>
-            <DialogFooter>
-              <Button type="submit">Create Project</Button>
-            </DialogFooter>
-          </DialogContent>
-        </DialogOverlay>
+        <Modal
+          isOpen={showNewProjectDialog}
+          onClose={() => setShowNewProjectDialog(false)}
+        >
+          <CreateProjectForm onClose={() => setShowNewProjectDialog(false)} />
+        </Modal>
       )}
 
       {/* 모달 구현 */}
       <Modal
         isOpen={modalState.type !== null}
-        onClose={() => setModalState({ type: null, project: null })}
+        onClose={() => {
+          setModalState({ type: null, project: null });
+          setDeleteConfirmInput("");
+        }}
       >
         {modalState.type === "view" && modalState.project && (
           <div>
             <h2 style={{ marginBottom: 8 }}>Project Details</h2>
-            <div><b>Name:</b> {modalState.project.name}</div>
-            <div><b>Description:</b> {modalState.project.description}</div>
-            <div><b>Status:</b> {modalState.project.status}</div>
-            <div><b>Progress:</b> {modalState.project.progress}%</div>
-            <div><b>Due Date:</b> {modalState.project.dueDate}</div>
-            <div><b>Priority:</b> {modalState.project.priority}</div>
-            <div><b>Category:</b> {modalState.project.category}</div>
+            <div>
+              <b>Name:</b> {modalState.project.name}
+            </div>
+            <div>
+              <b>Description:</b> {modalState.project.description}
+            </div>
+            <div>
+              <b>Status:</b> {modalState.project.status}
+            </div>
+            <div>
+              <b>Progress:</b> {modalState.project.progress}%
+            </div>
+            <div>
+              <b>Due Date:</b> {modalState.project.dueDate}
+            </div>
+            <div>
+              <b>Priority:</b> {modalState.project.priority}
+            </div>
+            <div>
+              <b>Category:</b> {modalState.project.category}
+            </div>
             <div style={{ marginTop: 16 }}>
-              <Button onClick={() => setModalState({ type: null, project: null })}>Close</Button>
+              <Button
+                onClick={() => setModalState({ type: null, project: null })}
+              >
+                Close
+              </Button>
             </div>
           </div>
         )}
         {modalState.type === "edit" && modalState.project && (
-          <div>
+          <EditModal>
             <h2 style={{ marginBottom: 8 }}>Edit Project</h2>
             {/* 간단한 예시 폼, 실제로는 상태 관리 필요 */}
             <div style={{ marginBottom: 8 }}>
@@ -577,9 +628,14 @@ export default function ProjectsPage() {
             </div>
             <div style={{ marginTop: 16 }}>
               <Button style={{ marginRight: 8 }}>Save</Button>
-              <Button variant="outline" onClick={() => setModalState({ type: null, project: null })}>Cancel</Button>
+              <Button
+                variant="outline"
+                onClick={() => setModalState({ type: null, project: null })}
+              >
+                Cancel
+              </Button>
             </div>
-          </div>
+          </EditModal>
         )}
         {modalState.type === "team" && modalState.project && (
           <div>
@@ -587,7 +643,14 @@ export default function ProjectsPage() {
             <div>
               {modalState.project.team.map((member: string, idx: number) => (
                 <div key={idx} style={{ marginBottom: 4 }}>
-                  <Avatar style={{ height: "2rem", width: "2rem", display: "inline-flex", marginRight: 8 }}>
+                  <Avatar
+                    style={{
+                      height: "2rem",
+                      width: "2rem",
+                      display: "inline-flex",
+                      marginRight: 8,
+                    }}
+                  >
                     <AvatarFallback>{member}</AvatarFallback>
                   </Avatar>
                   <span>{member}</span>
@@ -595,17 +658,55 @@ export default function ProjectsPage() {
               ))}
             </div>
             <div style={{ marginTop: 16 }}>
-              <Button variant="outline" onClick={() => setModalState({ type: null, project: null })}>Close</Button>
+              <Button
+                variant="outline"
+                onClick={() => setModalState({ type: null, project: null })}
+              >
+                Close
+              </Button>
             </div>
           </div>
         )}
         {modalState.type === "delete" && modalState.project && (
           <div>
-            <h2 style={{ marginBottom: 8, color: "#ef4444" }}>Delete Project</h2>
-            <div>정말로 <b>{modalState.project.name}</b> 프로젝트를 삭제하시겠습니까?</div>
+            <h2 style={{ marginBottom: 8, color: "#ef4444" }}>
+              Delete Project
+            </h2>
+            <div style={{ marginBottom: 12 }}>
+              정말로 <b>{modalState.project.name}</b> 프로젝트를
+              삭제하시겠습니까?
+            </div>
+            <div style={{ marginBottom: 12 }}>
+              <Input
+                placeholder={`프로젝트 명을 입력하세요: ${modalState.project.name}`}
+                value={deleteConfirmInput}
+                onChange={(e) => setDeleteConfirmInput(e.target.value)}
+              />
+            </div>
             <div style={{ marginTop: 16 }}>
-              <Button variant="destructive" style={{ marginRight: 8 }}>Delete</Button>
-              <Button variant="outline" onClick={() => setModalState({ type: null, project: null })}>Cancel</Button>
+              <Button
+                variant="destructive"
+                onClick={() => {
+                  setDeleteConfirmInput("");
+                }}
+                style={{
+                  marginRight: 8,
+                  opacity:
+                    deleteConfirmInput === modalState.project.name ? 1 : 0.3,
+                  pointerEvents:
+                    deleteConfirmInput === modalState.project.name
+                      ? "auto"
+                      : "none",
+                }}
+              >
+                Delete
+              </Button>
+              <Button
+                variant="outline"
+                onClick={() => setModalState({ type: null, project: null })}
+              >
+                Cancel
+              </Button>
             </div>
           </div>
         )}
@@ -618,12 +719,18 @@ export default function ProjectsPage() {
       >
         <div>
           <h2 style={{ marginBottom: 16 }}>All Team Members</h2>
-          <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+          <div
+            style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}
+          >
             {teamMembers.map((member) => (
               <TeamMemberItem key={member.initials}>
                 <Avatar style={{ height: "2rem", width: "2rem" }}>
                   <AvatarFallback
-                    style={{ backgroundColor: "#111827", color: "#ffffff", fontSize: "0.75rem" }}
+                    style={{
+                      backgroundColor: "#111827",
+                      color: "#ffffff",
+                      fontSize: "0.75rem",
+                    }}
                   >
                     {member.initials}
                   </AvatarFallback>
@@ -638,12 +745,15 @@ export default function ProjectsPage() {
             ))}
           </div>
           <div style={{ marginTop: 24, textAlign: "right" }}>
-            <Button variant="outline" onClick={() => setShowAllTeamModal(false)}>
+            <Button
+              variant="outline"
+              onClick={() => setShowAllTeamModal(false)}
+            >
               Close
             </Button>
           </div>
         </div>
       </Modal>
     </PageContainer>
-  )
+  );
 }
