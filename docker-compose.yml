@@ -3,5 +3,5 @@ services:
     build: .
     container_name: react-app
     ports:
-      - "80:5173"  # 외부에서 80으로 접속 → 컨테이너 3000으로 전달
+      - "80:5173"  # 외부에서 80으로 접속 → 컨테이너 5173으로 전달
     restart: always
