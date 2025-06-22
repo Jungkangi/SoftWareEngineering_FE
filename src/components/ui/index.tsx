@@ -1,7 +1,7 @@
 import styled, { css } from "styled-components"
-import * as React from "react"
+import React, { useState } from "react"
 import type { CSSProperties } from "react"
-import { useState } from "react"
+import { MessageCircle, Trash2 } from "lucide-react"
 
 // Button
 type ButtonVariant = "default" | "outline" | "ghost" | "destructive" | "link"
@@ -405,3 +405,141 @@ export const Textarea = styled.textarea`
   background: ${({ theme }) => theme.colors.background};
   color: ${({ theme }) => theme.colors.foreground};
 `
+
+// 댓글 박스(메시지 박스) 컴포넌트
+export type CommentType = {
+  id: number
+  author: string
+  content: string
+  createdAt: string
+}
+
+export function CommentBox({
+  comments,
+  onAdd,
+  onDelete,
+  style,
+  inputPlaceholder = "댓글을 입력하세요...",
+}: {
+  comments: CommentType[]
+  onAdd: (content: string) => void
+  onDelete: (commentId: number) => void
+  style?: React.CSSProperties
+  inputPlaceholder?: string
+}) {
+  // 기본값을 true로 변경하여 댓글이 기본적으로 열려있는 상태가 되도록 함
+  const [open, setOpen] = useState(true)
+  const [input, setInput] = useState("")
+  return (
+    <div
+      style={{
+        border: "1px solid #e5e7eb",
+        borderRadius: 8,
+        background: "#f9fafb",
+        marginTop: 8,
+        padding: 0,
+        boxShadow: "0 1px 2px 0 rgba(0,0,0,0.03)",
+        ...style,
+      }}
+    >
+      <button
+        style={{
+          display: "flex",
+          alignItems: "center",
+          width: "100%",
+          background: "none",
+          border: "none",
+          padding: "8px 12px",
+          cursor: "pointer",
+          borderBottom: "1px solid #e5e7eb",
+          fontWeight: 500,
+          fontSize: 14,
+          color: "#374151",
+        }}
+        onClick={() => setOpen((o) => !o)}
+      >
+        <MessageCircle size={16} style={{ marginRight: 8, color: "#6366f1" }} />
+        댓글 {comments.length > 0 && <span style={{ color: "#6366f1", marginLeft: 4 }}>({comments.length})</span>}
+        <span style={{ marginLeft: "auto", fontSize: 13, color: "#9ca3af" }}>{open ? "닫기" : "펼치기"}</span>
+      </button>
+      {open && (
+        <div style={{ padding: 12, paddingTop: 8 }}>
+          <div style={{ maxHeight: 220, overflowY: "auto", marginBottom: 8 }}>
+            {comments.length === 0 && (
+              <div style={{ color: "#9ca3af", fontSize: 13, textAlign: "center", padding: 12 }}>아직 댓글이 없습니다.</div>
+            )}
+            {comments.map((comment) => (
+              <div
+                key={comment.id}
+                style={{
+                  display: "flex",
+                  alignItems: "flex-start",
+                  marginBottom: 10,
+                  borderBottom: "1px solid #f3f4f6",
+                  paddingBottom: 6,
+                }}
+              >
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontWeight: 500, fontSize: 13, color: "#374151" }}>
+                    {comment.author}
+                    <span style={{ color: "#9ca3af", fontSize: 11, marginLeft: 8 }}>{comment.createdAt}</span>
+                  </div>
+                  <div style={{ fontSize: 14, color: "#222" }}>{comment.content}</div>
+                </div>
+                <button
+                  style={{
+                    background: "none",
+                    border: "none",
+                    color: "#ef4444",
+                    marginLeft: 8,
+                    cursor: "pointer",
+                    padding: 0,
+                  }}
+                  title="댓글 삭제"
+                  onClick={() => onDelete(comment.id)}
+                >
+                  <Trash2 size={15} />
+                </button>
+              </div>
+            ))}
+          </div>
+          <div style={{ display: "flex", gap: 8 }}>
+            <input
+              style={{
+                flex: 1,
+                border: "1px solid #e5e7eb",
+                borderRadius: 4,
+                padding: 7,
+                fontSize: 14,
+                background: "#fff",
+              }}
+              placeholder={inputPlaceholder}
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && input.trim()) {
+                  onAdd(input)
+                  setInput("")
+                }
+              }}
+              maxLength={200}
+            />
+            <Button
+              size="sm"
+              style={{ minWidth: 48 }}
+              onClick={() => {
+                if (input.trim()) {
+                  onAdd(input)
+                  setInput("")
+                }
+              }}
+              disabled={!input.trim()}
+            >
+              등록
+            </Button>
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
