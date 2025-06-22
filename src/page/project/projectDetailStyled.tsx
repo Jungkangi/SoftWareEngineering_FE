@@ -1,3 +1,110 @@
+export const StyledInput = styled.input`
+  padding: 0.5rem;
+  border: 1px solid ${({ theme }) => theme.colors.input};
+  border-radius: ${({ theme }) => theme.radii.md};
+  font-size: ${({ theme }) => theme.fontSizes.sm};
+  color: ${({ theme }) => theme.colors.foreground};
+  background-color: transparent;
+  &:focus {
+    outline: none;
+    border-color: ${({ theme }) => theme.colors.primary};
+    box-shadow: 0 0 0 1px ${({ theme }) => theme.colors.primary};
+  }
+`;
+
+export const StyledButton = styled.button`
+  align-self: flex-end;
+  background-color: ${({ theme }) => theme.colors.primary};
+  color: ${({ theme }) => theme.colors.primaryForeground};
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: ${({ theme }) => theme.radii.md};
+  cursor: pointer;
+  font-size: ${({ theme }) => theme.fontSizes.sm};
+  &:hover {
+    background-color: ${({ theme }) => theme.colors.primary}cc;
+  }
+`;
+// ProjectDetail page styled-components
+export const Wrapper = styled.div`
+  padding: 2rem;
+  background-color: ${({ theme }) => theme.colors.card};
+  border-radius: ${({ theme }) => theme.radii.lg};
+  box-shadow: ${({ theme }) => theme.shadows.md};
+  width: 50vw;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+`;
+
+export const HeaderArea = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+`;
+
+export const Title = styled.h2`
+  font-size: ${({ theme }) => theme.fontSizes["2xl"]};
+  font-weight: 700;
+`;
+
+export const CloseButton = styled.button`
+  background: transparent;
+  border: none;
+  font-size: ${({ theme }) => theme.fontSizes["2xl"]};
+  cursor: pointer;
+  color: ${({ theme }) => theme.colors.mutedForeground};
+  &:hover {
+    color: ${({ theme }) => theme.colors.foreground};
+  }
+`;
+
+export const Section = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+`;
+
+export const Label = styled.span`
+  font-size: ${({ theme }) => theme.fontSizes.sm};
+  font-weight: 500;
+  color: ${({ theme }) => theme.colors.mutedForeground};
+`;
+
+export const Value = styled.span`
+  font-size: ${({ theme }) => theme.fontSizes.md};
+  color: ${({ theme }) => theme.colors.foreground};
+`;
+
+export const DescriptionBox = styled.textarea`
+  padding: 0.75rem;
+  border-radius: ${({ theme }) => theme.radii.md};
+  color: ${({ theme }) => theme.colors.foreground};
+  font-size: ${({ theme }) => theme.fontSizes.sm};
+  box-shadow: 0 0 5px #ccc;
+  border: 0;
+  min-height: 4rem;
+  width: 100%;
+  &:focus {
+    transition: all ease 0.3s;
+    outline: none;
+    box-shadow: 0 0 5px ${({ theme }) => theme.colors.primary};
+  }
+`;
+
+export const Row = styled.div`
+  display: flex;
+  gap: 1rem;
+  justify-content: space-between;
+`;
+
+export const Column = styled.div`
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+`;
 import styled, { css } from "styled-components";
 import * as React from "react";
 import { useEffect, useState } from "react";
@@ -568,7 +675,7 @@ export const Textarea = styled.textarea`
 `;
 
 // Label 컴포넌트
-export const Label = styled.label`
+export const LabelSteyled = styled.label`
   font-size: ${({ theme }) => theme.fontSizes.sm};
   font-weight: 500;
 `;
@@ -1040,26 +1147,6 @@ export const FormRow = styled.div`
 // Dropdown
 export const DropdownContainer = styled.div`
   position: relative;
-  display: inline-block;
-
-  select {
-    position: absolute;
-    top: 0;
-    left: 0;
-    opacity: 1;
-    width: 100%;
-    height: 100%;
-    z-index: 10;
-    cursor: pointer;
-    background: transparent;
-    border: none;
-    color: inherit;
-    font: inherit;
-  }
-
-  .badge-wrapper {
-    pointer-events: none;
-  }
 `;
 
 export const DropdownContent = styled.div<{
@@ -1069,8 +1156,8 @@ export const DropdownContent = styled.div<{
 }>`
   position: ${({ $fixedTop }) =>
     $fixedTop !== undefined ? "fixed" : "absolute"};
-  /* Always set z-index high for dropdown overlays */
-  z-index: 999;
+  right: 0;
+  z-index: 10;
   min-width: 8rem;
   overflow: hidden;
   border-radius: ${({ theme }) => theme.radii.md};
@@ -1082,16 +1169,8 @@ export const DropdownContent = styled.div<{
       ? `
     top: ${$fixedTop}px;
     left: ${$fixedLeft}px;
-    width: ${$fixedWidth ? `${$fixedWidth}px` : "max-content"};
+    width: ${$fixedWidth ? `${$fixedWidth}px` : "auto"};
     right: auto;
-  `
-      : ""}
-  ${({ $fixedTop }) =>
-    $fixedTop === undefined
-      ? `
-    top: auto;
-    left: auto;
-    width: max-content;
   `
       : ""}
 `;
@@ -1221,82 +1300,4 @@ export const ResponsiveTableCellLg = styled(TableCell)`
 export const EditModal = styled.div`
   width: 80vw;
   height: fit-content;
-`;
-
-export const DeleteButton = styled.button`
-  background-color: #fef2f2;
-  color: #dc2626;
-  border: 1px solid #fecaca;
-  border-radius: 6px;
-  padding: 6px 10px;
-  cursor: pointer;
-  transition: all 0.2s;
-
-  &:hover {
-    background-color: #fee2e2;
-  }
-`;
-// View Project 모달 내부 레이아웃
-export const ProjectModalContent = styled.div`
-  display: flex;
-  flex-direction: row;
-  gap: 32px;
-  width: 100%;
-  height: 100%;
-  min-width: 0;
-  min-height: 0;
-  box-sizing: border-box;
-`;
-
-export const ProjectModalLeft = styled.div`
-  flex: 1;
-  min-width: 0;
-  min-height: 0;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  box-sizing: border-box;
-  /* 댓글 영역이 모달에 맞게 꽉 차도록 */
-  > h3 {
-    margin: 0 0 8px 0;
-    font-size: 18px;
-  }
-  > .comment-box-wrapper {
-    flex: 1;
-    min-height: 0;
-    display: flex;
-    flex-direction: column;
-  }
-`;
-
-export const ProjectModalRight = styled.div`
-  flex: 1;
-  min-width: 0;
-  min-height: 0;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  box-sizing: border-box;
-  overflow-y: auto;
-  /* 내부 데이터가 보기 좋게 여백 추가 */
-  padding-right: 8px;
-`;
-
-export const ProjectModalInfoList = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  font-size: 1rem;
-  margin-bottom: 24px;
-  > div {
-    word-break: break-all;
-  }
-`;
-
-export const ProjectModalCloseWrapper = styled.div`
-  margin-top: auto;
-  display: flex;
-  justify-content: flex-end;
 `;

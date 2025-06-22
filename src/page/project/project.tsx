@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { ChevronDown, Filter, Plus, Search } from "lucide-react";
 import {
   Avatar,
@@ -55,11 +55,16 @@ import {
   ResponsiveTableCellLg,
   EditModal,
 } from "./projectStyled";
+import * as S from "./projectStyled";
 import Modal from "../../components/modal/modal";
 import CreateProjectForm from "./createProject";
+import ProjectDetail from "./projectDetail";
 
 // api import
 import { useGetMyProjects } from "../../hooks/project/getProjectData";
+import { putProjectData } from "../../hooks/project/putProjectData";
+import { deleteProjectData } from "../../hooks/project/DeleteProjectData";
+
 import {  ProjectModalContent,
   ProjectModalLeft,
   ProjectModalRight,
@@ -75,6 +80,7 @@ export default function ProjectsPage() {
   // const isMobile = useIsMobile()
   const [selectedTab, setSelectedTab] = useState("all");
   const [showNewProjectDialog, setShowNewProjectDialog] = useState(false);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [showFilterDropdown, setShowFilterDropdown] = useState(false);
   const [showActionDropdown, setShowActionDropdown] = useState<number | null>(
     null
@@ -83,6 +89,8 @@ export default function ProjectsPage() {
     type: null | "view" | "edit" | "team" | "delete";
     project: any | null;
   }>({ type: null, project: null });
+  // 상태 드롭다운 오픈을 위한 상태
+  const [openDropdownId, setOpenDropdownId] = useState<number | null>(null);
 
   // 삭제 확인 입력 상태 추가
   const [deleteConfirmInput, setDeleteConfirmInput] = useState("");
@@ -105,13 +113,24 @@ export default function ProjectsPage() {
     { name: "Ivan Jones", initials: "IJ", projects: 2, tasks: 7 },
   ];
 
-  const { projects: apiProjects, loading, error } = useGetMyProjects();
+  const {
+    projects: apiProjects,
+    loading,
+    error,
+  } = useGetMyProjects(refreshTrigger);
+
+  useEffect(() => {
+    if (!showNewProjectDialog) {
+      setRefreshTrigger((prev) => prev + 1);
+    }
+  }, [showNewProjectDialog]);
 
   const projects = Array.isArray(apiProjects)
     ? apiProjects.map((p, index) => ({
         id: index,
+        P_ID: p.P_ID,
         name: p.P_NAME,
-        description: "",
+        descript: p.DISCRIPTION || "",
         progress: 0,
         team: [],
         issues: { total: 0, completed: 0 },
@@ -123,7 +142,8 @@ export default function ProjectsPage() {
             : p.P_STATUS === "COMPLETED"
             ? "Completed"
             : "Planning",
-        category: "Uncategorized",
+        category:
+          p.CATEGORY && p.CATEGORY.trim() !== "" ? p.CATEGORY : "Uncategorized",
       }))
     : [];
 
@@ -254,16 +274,37 @@ export default function ProjectsPage() {
                       </TableHeader>
                       <TableBody>
                         {filteredProjects.map((project) => (
-                          <React.Fragment key={project.id}>
-                            <TableRow>
-                              <TableCell>
-                                <div style={{ fontWeight: "500" }}>{project.name}</div>
-                                <div style={{ fontSize: "0.75rem", color: "#6b7280" }}>
-                                  {project.status} • Due {project.dueDate}
-                                </div>
-                              </TableCell>
-                              <ResponsiveTableCell>
+                          <TableRow key={project.id}>
+                            <TableCell>
+                              <div
+                                style={{ fontWeight: "500", cursor: "pointer" }}
+                                onClick={() => {
+                                  setModalState({ type: "view", project });
+                                }}
+                              >
+                                {project.name}
+                              </div>
+                              <div
+                                style={{
+                                  fontSize: "0.75rem",
+                                  color: "#6b7280",
+                                }}
+                              >
+                                {project.status} • Due {project.dueDate}
+                              </div>
+                            </TableCell>
+                            <ResponsiveTableCell>
+                              <DropdownContainer>
                                 <Badge
+                                  role="button"
+                                  tabIndex={0}
+                                  onClick={() =>
+                                    setOpenDropdownId((prev) =>
+                                      prev === project.P_ID
+                                        ? null
+                                        : project.P_ID
+                                    )
+                                  }
                                   variant={
                                     project.status === "Completed"
                                       ? "success"
@@ -271,111 +312,113 @@ export default function ProjectsPage() {
                                       ? "secondary"
                                       : "default"
                                   }
+                                  style={{ cursor: "pointer" }}
                                 >
                                   {project.status}
                                 </Badge>
-                              </ResponsiveTableCell>
-                              <ResponsiveTableCell>
-                                <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                                  <Progress value={project.progress} />
-                                  <span style={{ fontSize: "0.75rem", color: "#6b7280" }}>
-                                    {project.progress}%
-                                  </span>
-                                </div>
-                              </ResponsiveTableCell>
-                              <ResponsiveTableCell>
-                                {project.dueDate}
-                              </ResponsiveTableCell>
-                              <ResponsiveTableCellLg>
-                                <AvatarGroup>
-                                  {project.team.map((member, i) => (
-                                    <Avatar key={i}>
-                                      <AvatarFallback>{member}</AvatarFallback>
-                                    </Avatar>
-                                  ))}
-                                </AvatarGroup>
-                              </ResponsiveTableCellLg>
-                              <TableCell>
-                                <Badge
-                                  variant={
-                                    project.priority === "High"
-                                      ? "destructive"
-                                      : project.priority === "Medium"
-                                      ? "default"
-                                      : "secondary"
-                                  }
-                                >
-                                  {project.priority}
-                                </Badge>
-                              </TableCell>
-                              <TableCell>
-                                <DropdownContainer>
-                                  <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    ref={el => (actionBtnRefs.current[project.id] = el)}
-                                    onClick={() => {
-                                      if (project.id === showActionDropdown) {
-                                        setShowActionDropdown(null)
-                                        setDropdownPosition(null)
-                                      } else {
-                                        // 위치 계산
-                                        const btn = actionBtnRefs.current[project.id]
-                                        if (btn) {
-                                          const rect = btn.getBoundingClientRect()
-                                          const dropdownHeight = 180 // 예상 드롭다운 높이(px)
-                                          const spaceBelow = window.innerHeight - rect.bottom
-                                          const spaceAbove = rect.top
-                                          let top = rect.bottom
-                                          if (spaceBelow < dropdownHeight && spaceAbove > dropdownHeight) {
-                                            // 위로 띄움
-                                            top = rect.top - dropdownHeight
+                                {openDropdownId === project.P_ID && (
+                                  <DropdownContent>
+                                    {[
+                                      "Planning",
+                                      "In Progress",
+                                      "Completed",
+                                    ].map((option) => (
+                                      <div
+                                        key={option}
+                                        onClick={async () => {
+                                          if (option === project.status) {
+                                            setOpenDropdownId(null);
+                                            return;
                                           }
-                                          setDropdownPosition({
-                                            top,
-                                            left: rect.left,
-                                            width: rect.width,
-                                          })
-                                        }
-                                        setShowActionDropdown(project.id)
-                                      }
-                                    }}
-                                  >
-                                    <ChevronDown size={16} />
-                                  </Button>
-                                  {showActionDropdown === project.id && (
-                                    <DropdownContent
-                                      $fixedTop={dropdownPosition?.top}
-                                      $fixedLeft={dropdownPosition?.left}
-                                      $fixedWidth={dropdownPosition?.width}
-                                    >
-                                      <DropdownItem onClick={() => {
-                                        setModalState({ type: "view", project })
-                                        setShowActionDropdown(null)
-                                        setDropdownPosition(null)
-                                      }}>View Project</DropdownItem>
-                                      <DropdownItem onClick={() => {
-                                        setModalState({ type: "edit", project })
-                                        setShowActionDropdown(null)
-                                        setDropdownPosition(null)
-                                      }}>Edit Project</DropdownItem>
-                                      <DropdownItem onClick={() => {
-                                        setModalState({ type: "team", project })
-                                        setShowActionDropdown(null)
-                                        setDropdownPosition(null)
-                                      }}>Manage Team</DropdownItem>
-                                      <DropdownSeparator />
-                                      <DropdownItemDestructive onClick={() => {
-                                        setModalState({ type: "delete", project })
-                                        setShowActionDropdown(null)
-                                        setDropdownPosition(null)
-                                      }}>Delete Project</DropdownItemDestructive>
-                                    </DropdownContent>
-                                  )}
-                                </DropdownContainer>
-                              </TableCell>
-                            </TableRow>
-                          </React.Fragment>
+
+                                          try {
+                                            await putProjectData(project.P_ID, {
+                                              P_NAME: project.name,
+                                              DISCRIPTION: project.descript,
+                                              PRIORITY:
+                                                project.priority.toUpperCase(),
+                                              CATEGORY: project.category,
+                                              P_STATUS:
+                                                option === "In Progress"
+                                                  ? "IN_PROGRESS"
+                                                  : option.toUpperCase(),
+                                            });
+                                            setRefreshTrigger(
+                                              (prev) => prev + 1
+                                            );
+                                          } catch (err) {
+                                            console.error(err);
+                                          } finally {
+                                            setOpenDropdownId(null);
+                                          }
+                                        }}
+                                        style={{
+                                          padding: "6px 12px",
+                                          cursor: "pointer",
+                                          whiteSpace: "nowrap",
+                                        }}
+                                      >
+                                        {option}
+                                      </div>
+                                    ))}
+                                  </DropdownContent>
+                                )}
+                              </DropdownContainer>
+                            </ResponsiveTableCell>
+                            <ResponsiveTableCell>
+                              <div
+                                style={{
+                                  display: "flex",
+                                  alignItems: "center",
+                                  gap: "0.5rem",
+                                }}
+                              >
+                                <Progress value={project.progress} />
+                                <span
+                                  style={{
+                                    fontSize: "0.75rem",
+                                    color: "#6b7280",
+                                  }}
+                                >
+                                  {project.progress}%
+                                </span>
+                              </div>
+                            </ResponsiveTableCell>
+                            <ResponsiveTableCell>
+                              {project.dueDate}
+                            </ResponsiveTableCell>
+                            <ResponsiveTableCellLg>
+                              <AvatarGroup>
+                                {project.team.map((member, i) => (
+                                  <Avatar key={i}>
+                                    <AvatarFallback>{member}</AvatarFallback>
+                                  </Avatar>
+                                ))}
+                              </AvatarGroup>
+                            </ResponsiveTableCellLg>
+                            <TableCell>
+                              <Badge
+                                variant={
+                                  project.priority === "High"
+                                    ? "destructive"
+                                    : project.priority === "Medium"
+                                    ? "default"
+                                    : "secondary"
+                                }
+                              >
+                                {project.priority}
+                              </Badge>
+                            </TableCell>
+                            <TableCell>
+                              <S.DeleteButton
+                                onClick={() =>
+                                  setModalState({ type: "delete", project })
+                                }
+                              >
+                                Delete
+                              </S.DeleteButton>
+                            </TableCell>
+                          </TableRow>
                         ))}
                       </TableBody>
                     </Table>
@@ -553,37 +596,21 @@ export default function ProjectsPage() {
         onClose={() => setModalState({ type: null, project: null })}
       >
         {modalState.type === "view" && modalState.project && (
-          <div>
-            <h2 style={{ marginBottom: 8 }}>Project Details</h2>
-            <div>
-              <b>Name:</b> {modalState.project.name}
-            </div>
-            <div>
-              <b>Description:</b> {modalState.project.description}
-            </div>
-            <div>
-              <b>Status:</b> {modalState.project.status}
-            </div>
-            <div>
-              <b>Progress:</b> {modalState.project.progress}%
-            </div>
-            <div>
-              <b>Due Date:</b> {modalState.project.dueDate}
-            </div>
-            <div>
-              <b>Priority:</b> {modalState.project.priority}
-            </div>
-            <div>
-              <b>Category:</b> {modalState.project.category}
-            </div>
-            <div style={{ marginTop: 16 }}>
-              <Button
-                onClick={() => setModalState({ type: null, project: null })}
-              >
-                Close
-              </Button>
-            </div>
-          </div>
+          <ProjectDetail
+            projectId={modalState.project.P_ID}
+            projectData={{
+              P_NAME: modalState.project.name,
+              STAT: modalState.project.status,
+              DUE_DATE: modalState.project.dueDate,
+              DISCRIPTION: modalState.project.descript,
+              PRIORITY: modalState.project.priority,
+              CATEGORY: modalState.project.category,
+            }}
+            onUpdate={() => {
+              setModalState({ type: null, project: null });
+              setRefreshTrigger((prev) => prev + 1);
+            }}
+          />
         )}
         {modalState.type === "edit" && modalState.project && (
           <EditModal>
@@ -657,8 +684,15 @@ export default function ProjectsPage() {
             <div style={{ marginTop: 16 }}>
               <Button
                 variant="destructive"
-                onClick={() => {
-                  setDeleteConfirmInput("");
+                onClick={async () => {
+                  try {
+                    await deleteProjectData(modalState.project.P_ID);
+                    setModalState({ type: null, project: null });
+                    setDeleteConfirmInput("");
+                    setRefreshTrigger((prev) => prev + 1);
+                  } catch (err) {
+                    console.error("Failed to delete project", err);
+                  }
                 }}
                 style={{
                   marginRight: 8,

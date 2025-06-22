@@ -2,12 +2,16 @@ import { useEffect, useState } from "react";
 import api from "../axios";
 
 export interface ProjectData {
+  P_ID: number;
   P_NAME: string;
   P_STATUS: "IN_PROGRESS" | "COMPLETED" | "PLANNING" | string;
   P_CDATE: string;
+  DISCRIPTION: string;
+  PRIORITY: "HIGH" | "MEDIUM" | "LOW" | string;
+  CATEGORY: string;
 }
 
-export const useGetMyProjects = () => {
+export const useGetMyProjects = (refreshTrigger: number) => {
   const [projects, setProjects] = useState<ProjectData[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -25,7 +29,7 @@ export const useGetMyProjects = () => {
     };
 
     fetchProjects();
-  }, []);
+  }, [refreshTrigger]);
 
   return { projects, loading, error };
 };
