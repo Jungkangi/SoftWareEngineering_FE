@@ -61,6 +61,23 @@ import {
 import { getSprintsByProject } from "../../hooks/sprint/getSprintsByProject";
 import { useGetMyProjects } from "../../hooks/project/getProjectData";
 
+// Sprint 타입 정의
+type Sprint = {
+  id: number;
+  projectId: number;
+  name: string;
+  startDate: string;
+  endDate: string;
+  status: string;
+  progress: number;
+  issues: {
+    TODO: any[];
+    PROCESSING: any[];
+    REVIEW: any[];
+    DONE: any[];
+  };
+};
+
 export default function SprintsPage() {
   const [activeProjectId, setActiveProjectId] = useState(1);
   const [activeTab, setActiveTab] = useState("board");
@@ -87,8 +104,10 @@ export default function SprintsPage() {
       setSprintsLoading(true);
       try {
         const data = await getSprintsByProject(Number(activeProjectId));
+        // Ensure data is always an array before reduce
+        const issueArray = Array.isArray(data) ? data : [];
         // Map issues into columns by STAT
-        const issues = data.reduce(
+        const issues = issueArray.reduce(
           (acc: any, issue: any) => {
             const status = issue.STAT;
             const newIssue = {
@@ -131,23 +150,6 @@ export default function SprintsPage() {
     fetchSprints();
   }, [activeProjectId]);
 
-  // Sprint 타입 정의
-  type Sprint = {
-    id: number;
-    projectId: number;
-    name: string;
-    startDate: string;
-    endDate: string;
-    status: string;
-    progress: number;
-    issues: {
-      TODO: any[];
-      PROCESSING: any[];
-      REVIEW: any[];
-      DONE: any[];
-    };
-  };
-
   // Filter sprints by active project
   const filteredSprints = sprints.filter(
     (sprint: Sprint) => sprint.projectId === activeProjectId
@@ -174,10 +176,10 @@ export default function SprintsPage() {
     }
 
     return {
-      todo: sprint.issues.TODO?.length || 0,
-      inProgress: sprint.issues.PROCESSING?.length || 0,
-      review: sprint.issues.REVIEW?.length || 0,
-      done: sprint.issues.DONE?.length || 0,
+      todo: sprint.issues?.TODO?.length || 0,
+      inProgress: sprint.issues?.PROCESSING?.length || 0,
+      review: sprint.issues?.REVIEW?.length || 0,
+      done: sprint.issues?.DONE?.length || 0,
     };
   };
 
@@ -236,10 +238,10 @@ export default function SprintsPage() {
   const [boardIssues, setBoardIssues] = useState(() =>
     activeSprint
       ? {
-          todo: [...activeSprint.issues.TODO],
-          inProgress: [...activeSprint.issues.PROCESSING],
-          review: [...activeSprint.issues.REVIEW],
-          done: [...activeSprint.issues.DONE],
+          todo: [...(activeSprint.issues?.TODO || [])],
+          inProgress: [...(activeSprint.issues?.PROCESSING || [])],
+          review: [...(activeSprint.issues?.REVIEW || [])],
+          done: [...(activeSprint.issues?.DONE || [])],
         }
       : { todo: [], inProgress: [], review: [], done: [] }
   );
@@ -248,10 +250,10 @@ export default function SprintsPage() {
   React.useEffect(() => {
     if (activeSprint) {
       setBoardIssues({
-        todo: [...activeSprint.issues.TODO],
-        inProgress: [...activeSprint.issues.PROCESSING],
-        review: [...activeSprint.issues.REVIEW],
-        done: [...activeSprint.issues.DONE],
+        todo: [...(activeSprint.issues?.TODO || [])],
+        inProgress: [...(activeSprint.issues?.PROCESSING || [])],
+        review: [...(activeSprint.issues?.REVIEW || [])],
+        done: [...(activeSprint.issues?.DONE || [])],
       });
     }
   }, [activeSprint]);
@@ -511,7 +513,7 @@ export default function SprintsPage() {
                       const doneCount = activeSprint?.issues?.DONE?.length || 0;
                       const totalCount = activeSprint?.issues
                         ? Object.values(activeSprint.issues).reduce(
-                            (sum, arr) => sum + arr.length,
+                            (sum, arr) => sum + (arr?.length || 0),
                             0
                           )
                         : 0;
@@ -528,7 +530,7 @@ export default function SprintsPage() {
                       const doneCount = activeSprint?.issues?.DONE?.length || 0;
                       const totalCount = activeSprint?.issues
                         ? Object.values(activeSprint.issues).reduce(
-                            (sum, arr) => sum + arr.length,
+                            (sum, arr) => sum + (arr?.length || 0),
                             0
                           )
                         : 0;
@@ -976,8 +978,11 @@ export default function SprintsPage() {
                                 .toISOString()
                                 .slice(0, 10)}
                               totalIssues={Object.values(
-                                activeSprint.issues
-                              ).reduce((sum, arr) => sum + arr.length, 0)}
+                                activeSprint.issues ?? {}
+                              ).reduce(
+                                (sum, arr) => sum + (arr?.length || 0),
+                                0
+                              )}
                               dailyRemaining={getBurndownData()}
                             />
                           ) : (
@@ -1050,7 +1055,7 @@ export default function SprintsPage() {
                             ].filter((issue) => issue.assignee === member);
 
                             const completedIssues = (
-                              activeSprint?.issues.DONE || []
+                              activeSprint?.issues?.DONE || []
                             ).filter((issue) => issue.assignee === member);
 
                             const completionRate =
@@ -1208,8 +1213,11 @@ export default function SprintsPage() {
                                     ""
                                   ) as keyof typeof sprint.issues;
                                 const count =
-                                  sprint.issues && sprint.issues[key]
-                                    ? sprint.issues[key].length
+                                  sprint.issues &&
+                                  typeof sprint.issues === "object" &&
+                                  key in sprint.issues &&
+                                  Array.isArray(sprint.issues[key])
+                                    ? sprint.issues[key]?.length
                                     : 0;
 
                                 return (
@@ -1280,18 +1288,19 @@ export default function SprintsPage() {
                   <div style={{ marginBottom: 8 }}>
                     <b>Issues:</b>
                     <ul style={{ margin: "8px 0 0 16px", fontSize: 14 }}>
-                      <li>To Do: {viewSprint.issues.TODO.length}</li>
+                      <li>To Do: {viewSprint.issues?.TODO?.length ?? 0}</li>
                       <li>
-                        In Progress: {viewSprint.issues.PROCESSING.length}
+                        In Progress:{" "}
+                        {viewSprint.issues?.PROCESSING?.length ?? 0}
                       </li>
-                      <li>Review: {viewSprint.issues.REVIEW.length}</li>
-                      <li>Done: {viewSprint.issues.DONE.length}</li>
+                      <li>Review: {viewSprint.issues?.REVIEW?.length ?? 0}</li>
+                      <li>Done: {viewSprint.issues?.DONE?.length ?? 0}</li>
                     </ul>
                   </div>
                   {/* 예시: 스프린트 상세 모달 내 이슈별 댓글 */}
                   {(["TODO", "PROCESSING", "REVIEW", "DONE"] as const).map(
                     (col) =>
-                      viewSprint.issues[col]?.map?.((issue: any) => (
+                      viewSprint.issues?.[col]?.map?.((issue: any) => (
                         <div
                           key={issue.id}
                           style={{
