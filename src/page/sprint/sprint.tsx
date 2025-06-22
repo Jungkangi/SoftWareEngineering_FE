@@ -89,10 +89,12 @@ export default function SprintsPage() {
   const { projects: apiProjects } = useGetMyProjects(refreshTrigger);
   const projects = [
     { id: 0, name: "All" },
-    ...apiProjects.map((p, index) => ({
-      id: index + 1,
-      name: p.P_NAME,
-    })),
+    ...(Array.isArray(apiProjects)
+      ? apiProjects.map((p, index) => ({
+          id: index + 1,
+          name: p.P_NAME,
+        }))
+      : []),
   ];
 
   // Replace react-query useQuery with manual fetch using useEffect/useState
