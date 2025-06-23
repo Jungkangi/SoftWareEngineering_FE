@@ -1250,11 +1250,11 @@ export const ProjectModalLeft = styled.div`
   min-width: 0;
   min-height: 0;
   width: 70px;
+  width: 100%;
   height: 100%;
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
-
   background-color: pink;
 `;
 

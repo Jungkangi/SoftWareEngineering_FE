@@ -47,7 +47,7 @@ import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import BurndownChart from "./BurndownChart";
 import React from "react";
 import Modal from "../../components/modal/modal";
-import { CommentBox, CommentType } from "../../components/comment/comment";
+import { CommentBox, CommentType } from "../../components/ui";
 import SprintWideModal from "./SprintWideModal";
 import {
   SprintModalContent,
@@ -61,6 +61,23 @@ import {
 import { getSprintsByProject } from "../../hooks/sprint/getSprintsByProject";
 import { useGetMyProjects } from "../../hooks/project/getProjectData";
 
+// Sprint 타입 정의
+type Sprint = {
+  id: number;
+  projectId: number;
+  name: string;
+  startDate: string;
+  endDate: string;
+  status: string;
+  progress: number;
+  issues: {
+    TODO: any[];
+    PROCESSING: any[];
+    REVIEW: any[];
+    DONE: any[];
+  };
+};
+
 export default function SprintsPage() {
   const [activeProjectId, setActiveProjectId] = useState(1);
   const [activeTab, setActiveTab] = useState("board");
@@ -72,10 +89,12 @@ export default function SprintsPage() {
   const { projects: apiProjects } = useGetMyProjects(refreshTrigger);
   const projects = [
     { id: 0, name: "All" },
-    ...apiProjects.map((p, index) => ({
-      id: index + 1,
-      name: p.P_NAME,
-    })),
+    ...(Array.isArray(apiProjects)
+      ? apiProjects.map((p, index) => ({
+          id: index + 1,
+          name: p.P_NAME,
+        }))
+      : []),
   ];
 
   // Replace react-query useQuery with manual fetch using useEffect/useState
@@ -87,8 +106,10 @@ export default function SprintsPage() {
       setSprintsLoading(true);
       try {
         const data = await getSprintsByProject(Number(activeProjectId));
+        // Ensure data is always an array before reduce
+        const issueArray = Array.isArray(data) ? data : [];
         // Map issues into columns by STAT
-        const issues = data.reduce(
+        const issues = issueArray.reduce(
           (acc: any, issue: any) => {
             const status = issue.STAT;
             const newIssue = {
@@ -131,23 +152,6 @@ export default function SprintsPage() {
     fetchSprints();
   }, [activeProjectId]);
 
-  // Sprint 타입 정의
-  type Sprint = {
-    id: number;
-    projectId: number;
-    name: string;
-    startDate: string;
-    endDate: string;
-    status: string;
-    progress: number;
-    issues: {
-      TODO: any[];
-      PROCESSING: any[];
-      REVIEW: any[];
-      DONE: any[];
-    };
-  };
-
   // Filter sprints by active project
   const filteredSprints = sprints.filter(
     (sprint: Sprint) => sprint.projectId === activeProjectId
@@ -174,10 +178,10 @@ export default function SprintsPage() {
     }
 
     return {
-      todo: sprint.issues.TODO?.length || 0,
-      inProgress: sprint.issues.PROCESSING?.length || 0,
-      review: sprint.issues.REVIEW?.length || 0,
-      done: sprint.issues.DONE?.length || 0,
+      todo: sprint.issues?.TODO?.length || 0,
+      inProgress: sprint.issues?.PROCESSING?.length || 0,
+      review: sprint.issues?.REVIEW?.length || 0,
+      done: sprint.issues?.DONE?.length || 0,
     };
   };
 
@@ -236,10 +240,10 @@ export default function SprintsPage() {
   const [boardIssues, setBoardIssues] = useState(() =>
     activeSprint
       ? {
-          todo: [...activeSprint.issues.TODO],
-          inProgress: [...activeSprint.issues.PROCESSING],
-          review: [...activeSprint.issues.REVIEW],
-          done: [...activeSprint.issues.DONE],
+          todo: [...(activeSprint.issues?.TODO || [])],
+          inProgress: [...(activeSprint.issues?.PROCESSING || [])],
+          review: [...(activeSprint.issues?.REVIEW || [])],
+          done: [...(activeSprint.issues?.DONE || [])],
         }
       : { todo: [], inProgress: [], review: [], done: [] }
   );
@@ -248,10 +252,10 @@ export default function SprintsPage() {
   React.useEffect(() => {
     if (activeSprint) {
       setBoardIssues({
-        todo: [...activeSprint.issues.TODO],
-        inProgress: [...activeSprint.issues.PROCESSING],
-        review: [...activeSprint.issues.REVIEW],
-        done: [...activeSprint.issues.DONE],
+        todo: [...(activeSprint.issues?.TODO || [])],
+        inProgress: [...(activeSprint.issues?.PROCESSING || [])],
+        review: [...(activeSprint.issues?.REVIEW || [])],
+        done: [...(activeSprint.issues?.DONE || [])],
       });
     }
   }, [activeSprint]);
@@ -286,7 +290,7 @@ export default function SprintsPage() {
     null | keyof typeof boardIssues
   >(null);
   const [newIssueTitle, setNewIssueTitle] = useState("");
-  const [newIssueAssignee, setNewIssueAssignee] = useState("");
+  const [newIssueAssignee, setNewIssueAssignee] = useState<string[]>([]);
   const [newIssuePriority, setNewIssuePriority] = useState("Medium");
 
   // 이슈 추가 핸들러
@@ -313,12 +317,90 @@ export default function SprintsPage() {
     });
     setShowAddIssueModal(null);
     setNewIssueTitle("");
-    setNewIssueAssignee("");
+    setNewIssueAssignee([]);
     setNewIssuePriority("Medium");
   };
 
   // View Details 모달 상태
   const [viewSprint, setViewSprint] = useState<Sprint | null>(null);
+
+  // 이슈별 댓글 상태
+  const [issueComments, setIssueComments] = useState<{
+    [issueId: number]: CommentType[];
+  }>({});
+  const [commentInputs, setCommentInputs] = useState<{
+    [issueId: number]: string;
+  }>({});
+  const [openCommentIssueId, setOpenCommentIssueId] = useState<number | null>(
+    null
+  );
+
+  // 이슈별 댓글 상태 추가
+  const [modalIssueComments, setModalIssueComments] = useState<{
+    [issueId: number]: CommentType[];
+  }>({});
+
+  // 댓글 추가 함수
+  const handleAddIssueComment = (issueId: number, content: string) => {
+    if (!content.trim()) return;
+    setIssueComments((prev) => ({
+      ...prev,
+      [issueId]: [
+        ...(prev[issueId] || []),
+        {
+          id: Date.now(),
+          author: "Me",
+          content,
+          createdAt: new Date().toLocaleString(),
+        },
+      ],
+    }));
+    setCommentInputs((prev) => ({ ...prev, [issueId]: "" }));
+  };
+
+  function handleAddModalIssueComment(issueId: number, content: string) {
+    if (!content.trim()) return;
+    setModalIssueComments((prev) => ({
+      ...prev,
+      [issueId]: [
+        ...(prev[issueId] || []),
+        {
+          id: Date.now(),
+          author: "Me",
+          content,
+          createdAt: new Date().toLocaleString(),
+        },
+      ],
+    }));
+  }
+
+  // 댓글 삭제 함수
+  const handleDeleteIssueComment = (issueId: number, commentId: number) => {
+    setIssueComments((prev) => ({
+      ...prev,
+      [issueId]: (prev[issueId] || []).filter((c) => c.id !== commentId),
+    }));
+  };
+  function handleDeleteModalIssueComment(issueId: number, commentId: number) {
+    setModalIssueComments((prev) => ({
+      ...prev,
+      [issueId]: (prev[issueId] || []).filter((c) => c.id !== commentId),
+    }));
+  }
+
+  type Issue = {
+    id: number;
+    title: string;
+    assignee: string;
+    priority: string;
+    stat?: string;
+  };
+
+  // 이슈 상세 모달 상태 추가 (여기에 선언!)
+  const [viewIssue, setViewIssue] = useState<null | {
+    issue: Issue;
+    column: string;
+  }>(null);
 
   return (
     <PageContainer>
@@ -433,7 +515,7 @@ export default function SprintsPage() {
                       const doneCount = activeSprint?.issues?.DONE?.length || 0;
                       const totalCount = activeSprint?.issues
                         ? Object.values(activeSprint.issues).reduce(
-                            (sum, arr) => sum + arr.length,
+                            (sum, arr) => sum + (arr?.length || 0),
                             0
                           )
                         : 0;
@@ -450,7 +532,7 @@ export default function SprintsPage() {
                       const doneCount = activeSprint?.issues?.DONE?.length || 0;
                       const totalCount = activeSprint?.issues
                         ? Object.values(activeSprint.issues).reduce(
-                            (sum, arr) => sum + arr.length,
+                            (sum, arr) => sum + (arr?.length || 0),
                             0
                           )
                         : 0;
@@ -605,7 +687,11 @@ export default function SprintsPage() {
                                               ? "#dbeafe"
                                               : "#fff",
                                             ...provided.draggableProps.style,
+                                            cursor: "pointer",
                                           }}
+                                          onClick={() =>
+                                            setViewIssue({ issue, column: key })
+                                          }
                                         >
                                           <div
                                             style={{
@@ -661,19 +747,38 @@ export default function SprintsPage() {
                                               >
                                                 #{issue.id}
                                               </div>
-                                              <Avatar
+                                              <div
                                                 style={{
-                                                  width: 24,
-                                                  height: 24,
+                                                  display: "flex",
+                                                  gap: 4,
                                                 }}
                                               >
-                                                <AvatarFallback
-                                                  style={{ fontSize: 12 }}
-                                                >
-                                                  {issue.assignee}
-                                                </AvatarFallback>
-                                              </Avatar>
+                                                {(Array.isArray(issue.assignee)
+                                                  ? issue.assignee
+                                                  : [issue.assignee]
+                                                ).map(
+                                                  (
+                                                    assignee: string,
+                                                    i: number
+                                                  ) => (
+                                                    <Avatar
+                                                      key={i}
+                                                      style={{
+                                                        width: 24,
+                                                        height: 24,
+                                                      }}
+                                                    >
+                                                      <AvatarFallback
+                                                        style={{ fontSize: 12 }}
+                                                      >
+                                                        {assignee}
+                                                      </AvatarFallback>
+                                                    </Avatar>
+                                                  )
+                                                )}
+                                              </div>
                                             </div>
+                                            {/* 댓글 박스는 모달에서만 보여줌 */}
                                           </div>
                                         </Card>
                                       )}
@@ -893,8 +998,11 @@ export default function SprintsPage() {
                                 .toISOString()
                                 .slice(0, 10)}
                               totalIssues={Object.values(
-                                activeSprint.issues
-                              ).reduce((sum, arr) => sum + arr.length, 0)}
+                                activeSprint.issues ?? {}
+                              ).reduce(
+                                (sum, arr) => sum + (arr?.length || 0),
+                                0
+                              )}
                               dailyRemaining={getBurndownData()}
                             />
                           ) : (
@@ -967,7 +1075,7 @@ export default function SprintsPage() {
                             ].filter((issue) => issue.assignee === member);
 
                             const completedIssues = (
-                              activeSprint?.issues.DONE || []
+                              activeSprint?.issues?.DONE || []
                             ).filter((issue) => issue.assignee === member);
 
                             const completionRate =
@@ -1125,8 +1233,11 @@ export default function SprintsPage() {
                                     ""
                                   ) as keyof typeof sprint.issues;
                                 const count =
-                                  sprint.issues && sprint.issues[key]
-                                    ? sprint.issues[key].length
+                                  sprint.issues &&
+                                  typeof sprint.issues === "object" &&
+                                  key in sprint.issues &&
+                                  Array.isArray(sprint.issues[key])
+                                    ? sprint.issues[key]?.length
                                     : 0;
 
                                 return (
@@ -1197,12 +1308,13 @@ export default function SprintsPage() {
                   <div style={{ marginBottom: 8 }}>
                     <b>Issues:</b>
                     <ul style={{ margin: "8px 0 0 16px", fontSize: 14 }}>
-                      <li>To Do: {viewSprint.issues.TODO.length}</li>
+                      <li>To Do: {viewSprint.issues?.TODO?.length ?? 0}</li>
                       <li>
-                        In Progress: {viewSprint.issues.PROCESSING.length}
+                        In Progress:{" "}
+                        {viewSprint.issues?.PROCESSING?.length ?? 0}
                       </li>
-                      <li>Review: {viewSprint.issues.REVIEW.length}</li>
-                      <li>Done: {viewSprint.issues.DONE.length}</li>
+                      <li>Review: {viewSprint.issues?.REVIEW?.length ?? 0}</li>
+                      <li>Done: {viewSprint.issues?.DONE?.length ?? 0}</li>
                     </ul>
                   </div>
                   {/* 예시: 스프린트 상세 모달 내 이슈별 댓글 */}
@@ -1222,6 +1334,9 @@ export default function SprintsPage() {
                             comments={modalIssueComments[issue.id] || []}
                             onAdd={(content) =>
                               handleAddModalIssueComment(issue.id, content)
+                            }
+                            onDelete={(commentId) =>
+                              handleDeleteModalIssueComment(issue.id, commentId)
                             }
                           />
                         </div>
@@ -1254,7 +1369,22 @@ export default function SprintsPage() {
                         onAdd={(content) =>
                           handleAddIssueComment(viewIssue.issue.id, content)
                         }
+
+                        onDelete={(commentId) =>
+                          handleDeleteIssueComment(
+                            viewIssue.issue.id,
+                            commentId
+                          )
+                        }
                         inputPlaceholder="이 이슈에 댓글을 남겨보세요!"
+                        style={{
+                          flex: 1,
+                          minHeight: 0,
+                          height: "100%",
+                          display: "flex",
+                          flexDirection: "column",
+                          overflow: "hidden",
+                        }}
                       />
                     </div>
                   </SprintModalLeft>
@@ -1327,7 +1457,7 @@ export default function SprintsPage() {
                     border: "1px solid #e5e7eb",
                   }}
                   value={newIssueAssignee}
-                  onChange={(e) => setNewIssueAssignee(e.target.value)}
+                  onChange={(e) => setNewIssueAssignee([e.target.value])}
                   placeholder="Enter assignee (optional)"
                 />
               </label>
