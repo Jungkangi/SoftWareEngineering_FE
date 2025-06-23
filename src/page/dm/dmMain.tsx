@@ -197,13 +197,13 @@ const Report = () => {
                     I_RELEASE: messageVisibility,
                   });
 
-                  await createAlert({
-                    A_CATEGORY: "DM",
-                    A_CONTENT: messageContent,
-                    UID: selectedRecipient,
-                    P_ID: Number(selectedProjectId),
-                    I_ID: 0,
-                  });
+                  // await createAlert({
+                  //   A_CATEGORY: "DM",
+                  //   A_CONTENT: messageContent,
+                  //   UID: selectedRecipient,
+                  //   P_ID: Number(selectedProjectId),
+                  //   I_ID: 0,
+                  // });
 
                   console.log("DM sent successfully:", result);
 
