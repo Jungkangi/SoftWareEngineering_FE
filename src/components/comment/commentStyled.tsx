@@ -1,12 +1,13 @@
 import styled from "styled-components";
 
 export const CommentWrapper = styled.div`
-  border: 1px solid #e0e0e0;
+  border: 1px solid #e8eaee;
+  box-shadow: 0 0 5px 0px #e5e7eb;
   border-radius: 8px;
-  background-color: #fafafa;
+  /* background-color: #fafafa; */
   padding: 16px;
-
   width: 100%;
+  height: 30.1em;
 `;
 
 export const Header = styled.div`
@@ -22,6 +23,8 @@ export const CommentList = styled.div`
   text-align: center;
   color: #999;
   margin-bottom: 16px;
+  max-height: 22em;
+  overflow-y: auto;
 `;
 
 export const InputArea = styled.div`

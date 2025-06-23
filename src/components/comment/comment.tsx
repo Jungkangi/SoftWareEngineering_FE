@@ -35,7 +35,7 @@ export function CommentBox({
 
   return (
     <CommentWrapper>
-      <Header>💬 댓글</Header>
+      <Header>댓글</Header>
       <CommentList>
         {comments.length === 0
           ? "아직 댓글이 없습니다."

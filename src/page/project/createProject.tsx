@@ -22,13 +22,13 @@ import {
 import { createProjectAsPM } from "../../hooks/project/newProjectData";
 
 interface CreateProjectFormProps {
-  onClose: () => void;
+  onClose: (newProject: any) => void;
 }
 
 const CreateProjectForm: React.FC<CreateProjectFormProps> = ({ onClose }) => {
   const [projectName, setProjectName] = useState("");
   const [priority, setPriority] = useState("Medium");
-  const [category, setCategory] = useState("Web Development");
+  const [category, setCategory] = useState("");
   const [Description, setDescription] = useState("");
   const [showPrioritySelect, setShowPrioritySelect] = useState(false);
   const [showCategorySelect, setShowCategorySelect] = useState(false);
@@ -143,8 +143,8 @@ const CreateProjectForm: React.FC<CreateProjectFormProps> = ({ onClose }) => {
                     ? category
                     : "Uncategorized",
               };
-              await createProjectAsPM(payload);
-              onClose();
+              const newProject = await createProjectAsPM(payload);
+              onClose(newProject);
             } catch (error) {
               console.error("Failed to create project:", error);
             }

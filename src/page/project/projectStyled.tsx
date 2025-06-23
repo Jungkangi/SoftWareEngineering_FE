@@ -1240,34 +1240,29 @@ export const DeleteButton = styled.button`
 export const ProjectModalContent = styled.div`
   display: flex;
   flex-direction: row;
-  gap: 0.5em;
   width: 80vw;
   height: 100%;
+  gap: 1em;
 `;
 
 export const ProjectModalLeft = styled.div`
-  flex: 1;
   min-width: 0;
   min-height: 0;
-  width: 70px;
-  width: 100%;
+  width: 60%;
   height: 100%;
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
-  background-color: pink;
+  margin-top: 0.6em;
 `;
 
 export const ProjectModalRight = styled.div`
-  flex: 1;
-  width: 30vw;
+  width: 40%;
   height: 100%;
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
-  overflow-y: auto;
-  /* 내부 데이터가 보기 좋게 여백 추가 */
-  padding-right: 8px;
+  padding: 0.5em 1em;
 `;
 
 export const ProjectModalInfoList = styled.div`

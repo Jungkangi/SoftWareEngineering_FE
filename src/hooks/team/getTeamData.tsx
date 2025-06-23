@@ -20,8 +20,8 @@ const useGetTeams = (refreshTrigger: number = 0) => {
       try {
         const res = await api.get<TeamData[]>("/teams/");
         setTeams(res.data);
-        console.log("Fetched teams:", res.data);
         setError(null);
+        console.log("Fetched teams:", res.data);
       } catch (err: any) {
         setError(err.response?.data?.detail || "Failed to fetch teams");
       } finally {
