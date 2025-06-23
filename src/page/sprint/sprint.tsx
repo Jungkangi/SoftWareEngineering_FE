@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { ChevronLeft, ChevronRight, Plus } from "lucide-react";
+import { Plus } from "lucide-react";
 import {
   Avatar,
   AvatarFallback,
@@ -40,14 +40,12 @@ import {
   ContentContainer,
   PageHeader,
   PageTitle,
-  ActionButtons,
   ProjectSelectArea,
 } from "./sprintStyled";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import BurndownChart from "./BurndownChart";
 import React from "react";
 import Modal from "../../components/modal/modal";
-import { CommentBox, CommentType } from "../../components/ui";
 import SprintWideModal from "./SprintWideModal";
 import {
   SprintModalContent,
@@ -56,6 +54,7 @@ import {
   SprintModalInfoList,
   SprintModalCloseWrapper,
 } from "./sprintStyled";
+import SprintCommentSection from "./SprintCommentSection";
 
 //import api
 import { getSprintsByProject } from "../../hooks/sprint/getSprintsByProject";
@@ -323,70 +322,6 @@ export default function SprintsPage() {
 
   // View Details 모달 상태
   const [viewSprint, setViewSprint] = useState<Sprint | null>(null);
-
-  // 이슈별 댓글 상태
-  const [issueComments, setIssueComments] = useState<{
-    [issueId: number]: CommentType[];
-  }>({});
-  const [commentInputs, setCommentInputs] = useState<{
-    [issueId: number]: string;
-  }>({});
-  const [openCommentIssueId, setOpenCommentIssueId] = useState<number | null>(
-    null
-  );
-
-  // 이슈별 댓글 상태 추가
-  const [modalIssueComments, setModalIssueComments] = useState<{
-    [issueId: number]: CommentType[];
-  }>({});
-
-  // 댓글 추가 함수
-  const handleAddIssueComment = (issueId: number, content: string) => {
-    if (!content.trim()) return;
-    setIssueComments((prev) => ({
-      ...prev,
-      [issueId]: [
-        ...(prev[issueId] || []),
-        {
-          id: Date.now(),
-          author: "Me",
-          content,
-          createdAt: new Date().toLocaleString(),
-        },
-      ],
-    }));
-    setCommentInputs((prev) => ({ ...prev, [issueId]: "" }));
-  };
-
-  function handleAddModalIssueComment(issueId: number, content: string) {
-    if (!content.trim()) return;
-    setModalIssueComments((prev) => ({
-      ...prev,
-      [issueId]: [
-        ...(prev[issueId] || []),
-        {
-          id: Date.now(),
-          author: "Me",
-          content,
-          createdAt: new Date().toLocaleString(),
-        },
-      ],
-    }));
-  }
-
-  // 댓글 삭제 함수
-  const handleDeleteIssueComment = (issueId: number, commentId: number) => {
-    setIssueComments((prev) => ({
-      ...prev,
-      [issueId]: (prev[issueId] || []).filter((c) => c.id !== commentId),
-    }));
-  };
-  function handleDeleteModalIssueComment(issueId: number, commentId: number) {
-    setModalIssueComments((prev) => ({
-      ...prev,
-      [issueId]: (prev[issueId] || []).filter((c) => c.id !== commentId),
-    }));
-  }
 
   type Issue = {
     id: number;
@@ -1317,7 +1252,7 @@ export default function SprintsPage() {
                       <li>Done: {viewSprint.issues?.DONE?.length ?? 0}</li>
                     </ul>
                   </div>
-                  {/* 예시: 스프린트 상세 모달 내 이슈별 댓글 */}
+                  {/* 스프린트 상세 모달 내 이슈별 댓글도 SprintCommentSection으로 분리 */}
                   {(["TODO", "PROCESSING", "REVIEW", "DONE"] as const).map(
                     (col) =>
                       viewSprint.issues?.[col]?.map?.((issue: any) => (
@@ -1330,15 +1265,7 @@ export default function SprintsPage() {
                           }}
                         >
                           <div style={{ fontWeight: 500 }}>{issue.title}</div>
-                          <CommentBox
-                            comments={modalIssueComments[issue.id] || []}
-                            onAdd={(content) =>
-                              handleAddModalIssueComment(issue.id, content)
-                            }
-                            onDelete={(commentId) =>
-                              handleDeleteModalIssueComment(issue.id, commentId)
-                            }
-                          />
+                          <SprintCommentSection issueId={issue.id} />
                         </div>
                       ))
                   )}
@@ -1362,31 +1289,7 @@ export default function SprintsPage() {
               {viewIssue && (
                 <SprintModalContent>
                   <SprintModalLeft>
-                    <h3>댓글</h3>
-                    <div className="comment-box-wrapper">
-                      <CommentBox
-                        comments={issueComments[viewIssue.issue.id] || []}
-                        onAdd={(content) =>
-                          handleAddIssueComment(viewIssue.issue.id, content)
-                        }
-
-                        onDelete={(commentId) =>
-                          handleDeleteIssueComment(
-                            viewIssue.issue.id,
-                            commentId
-                          )
-                        }
-                        inputPlaceholder="이 이슈에 댓글을 남겨보세요!"
-                        style={{
-                          flex: 1,
-                          minHeight: 0,
-                          height: "100%",
-                          display: "flex",
-                          flexDirection: "column",
-                          overflow: "hidden",
-                        }}
-                      />
-                    </div>
+                    <SprintCommentSection issueId={viewIssue.issue.id} />
                   </SprintModalLeft>
                   <SprintModalRight>
                     <h2 style={{ marginBottom: 8 }}>Issue Details</h2>
