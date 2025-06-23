@@ -101,3 +101,28 @@ export const NotificationIcon = styled.div`
     justify-content: center;
   }
 `;
+
+export const NotificationDropdown = styled.div`
+  position: absolute;
+  top: 36px;
+  right: 12px;
+  background: white;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  width: 240px;
+  padding: 12px;
+  z-index: 999;
+  max-height: 300px;
+  overflow-y: auto;
+
+  div {
+    padding: 8px;
+    font-size: 14px;
+    border-bottom: 1px solid #eee;
+  }
+
+  div:last-child {
+    border-bottom: none;
+  }
+`;

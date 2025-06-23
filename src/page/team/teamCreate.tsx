@@ -37,7 +37,7 @@ const CreateTeamPage = ({
   const [description, setDescription] = useState("");
   const [department, setDepartment] = useState("");
   const [teamProjectId, setTeamProjectId] = useState<number | "">(
-    initialProject && initialProject.P_ID ? initialProject.P_ID : ""
+    initialProject?.P_ID ?? ""
   );
   const { projects: myProjects } = useGetMyProjects(0);
   const [step, setStep] = useState(0);

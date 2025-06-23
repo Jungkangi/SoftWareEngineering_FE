@@ -13,6 +13,7 @@ const TeamPage = () => {
   const { me } = useMe();
   const { users } = useAllUsers();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isCreatingTeam, setIsCreatingTeam] = useState(false);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [selectedTeam, setSelectedTeam] = useState<{
     P_ID: number;
@@ -68,6 +69,7 @@ const TeamPage = () => {
               key={t.T_ID}
               onClick={() => {
                 setSelectedTeam(t);
+                setIsCreatingTeam(false);
                 setIsModalOpen(true);
               }}
             >
@@ -101,44 +103,58 @@ const TeamPage = () => {
             </a>
             을 알아보세요
           </S.EmptyTeamDesc>
-          <S.TeamCreateButton onClick={() => setIsModalOpen(true)}>
+          <S.TeamCreateButton
+            onClick={() => {
+              setIsCreatingTeam(true);
+              setIsModalOpen(true);
+            }}
+          >
             팀 만들기
           </S.TeamCreateButton>
         </S.EmptyTeamWrapper>
       )}
 
       <Modal
-        isOpen={isModalOpen && selectedTeam !== null}
+        isOpen={isModalOpen}
         onClose={() => {
           setIsModalOpen(false);
           setSelectedTeam(null);
+          setIsCreatingTeam(false);
           setRefreshTrigger((prev) => prev + 1);
         }}
       >
         <div style={{ padding: "1.5rem" }}>
-          <Modifyteam
-            initialTeam={selectedTeam}
-            projectName={
-              Array.isArray(projects)
-                ? projects.find((p) => p.P_ID === selectedTeam?.P_ID)?.P_NAME
-                : ""
-            }
-            teamMembers={teams
-              .filter((tm) => tm.P_ID === selectedTeam?.P_ID)
-              .map((tm) => {
-                const matchedUser = users?.find((user) => user.UID === tm.U_ID);
-                return {
-                  UID: tm.U_ID,
-                  NICKNAME: matchedUser?.NICKNAME || "알 수 없음",
-                  EMAIL: matchedUser?.EMAIL || "",
-                  ROLE: tm.ROLE || "MEMBER",
-                  PASSWORD: "",
-                  PHONE: "",
-                  CREATE_DATE: tm.CREATE_DATE || "",
-                };
-              })}
-          />
-          {/* You can use selectedTeam here to show more info */}
+          {isCreatingTeam ? (
+            <CreateTeamPage />
+          ) : (
+            selectedTeam && (
+              <Modifyteam
+                initialTeam={selectedTeam}
+                projectName={
+                  Array.isArray(projects)
+                    ? projects.find((p) => p.P_ID === selectedTeam?.P_ID)
+                        ?.P_NAME
+                    : ""
+                }
+                teamMembers={teams
+                  .filter((tm) => tm.P_ID === selectedTeam?.P_ID)
+                  .map((tm) => {
+                    const matchedUser = users?.find(
+                      (user) => user.UID === tm.U_ID
+                    );
+                    return {
+                      UID: tm.U_ID,
+                      NICKNAME: matchedUser?.NICKNAME || "알 수 없음",
+                      EMAIL: matchedUser?.EMAIL || "",
+                      ROLE: tm.ROLE || "MEMBER",
+                      PASSWORD: "",
+                      PHONE: "",
+                      CREATE_DATE: tm.CREATE_DATE || "",
+                    };
+                  })}
+              />
+            )
+          )}
         </div>
       </Modal>
     </div>

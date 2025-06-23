@@ -6,5 +6,16 @@ import SprintsPage from "./sprint/sprint";
 import AuthPage from "./auth/auth";
 import Team from "./team/team";
 import Calendar from "./calendar/calendar";
+import Dm from "./dm/dmMain";
 
-export { Dashboard, Intro, Layout, ProjectsPage, SprintsPage, AuthPage, Team, Calendar };
+export {
+  Dashboard,
+  Intro,
+  Layout,
+  ProjectsPage,
+  SprintsPage,
+  AuthPage,
+  Team,
+  Calendar,
+  Dm,
+};

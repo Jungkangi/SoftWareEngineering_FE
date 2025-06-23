@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import useAllUsers from "../../hooks/team/getAlluser";
 import { Plus } from "lucide-react";
 import {
   Avatar,
@@ -58,7 +59,9 @@ import SprintCommentSection from "./SprintCommentSection";
 
 //import api
 import { getSprintsByProject } from "../../hooks/sprint/getSprintsByProject";
+import { createSprint } from "../../hooks/sprint/newSprint";
 import { useGetMyProjects } from "../../hooks/project/getProjectData";
+import { putSprint } from "../../hooks/sprint/putSprint";
 
 // Sprint 타입 정의
 type Sprint = {
@@ -69,6 +72,7 @@ type Sprint = {
   endDate: string;
   status: string;
   progress: number;
+  createDate: string;
   issues: {
     TODO: any[];
     PROCESSING: any[];
@@ -78,6 +82,8 @@ type Sprint = {
 };
 
 export default function SprintsPage() {
+  // Fetch all users for assignee dropdown
+  const { users } = useAllUsers();
   const [activeProjectId, setActiveProjectId] = useState(1);
   const [activeTab, setActiveTab] = useState("board");
   const [isProjectSelectOpen, setIsProjectSelectOpen] = useState(false);
@@ -114,9 +120,19 @@ export default function SprintsPage() {
             const newIssue = {
               id: issue.S_ID,
               title: issue.TITLE,
-              assignee: issue.ASSIGNEE || "NY", // 기본값 설정 (걸려있는 사람)
+              contents: issue.CONTENTS || "", // ← contents 추가
+              assignees: Array.isArray(issue.ASSIGNEES)
+                ? issue.ASSIGNEES.map(
+                    (a: { UID: string; NICKNAME: string }) => a.NICKNAME
+                  )
+                : [],
+              assignee:
+                Array.isArray(issue.ASSIGNEES) && issue.ASSIGNEES.length > 0
+                  ? issue.ASSIGNEES[0].NICKNAME
+                  : "Unassigned",
               priority: issue.PRIORITY || "Medium",
               stat: issue.STAT,
+              createDate: issue.CREATE_DATE || "",
             };
             if (!acc[status]) acc[status] = [];
             acc[status].push(newIssue);
@@ -138,6 +154,7 @@ export default function SprintsPage() {
             endDate: "",
             status: "PROCESSING",
             progress: 0,
+            createDate: "", // Dummy value for now
             issues,
           },
         ]);
@@ -186,16 +203,29 @@ export default function SprintsPage() {
 
   const columnCounts = getColumnCounts(activeSprint);
 
-  // 새 스프린트 생성 핸들러 (실제 데이터 추가는 필요에 따라 구현)
+  // 새 스프린트 생성 핸들러 (API 연동)
   const handleCreateSprint = (data: {
-    name: string;
-    startDate: string;
-    endDate: string;
-    goal: string;
+    title: string;
+    contents: string;
+    projectId: number;
+    stat: "TODO" | "PROCESSING" | "COMPLETED" | "PLANNING";
+    assignees: { UID: string; NICKNAME: string }[];
   }) => {
-    // 예시: alert(JSON.stringify(data))
-    // 실제로는 setSprints([...sprints, ...]) 등으로 추가
-    alert(`Sprint created: ${JSON.stringify(data)}`);
+    createSprint({
+      TITLE: data.title,
+      CONTENTS: data.contents,
+      P_ID: data.projectId,
+      STAT: data.stat,
+      ASSIGNEES: data.assignees.map((a) => a.UID),
+    })
+      .then((res) => {
+        alert("Sprint created successfully");
+        setRefreshTrigger((prev) => prev + 1);
+      })
+      .catch((err) => {
+        console.error(err);
+        alert("Failed to create sprint");
+      });
   };
 
   // 프로젝트 변경 시 인덱스 초기화
@@ -259,9 +289,9 @@ export default function SprintsPage() {
     }
   }, [activeSprint]);
 
-  // 드래그 완료 시 이슈 상태 변경
-  const onDragEnd = (result: any) => {
-    const { source, destination } = result;
+  // 드래그 완료 시 이슈 상태 변경 및 스프린트 상태 업데이트 API 호출
+  const onDragEnd = async (result: any) => {
+    const { source, destination, draggableId } = result;
     if (!destination) return;
     if (
       source.droppableId === destination.droppableId &&
@@ -282,6 +312,39 @@ export default function SprintsPage() {
       [sourceCol]: sourceList,
       [destCol]: destList,
     }));
+
+    // Determine new STAT based on destination column (droppableId)
+    let newStat: "TODO" | "PROCESSING" | "REVIEW" | "DONE" | "" = "";
+    switch (destCol) {
+      case "todo":
+        newStat = "TODO";
+        break;
+      case "inProgress":
+        newStat = "PROCESSING";
+        break;
+      case "review":
+        newStat = "REVIEW";
+        break;
+      case "done":
+        newStat = "DONE";
+        break;
+      default:
+        newStat = "";
+    }
+
+    // Get sprintId (assume issue id is removed.id or draggableId)
+    const sprintId = parseInt(draggableId, 10);
+    if (!sprintId || !newStat) return;
+
+    // Call the sprint status update API using putSprint
+    try {
+      await putSprint(sprintId, { STAT: newStat });
+      // Optionally update local state or refetch sprints
+      // setRefreshTrigger((prev) => prev + 1);
+    } catch (error) {
+      console.error("Failed to update sprint stat:", error);
+      // Optionally, revert UI update or show error
+    }
   };
 
   // Add Todo Modal 상태
@@ -289,35 +352,62 @@ export default function SprintsPage() {
     null | keyof typeof boardIssues
   >(null);
   const [newIssueTitle, setNewIssueTitle] = useState("");
+  const [newIssueDescription, setNewIssueDescription] = useState("");
   const [newIssueAssignee, setNewIssueAssignee] = useState<string[]>([]);
   const [newIssuePriority, setNewIssuePriority] = useState("Medium");
 
-  // 이슈 추가 핸들러
-  const handleAddIssue = () => {
+  // 이슈 추가 핸들러 (API 연동)
+  const handleAddIssue = async () => {
     if (!showAddIssueModal || !newIssueTitle.trim()) return;
-    setBoardIssues((prev) => {
-      const newId =
-        Math.max(
-          ...Object.values(prev)
-            .flat()
-            .map((issue) => issue.id),
-          0
-        ) + 1;
-      const newIssue = {
-        id: newId,
-        title: newIssueTitle,
-        assignee: newIssueAssignee || "Unassigned",
-        priority: newIssuePriority,
+
+    try {
+      const projectId = activeProjectId;
+      // API 스키마에 맞춰 payload 구성
+      const newSprintPayload = {
+        TITLE: newIssueTitle,
+        CONTENTS: newIssueDescription,
+        P_ID: projectId,
+        STAT: "PROCESSING",
+        ASSIGNEES: newIssueAssignee, // assumed to be string[]
       };
-      return {
-        ...prev,
-        [showAddIssueModal]: [...prev[showAddIssueModal], newIssue],
-      };
-    });
-    setShowAddIssueModal(null);
-    setNewIssueTitle("");
-    setNewIssueAssignee([]);
-    setNewIssuePriority("Medium");
+
+      await createSprint(newSprintPayload);
+
+      // 로컬 상태 업데이트
+      setBoardIssues((prev) => {
+        const newId =
+          Math.max(
+            ...Object.values(prev)
+              .flat()
+              .map((issue) => issue.id),
+            0
+          ) + 1;
+        const newIssue = {
+          id: newId,
+          title: newIssueTitle,
+          description: newIssueDescription,
+          assignee: newIssueAssignee || "Unassigned",
+          priority: newIssuePriority,
+        };
+        return {
+          ...prev,
+          [showAddIssueModal]: [...prev[showAddIssueModal], newIssue],
+        };
+      });
+
+      // 초기화
+      setShowAddIssueModal(null);
+      setNewIssueTitle("");
+      setNewIssueDescription("");
+      setNewIssueAssignee([]);
+      setNewIssuePriority("Medium");
+
+      // 새로고침 트리거
+      setRefreshTrigger((prev) => prev + 1);
+    } catch (err) {
+      console.error("이슈 생성 실패:", err);
+      alert("Failed to create issue");
+    }
   };
 
   // View Details 모달 상태
@@ -326,9 +416,12 @@ export default function SprintsPage() {
   type Issue = {
     id: number;
     title: string;
+    contents: string;
     assignee: string;
+    assignees: string[];
     priority: string;
     stat?: string;
+    CREATE_DATE: string;
   };
 
   // 이슈 상세 모달 상태 추가 (여기에 선언!)
@@ -604,11 +697,11 @@ export default function SprintsPage() {
                                 >
                                   {boardIssues[
                                     key as keyof typeof boardIssues
-                                  ].map((issue, idx) => (
+                                  ].map((sprint, idx) => (
                                     <Draggable
-                                      draggableId={String(issue.id)}
+                                      draggableId={String(sprint.id)}
                                       index={idx}
-                                      key={issue.id}
+                                      key={sprint.id}
                                     >
                                       {(provided: any, snapshot: any) => (
                                         <Card
@@ -625,7 +718,10 @@ export default function SprintsPage() {
                                             cursor: "pointer",
                                           }}
                                           onClick={() =>
-                                            setViewIssue({ issue, column: key })
+                                            setViewIssue({
+                                              issue: sprint,
+                                              column: key,
+                                            })
                                           }
                                         >
                                           <div
@@ -648,13 +744,13 @@ export default function SprintsPage() {
                                                   fontSize: 14,
                                                 }}
                                               >
-                                                {issue.title}
+                                                {sprint.title}
                                               </div>
                                               <Badge
                                                 variant={
-                                                  issue.priority === "High"
+                                                  sprint.priority === "High"
                                                     ? "destructive"
-                                                    : issue.priority ===
+                                                    : sprint.priority ===
                                                       "Medium"
                                                     ? "default"
                                                     : "secondary"
@@ -664,7 +760,7 @@ export default function SprintsPage() {
                                                   fontSize: 12,
                                                 }}
                                               >
-                                                {issue.priority}
+                                                {sprint.priority}
                                               </Badge>
                                             </div>
                                             <div
@@ -680,7 +776,7 @@ export default function SprintsPage() {
                                                   color: "#888",
                                                 }}
                                               >
-                                                #{issue.id}
+                                                #{sprint.id}
                                               </div>
                                               <div
                                                 style={{
@@ -688,12 +784,14 @@ export default function SprintsPage() {
                                                   gap: 4,
                                                 }}
                                               >
-                                                {(Array.isArray(issue.assignee)
-                                                  ? issue.assignee
-                                                  : [issue.assignee]
+                                                {(Array.isArray(
+                                                  sprint.assignees
+                                                )
+                                                  ? sprint.assignees
+                                                  : []
                                                 ).map(
                                                   (
-                                                    assignee: string,
+                                                    assignee: any,
                                                     i: number
                                                   ) => (
                                                     <Avatar
@@ -706,7 +804,8 @@ export default function SprintsPage() {
                                                       <AvatarFallback
                                                         style={{ fontSize: 12 }}
                                                       >
-                                                        {assignee}
+                                                        {assignee?.NICKNAME ||
+                                                          assignee}
                                                       </AvatarFallback>
                                                     </Avatar>
                                                   )
@@ -1225,36 +1324,16 @@ export default function SprintsPage() {
                 </div>
               </CardContent>
             </Card>
-            <Modal isOpen={!!viewSprint} onClose={() => setViewSprint(null)}>
+            <SprintWideModal
+              isOpen={!!viewSprint}
+              onClose={() => setViewSprint(null)}
+            >
               {viewSprint && (
-                <div>
-                  <h2 style={{ marginBottom: 12 }}>
-                    {viewSprint.name} Details
-                  </h2>
-                  <div style={{ marginBottom: 8 }}>
-                    <b>Status:</b> {viewSprint.status}
-                  </div>
-                  <div style={{ marginBottom: 8 }}>
-                    <b>Period:</b> {viewSprint.startDate} ~ {viewSprint.endDate}
-                  </div>
-                  <div style={{ marginBottom: 8 }}>
-                    <b>Progress:</b> {viewSprint.progress}%
-                  </div>
-                  <div style={{ marginBottom: 8 }}>
-                    <b>Issues:</b>
-                    <ul style={{ margin: "8px 0 0 16px", fontSize: 14 }}>
-                      <li>To Do: {viewSprint.issues?.TODO?.length ?? 0}</li>
-                      <li>
-                        In Progress:{" "}
-                        {viewSprint.issues?.PROCESSING?.length ?? 0}
-                      </li>
-                      <li>Review: {viewSprint.issues?.REVIEW?.length ?? 0}</li>
-                      <li>Done: {viewSprint.issues?.DONE?.length ?? 0}</li>
-                    </ul>
-                  </div>
-                  {/* 스프린트 상세 모달 내 이슈별 댓글도 SprintCommentSection으로 분리 */}
-                  {(["TODO", "PROCESSING", "REVIEW", "DONE"] as const).map(
-                    (col) =>
+                <SprintModalContent>
+                  <SprintModalLeft>
+                    {(
+                      ["TODO", "PROCESSING", "REVIEW", "DONE"] as const
+                    ).flatMap((col) =>
                       viewSprint.issues?.[col]?.map?.((issue: any) => (
                         <div
                           key={issue.id}
@@ -1268,18 +1347,49 @@ export default function SprintsPage() {
                           <SprintCommentSection issueId={issue.id} />
                         </div>
                       ))
-                  )}
-                  <div style={{ marginTop: 16, textAlign: "right" }}>
-                    <Button
-                      variant="outline"
-                      onClick={() => setViewSprint(null)}
-                    >
-                      Close
-                    </Button>
-                  </div>
-                </div>
+                    )}
+                  </SprintModalLeft>
+                  <SprintModalRight>
+                    <h2 style={{ marginBottom: 8 }}>Sprint Details</h2>
+                    <SprintModalInfoList>
+                      <div>
+                        <b>Name:</b> {viewSprint.name}
+                      </div>
+                      <div>
+                        <b>Status:</b> {viewSprint.status}
+                      </div>
+                      <div>
+                        <b>Period:</b> {viewSprint.startDate} ~{" "}
+                        {viewSprint.endDate}
+                      </div>
+                      <div>
+                        <b>Progress:</b> {viewSprint.progress}%
+                      </div>
+                      <div>
+                        <b>Created At:</b> {viewSprint.createDate || "N/A"}
+                      </div>
+                      <div>
+                        <b>Issues:</b>
+                        <ul style={{ margin: "8px 0 0 16px", fontSize: 14 }}>
+                          <li>To Do: {viewSprint.issues?.TODO?.length ?? 0}</li>
+                          <li>
+                            In Progress:{" "}
+                            {viewSprint.issues?.PROCESSING?.length ?? 0}
+                          </li>
+                          <li>
+                            Review: {viewSprint.issues?.REVIEW?.length ?? 0}
+                          </li>
+                          <li>Done: {viewSprint.issues?.DONE?.length ?? 0}</li>
+                        </ul>
+                      </div>
+                    </SprintModalInfoList>
+                    <SprintModalCloseWrapper>
+                      <Button onClick={() => setViewSprint(null)}>Close</Button>
+                    </SprintModalCloseWrapper>
+                  </SprintModalRight>
+                </SprintModalContent>
               )}
-            </Modal>
+            </SprintWideModal>
 
             {/* 이슈 상세 모달 */}
             <SprintWideModal
@@ -1298,7 +1408,7 @@ export default function SprintsPage() {
                         <b>Title:</b> {viewIssue.issue.title}
                       </div>
                       <div>
-                        <b>Assignee:</b> {viewIssue.issue.assignee}
+                        <b>Contents:</b> {viewIssue.issue.contents}
                       </div>
                       <div>
                         <b>Priority:</b> {viewIssue.issue.priority}
@@ -1308,6 +1418,10 @@ export default function SprintsPage() {
                       </div>
                       <div>
                         <b>ID:</b> {viewIssue.issue.id}
+                      </div>
+                      <div>
+                        <b>Created At:</b>{" "}
+                        {viewIssue.issue.CREATE_DATE || "N/A"}
                       </div>
                     </SprintModalInfoList>
                     <SprintModalCloseWrapper>
@@ -1349,8 +1463,8 @@ export default function SprintsPage() {
                 />
               </label>
               <label>
-                Assignee
-                <input
+                Description
+                <textarea
                   style={{
                     width: "100%",
                     marginTop: 4,
@@ -1358,11 +1472,43 @@ export default function SprintsPage() {
                     padding: 8,
                     borderRadius: 6,
                     border: "1px solid #e5e7eb",
+                    height: "6rem",
+                  }}
+                  value={newIssueDescription}
+                  onChange={(e) => setNewIssueDescription(e.target.value)}
+                  placeholder="Enter issue details"
+                />
+              </label>
+              <label>
+                Assignee
+                <select
+                  multiple
+                  style={{
+                    width: "100%",
+                    marginTop: 4,
+                    marginBottom: 8,
+                    padding: 8,
+                    borderRadius: 6,
+                    border: "1px solid #e5e7eb",
+                    height: "8rem",
                   }}
                   value={newIssueAssignee}
-                  onChange={(e) => setNewIssueAssignee([e.target.value])}
-                  placeholder="Enter assignee (optional)"
-                />
+                  onChange={(e) =>
+                    setNewIssueAssignee(
+                      Array.from(
+                        e.target.selectedOptions,
+                        (option) => option.value
+                      )
+                    )
+                  }
+                >
+                  <option value="">Unassigned</option>
+                  {users?.map((user) => (
+                    <option key={user.UID} value={user.NICKNAME}>
+                      {user.NICKNAME} ({user.EMAIL})
+                    </option>
+                  ))}
+                </select>
               </label>
               <label>
                 Priority
@@ -1418,24 +1564,41 @@ function NewSprintDialog({
   open: boolean;
   onClose: () => void;
   onSubmit: (data: {
-    name: string;
-    startDate: string;
-    endDate: string;
-    goal: string;
+    title: string;
+    contents: string;
+    projectId: number;
+    stat: "TODO" | "PROCESSING" | "COMPLETED" | "PLANNING";
+    assignees: { UID: string; NICKNAME: string }[];
   }) => void;
 }) {
   const [name, setName] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [goal, setGoal] = useState("");
+  const [assignees, setAssignees] = useState<
+    { UID: string; NICKNAME: string }[]
+  >([]);
+  // users를 상위에서 가져와야 함
+  const { users } = useAllUsers ? useAllUsers() : { users: [] };
 
+  // 상위에서 activeProjectId를 prop으로 받아야 정확하지만, 임시로 1 사용 (실제 구현 시 prop으로 전달 필요)
+  // 또는 상위에서 activeProjectId를 prop으로 내려주면 더 좋음
+  // 이 예시에서는 activeProjectId가 1로 가정됨
+  const activeProjectId = 1;
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit({ name, startDate, endDate, goal });
+    onSubmit({
+      title: name,
+      contents: goal,
+      projectId: activeProjectId,
+      stat: "TODO",
+      assignees,
+    });
     setName("");
     setStartDate("");
     setEndDate("");
     setGoal("");
+    setAssignees([]);
     onClose();
   };
 
@@ -1528,6 +1691,36 @@ function NewSprintDialog({
                   fontSize: 14,
                 }}
               />
+            </FormGroup>
+            <FormGroup>
+              <Label htmlFor="assignees">Assign Users</Label>
+              <select
+                id="assignees"
+                multiple
+                style={{
+                  width: "100%",
+                  padding: 8,
+                  borderRadius: 6,
+                  border: "1px solid #e5e7eb",
+                  height: "8rem",
+                }}
+                value={assignees.map((a) => a.UID)}
+                onChange={(e) => {
+                  const selectedUIDs = Array.from(e.target.selectedOptions).map(
+                    (opt) => opt.value
+                  );
+                  const selectedUsers = users?.filter((u) =>
+                    selectedUIDs.includes(u.UID)
+                  );
+                  setAssignees(selectedUsers || []);
+                }}
+              >
+                {users?.map((user) => (
+                  <option key={user.UID} value={user.UID}>
+                    {user.NICKNAME} ({user.EMAIL})
+                  </option>
+                ))}
+              </select>
             </FormGroup>
           </FormGrid>
           <DialogFooter>
