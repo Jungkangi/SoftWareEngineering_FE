@@ -75,7 +75,7 @@ export const Label = styled.label`
 `;
 
 export const Input = styled.input`
-  width: 100%;
+  width: 24.5%;
   padding: 0.75rem;
   border-radius: 0.5rem;
   border: 1px solid #d1d5db;
@@ -139,6 +139,7 @@ export const TipBox = styled.div`
   display: flex;
   align-items: flex-start;
   gap: 0.75rem;
+  width: 24.5%;
 `;
 
 export const NextButton = styled.button`
@@ -178,7 +179,7 @@ export const SlidesContainer = styled.div<{ step: number }>`
   display: flex;
   transition: transform 0.4s ease;
   transform: translateX(${(props) => `-${props.step * 100}%`});
-  width: fit-content;
+  width: 404%;
 `;
 
 export const Slide = styled.div`

@@ -20,6 +20,7 @@ export const putProjectData = async (
   }
 ) => {
   try {
+    console.log(data);
     const response = await api.put(`/projects/${projectId}`, data);
     return response.data;
   } catch (error: any) {

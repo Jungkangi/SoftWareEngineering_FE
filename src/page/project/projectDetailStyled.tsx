@@ -30,8 +30,9 @@ export const Wrapper = styled.div`
   padding: 2rem;
   background-color: ${({ theme }) => theme.colors.card};
   border-radius: ${({ theme }) => theme.radii.lg};
-  box-shadow: ${({ theme }) => theme.shadows.md};
-  width: 50vw;
+  box-shadow: 0 0 5px 1px ${({ theme }) => theme.colors.border};
+  width: 100%;
+  height: 30em;
   margin: 0 auto;
   display: flex;
   flex-direction: column;

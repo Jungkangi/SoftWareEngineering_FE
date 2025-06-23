@@ -28,11 +28,17 @@ import type { User } from "../../hooks/team/getAlluser";
 import { useGetMyProjects } from "../../hooks/project/getProjectData";
 import { useNavigate } from "react-router-dom";
 
-const CreateTeamPage = () => {
-  const [teamName, setTeamName] = useState("");
+const CreateTeamPage = ({
+  initialProject,
+}: {
+  initialProject?: { P_ID: number; P_NAME: string };
+}) => {
+  const [teamName, setTeamName] = useState(initialProject?.P_NAME ?? "");
   const [description, setDescription] = useState("");
   const [department, setDepartment] = useState("");
-  const [teamProjectId, setTeamProjectId] = useState<number | "">("");
+  const [teamProjectId, setTeamProjectId] = useState<number | "">(
+    initialProject && initialProject.P_ID ? initialProject.P_ID : ""
+  );
   const { projects: myProjects } = useGetMyProjects(0);
   const [step, setStep] = useState(0);
   const [loading, setLoading] = useState(false);

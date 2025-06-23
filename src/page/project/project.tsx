@@ -58,9 +58,12 @@ import * as S from "./projectStyled";
 import Modal from "../../components/modal/modal";
 import CreateProjectForm from "./createProject";
 import ProjectDetail from "./projectDetail";
+import CreateTeamPage from "../team/teamCreate";
 
 // api import
 import { useGetMyProjects } from "../../hooks/project/getProjectData";
+import useGetTeamsByProjectId from "../../hooks/team/getTeamData";
+import { TeamData } from "../../hooks/team/getTeamData";
 import { putProjectData } from "../../hooks/project/putProjectData";
 import { deleteProjectData } from "../../hooks/project/DeleteProjectData";
 
@@ -68,7 +71,6 @@ import {
   ProjectModalContent,
   ProjectModalLeft,
   ProjectModalRight,
-  ProjectModalCloseWrapper,
 } from "./projectStyled";
 import { CommentBox, CommentType } from "../../components/comment/comment";
 
@@ -80,7 +82,7 @@ export default function ProjectsPage() {
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [showFilterDropdown, setShowFilterDropdown] = useState(false);
   const [modalState, setModalState] = useState<{
-    type: null | "view" | "edit" | "team" | "delete";
+    type: null | "view" | "edit" | "team" | "delete" | "newteam";
     project: any | null;
   }>({ type: null, project: null });
   // 상태 드롭다운 오픈을 위한 상태
@@ -98,14 +100,10 @@ export default function ProjectsPage() {
   } | null>(null);
   const actionBtnRefs = useRef<{ [key: number]: HTMLButtonElement | null }>({});
 
-  // 팀원 데이터 분리
-  const teamMembers = [
-    { name: "Alex Brown", initials: "AB", projects: 3, tasks: 12 },
-    { name: "Chris Davis", initials: "CD", projects: 3, tasks: 8 },
-    { name: "Emma Ford", initials: "EF", projects: 2, tasks: 6 },
-    { name: "Grace Hill", initials: "GH", projects: 1, tasks: 4 },
-    { name: "Ivan Jones", initials: "IJ", projects: 2, tasks: 7 },
-  ];
+  // 팀원 데이터: 현재 보고 있는 프로젝트의 팀원 조회
+  const currentProjectId = modalState.project?.P_ID;
+  const { teams: teamMembers, loading: teamLoading } =
+    useGetTeamsByProjectId(currentProjectId);
 
   const {
     projects: apiProjects,
@@ -126,7 +124,7 @@ export default function ProjectsPage() {
         name: p.P_NAME,
         descript: p.DISCRIPTION || "",
         progress: 0,
-        team: [],
+        team: teamMembers,
         issues: { total: 0, completed: 0 },
         priority: "Medium",
         dueDate: new Date(p.P_CDATE).toLocaleDateString(),
@@ -388,11 +386,18 @@ export default function ProjectsPage() {
                             </ResponsiveTableCell>
                             <ResponsiveTableCellLg>
                               <AvatarGroup>
-                                {project.team.map((member, i) => (
-                                  <Avatar key={i}>
-                                    <AvatarFallback>{member}</AvatarFallback>
-                                  </Avatar>
-                                ))}
+                                {Array.isArray(project.team) &&
+                                  [
+                                    ...new Map(
+                                      project.team.map((m) => [m.U_ID, m])
+                                    ).values(),
+                                  ].map((member: TeamData, i: number) => (
+                                    <Avatar key={i}>
+                                      <AvatarFallback>
+                                        {member.U_ID.slice(0, 2).toUpperCase()}
+                                      </AvatarFallback>
+                                    </Avatar>
+                                  ))}
                               </AvatarGroup>
                             </ResponsiveTableCellLg>
                             <TableCell>
@@ -540,27 +545,27 @@ export default function ProjectsPage() {
                       gap: "0.5rem",
                     }}
                   >
-                    {teamMembers.slice(0, 5).map((member) => (
-                      <TeamMemberItem key={member.initials}>
-                        <Avatar style={{ height: "2rem", width: "2rem" }}>
-                          <AvatarFallback
-                            style={{
-                              backgroundColor: "#111827",
-                              color: "#ffffff",
-                              fontSize: "0.75rem",
-                            }}
-                          >
-                            {member.initials}
-                          </AvatarFallback>
-                        </Avatar>
-                        <TeamMemberInfo>
-                          <TeamMemberName>{member.name}</TeamMemberName>
-                          <TeamMemberRole>
-                            {member.projects} projects, {member.tasks} tasks
-                          </TeamMemberRole>
-                        </TeamMemberInfo>
-                      </TeamMemberItem>
-                    ))}
+                    {[...new Map(teamMembers.map((m) => [m.U_ID, m])).values()]
+                      .slice(0, 5)
+                      .map((member: TeamData) => (
+                        <TeamMemberItem key={member.T_ID}>
+                          <Avatar style={{ height: "2rem", width: "2rem" }}>
+                            <AvatarFallback
+                              style={{
+                                backgroundColor: "#111827",
+                                color: "#ffffff",
+                                fontSize: "0.75rem",
+                              }}
+                            >
+                              {member.U_ID.slice(0, 2).toUpperCase()}
+                            </AvatarFallback>
+                          </Avatar>
+                          <TeamMemberInfo>
+                            <TeamMemberName>{member.U_ID}</TeamMemberName>
+                            <TeamMemberRole>{member.ROLE}</TeamMemberRole>
+                          </TeamMemberInfo>
+                        </TeamMemberItem>
+                      ))}
                   </div>
                 </CardContent>
                 <CardFooter>
@@ -585,7 +590,14 @@ export default function ProjectsPage() {
           isOpen={showNewProjectDialog}
           onClose={() => setShowNewProjectDialog(false)}
         >
-          <CreateProjectForm onClose={() => setShowNewProjectDialog(false)} />
+          <CreateProjectForm
+            onClose={(newProject) => {
+              if (newProject?.P_ID) {
+                setModalState({ type: "newteam", project: newProject });
+              }
+              setShowNewProjectDialog(false);
+            }}
+          />
         </Modal>
       )}
 
@@ -634,25 +646,27 @@ export default function ProjectsPage() {
             </div>
           </EditModal>
         )}
-        {modalState.type === "team" && modalState.project && (
+        {/* {modalState.type === "team" && modalState.project && (
           <div>
             <h2 style={{ marginBottom: 8 }}>Manage Team</h2>
             <div>
-              {modalState.project.team.map((member: string, idx: number) => (
-                <div key={idx} style={{ marginBottom: 4 }}>
-                  <Avatar
-                    style={{
-                      height: "2rem",
-                      width: "2rem",
-                      display: "inline-flex",
-                      marginRight: 8,
-                    }}
-                  >
-                    <AvatarFallback>{member}</AvatarFallback>
-                  </Avatar>
-                  <span>{member}</span>
-                </div>
-              ))}
+              {(modalState.project?.team ?? []).map(
+                (member: string, idx: number) => (
+                  <div key={idx} style={{ marginBottom: 4 }}>
+                    <Avatar
+                      style={{
+                        height: "2rem",
+                        width: "2rem",
+                        display: "inline-flex",
+                        marginRight: 8,
+                      }}
+                    >
+                      <AvatarFallback>{member}</AvatarFallback>
+                    </Avatar>
+                    <span>{member}</span>
+                  </div>
+                )
+              )}
             </div>
             <div style={{ marginTop: 16 }}>
               <Button
@@ -663,7 +677,7 @@ export default function ProjectsPage() {
               </Button>
             </div>
           </div>
-        )}
+        )} */}
         {modalState.type === "delete" && modalState.project && (
           <div>
             <h2 style={{ marginBottom: 8, color: "#ef4444" }}>
@@ -717,6 +731,9 @@ export default function ProjectsPage() {
             </div>
           </div>
         )}
+        {modalState.type === "newteam" && modalState.project && (
+          <CreateTeamPage initialProject={modalState.project} />
+        )}
       </Modal>
 
       <Modal
@@ -724,40 +741,41 @@ export default function ProjectsPage() {
         onClose={() => setModalState({ type: null, project: null })}
       >
         {modalState.type === "view" && modalState.project && (
-          <ProjectModalContent>
-            {/* 오른쪽: 프로젝트 정보 */}
-            <ProjectModalLeft>
-              <h2>Project Details</h2>
-              <ProjectDetail
-                projectId={modalState.project.P_ID}
-                projectData={{
-                  P_NAME: modalState.project.name,
-                  STAT: modalState.project.status,
-                  DUE_DATE: modalState.project.dueDate,
-                  DISCRIPTION: modalState.project.descript,
-                  PRIORITY: modalState.project.priority,
-                  CATEGORY: modalState.project.category,
-                }}
-                onUpdate={() => {
-                  setModalState({ type: null, project: null });
-                  setRefreshTrigger((prev) => prev + 1);
-                }}
-              />
-            </ProjectModalLeft>
-            {/* 왼쪽: 댓글 */}
-            {/* <ProjectModalRight>
-              <h3>댓글</h3>
-              <div>
-                <CommentBox
-                  comments={projectComments[modalState.project.id] || []}
-                  onAdd={(content) =>
-                    handleAddProjectComment(modalState.project.id, content)
-                  }
-                  inputPlaceholder="이 프로젝트에 댓글을 남겨보세요!"
+          <>
+            <h2>Project Details</h2>
+            <ProjectModalContent>
+              {/* 오른쪽: 프로젝트 정보 */}
+              <ProjectModalLeft>
+                <ProjectDetail
+                  projectId={modalState.project.P_ID}
+                  projectData={{
+                    P_NAME: modalState.project.name,
+                    STAT: modalState.project.status,
+                    DUE_DATE: modalState.project.dueDate,
+                    DISCRIPTION: modalState.project.descript,
+                    PRIORITY: modalState.project.priority,
+                    CATEGORY: modalState.project.category,
+                  }}
+                  onUpdate={() => {
+                    setModalState({ type: null, project: null });
+                    setRefreshTrigger((prev) => prev + 1);
+                  }}
                 />
-              </div>
-            </ProjectModalRight> */}
-          </ProjectModalContent>
+              </ProjectModalLeft>
+              {/* 왼쪽: 댓글 */}
+              <ProjectModalRight>
+                <div>
+                  <CommentBox
+                    comments={projectComments[modalState.project.id] || []}
+                    onAdd={(content) =>
+                      handleAddProjectComment(modalState.project.id, content)
+                    }
+                    inputPlaceholder="이 프로젝트에 댓글을 남겨보세요!"
+                  />
+                </div>
+              </ProjectModalRight>
+            </ProjectModalContent>
+          </>
         )}
       </Modal>
 
@@ -771,27 +789,27 @@ export default function ProjectsPage() {
           <div
             style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}
           >
-            {teamMembers.map((member) => (
-              <TeamMemberItem key={member.initials}>
-                <Avatar style={{ height: "2rem", width: "2rem" }}>
-                  <AvatarFallback
-                    style={{
-                      backgroundColor: "#111827",
-                      color: "#ffffff",
-                      fontSize: "0.75rem",
-                    }}
-                  >
-                    {member.initials}
-                  </AvatarFallback>
-                </Avatar>
-                <TeamMemberInfo>
-                  <TeamMemberName>{member.name}</TeamMemberName>
-                  <TeamMemberRole>
-                    {member.projects} projects, {member.tasks} tasks
-                  </TeamMemberRole>
-                </TeamMemberInfo>
-              </TeamMemberItem>
-            ))}
+            {[...new Map(teamMembers.map((m) => [m.U_ID, m])).values()].map(
+              (member: TeamData) => (
+                <TeamMemberItem key={member.T_ID}>
+                  <Avatar style={{ height: "2rem", width: "2rem" }}>
+                    <AvatarFallback
+                      style={{
+                        backgroundColor: "#111827",
+                        color: "#ffffff",
+                        fontSize: "0.75rem",
+                      }}
+                    >
+                      {member.U_ID.slice(0, 2).toUpperCase()}
+                    </AvatarFallback>
+                  </Avatar>
+                  <TeamMemberInfo>
+                    <TeamMemberName>{member.U_ID}</TeamMemberName>
+                    <TeamMemberRole>{member.ROLE}</TeamMemberRole>
+                  </TeamMemberInfo>
+                </TeamMemberItem>
+              )
+            )}
           </div>
           <div style={{ marginTop: 24, textAlign: "right" }}>
             <Button
