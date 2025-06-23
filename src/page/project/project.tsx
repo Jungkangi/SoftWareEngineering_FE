@@ -71,7 +71,7 @@ import {
   ProjectModalCloseWrapper,
 } from "./projectStyled";
 import { CommentBox, CommentType } from "../../components/comment/comment";
-        
+
 // Main Component
 export default function ProjectsPage() {
   // const isMobile = useIsMobile()
@@ -143,38 +143,12 @@ export default function ProjectsPage() {
 
   // Filter projects based on selected tab
   const filteredProjects = projects.filter((project) => {
-    if (selectedTab === "all") return true
-    if (selectedTab === "in-progress") return project.status === "In Progress"
-    if (selectedTab === "completed") return project.status === "Completed"
-    if (selectedTab === "planning") return project.status === "Planning"
-    return true
-  })
-
-  // 프로젝트별 댓글 상태 (각 프로젝트별로 개별 관리)
-  const [projectComments, setProjectComments] = useState<{ [projectId: number]: CommentType[] }>({})
-
-  // 댓글 추가/삭제 함수
-  function handleAddProjectComment(projectId: number, content: string) {
-    if (!content.trim()) return
-    setProjectComments(prev => ({
-      ...prev,
-      [projectId]: [
-        ...(prev[projectId] || []),
-        {
-          id: Date.now(),
-          author: "Me",
-          content,
-          createdAt: new Date().toLocaleString(),
-        }
-      ]
-    }))
-  }
-  function handleDeleteProjectComment(projectId: number, commentId: number) {
-    setProjectComments(prev => ({
-      ...prev,
-      [projectId]: (prev[projectId] || []).filter(c => c.id !== commentId)
-    }))
-  }
+    if (selectedTab === "all") return true;
+    if (selectedTab === "in-progress") return project.status === "In Progress";
+    if (selectedTab === "completed") return project.status === "Completed";
+    if (selectedTab === "planning") return project.status === "Planning";
+    return true;
+  });
 
   // 프로젝트별 댓글 상태 (각 프로젝트별로 개별 관리)
   const [projectComments, setProjectComments] = useState<{
@@ -751,7 +725,6 @@ export default function ProjectsPage() {
       >
         {modalState.type === "view" && modalState.project && (
           <ProjectModalContent>
-
             {/* 오른쪽: 프로젝트 정보 */}
             <ProjectModalLeft>
               <h2>Project Details</h2>
@@ -787,7 +760,6 @@ export default function ProjectsPage() {
           </ProjectModalContent>
         )}
       </Modal>
-
 
       {/* 전체 팀원 모달 */}
       <Modal
