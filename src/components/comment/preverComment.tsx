@@ -416,15 +416,15 @@ export const Textarea = styled.textarea`
   resize: vertical;
   background: ${({ theme }) => theme.colors.background};
   color: ${({ theme }) => theme.colors.foreground};
-`
+`;
 
 // 댓글 박스(메시지 박스) 컴포넌트
 export type CommentType = {
-  id: number
-  author: string
-  content: string
-  createdAt: string
-}
+  id: number;
+  author: string;
+  content: string;
+  createdAt: string;
+};
 
 export function CommentBox({
   comments,
@@ -433,15 +433,15 @@ export function CommentBox({
   style,
   inputPlaceholder = "댓글을 입력하세요...",
 }: {
-  comments: CommentType[]
-  onAdd: (content: string) => void
-  onDelete: (commentId: number) => void
-  style?: React.CSSProperties
-  inputPlaceholder?: string
+  comments: CommentType[];
+  onAdd: (content: string) => void;
+  onDelete: (commentId: number) => void;
+  style?: React.CSSProperties;
+  inputPlaceholder?: string;
 }) {
   // 기본값을 true로 변경하여 댓글이 기본적으로 열려있는 상태가 되도록 함
-  const [open, setOpen] = useState(true)
-  const [input, setInput] = useState("")
+  const [open, setOpen] = useState(true);
+  const [input, setInput] = useState("");
   return (
     <div
       style={{
@@ -471,14 +471,30 @@ export function CommentBox({
         onClick={() => setOpen((o) => !o)}
       >
         <MessageCircle size={16} style={{ marginRight: 8, color: "#6366f1" }} />
-        댓글 {comments.length > 0 && <span style={{ color: "#6366f1", marginLeft: 4 }}>({comments.length})</span>}
-        <span style={{ marginLeft: "auto", fontSize: 13, color: "#9ca3af" }}>{open ? "닫기" : "펼치기"}</span>
+        댓글{" "}
+        {comments.length > 0 && (
+          <span style={{ color: "#6366f1", marginLeft: 4 }}>
+            ({comments.length})
+          </span>
+        )}
+        <span style={{ marginLeft: "auto", fontSize: 13, color: "#9ca3af" }}>
+          {open ? "닫기" : "펼치기"}
+        </span>
       </button>
       {open && (
         <div style={{ padding: 12, paddingTop: 8 }}>
           <div style={{ maxHeight: 220, overflowY: "auto", marginBottom: 8 }}>
             {comments.length === 0 && (
-              <div style={{ color: "#9ca3af", fontSize: 13, textAlign: "center", padding: 12 }}>아직 댓글이 없습니다.</div>
+              <div
+                style={{
+                  color: "#9ca3af",
+                  fontSize: 13,
+                  textAlign: "center",
+                  padding: 12,
+                }}
+              >
+                아직 댓글이 없습니다.
+              </div>
             )}
             {comments.map((comment) => (
               <div
@@ -492,11 +508,19 @@ export function CommentBox({
                 }}
               >
                 <div style={{ flex: 1 }}>
-                  <div style={{ fontWeight: 500, fontSize: 13, color: "#374151" }}>
+                  <div
+                    style={{ fontWeight: 500, fontSize: 13, color: "#374151" }}
+                  >
                     {comment.author}
-                    <span style={{ color: "#9ca3af", fontSize: 11, marginLeft: 8 }}>{comment.createdAt}</span>
+                    <span
+                      style={{ color: "#9ca3af", fontSize: 11, marginLeft: 8 }}
+                    >
+                      {comment.createdAt}
+                    </span>
                   </div>
-                  <div style={{ fontSize: 14, color: "#222" }}>{comment.content}</div>
+                  <div style={{ fontSize: 14, color: "#222" }}>
+                    {comment.content}
+                  </div>
                 </div>
                 <button
                   style={{
@@ -530,8 +554,8 @@ export function CommentBox({
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={(e) => {
                 if (e.key === "Enter" && input.trim()) {
-                  onAdd(input)
-                  setInput("")
+                  onAdd(input);
+                  setInput("");
                 }
               }}
               maxLength={200}
@@ -541,8 +565,8 @@ export function CommentBox({
               style={{ minWidth: 48 }}
               onClick={() => {
                 if (input.trim()) {
-                  onAdd(input)
-                  setInput("")
+                  onAdd(input);
+                  setInput("");
                 }
               }}
               disabled={!input.trim()}
@@ -553,5 +577,5 @@ export function CommentBox({
         </div>
       )}
     </div>
-  )
+  );
 }

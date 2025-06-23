@@ -88,7 +88,13 @@ const CreateProjectForm: React.FC<CreateProjectFormProps> = ({ onClose }) => {
           <FormGroup>
             <Label htmlFor="category">Category</Label>
             <SelectContainer>
-              <SelectTriggerContainer
+              <Input
+                id="project-name"
+                placeholder="Enter project name"
+                value={category}
+                onChange={(e) => setCategory(e.target.value)}
+              />
+              {/* <SelectTriggerContainer
                 onClick={() => setShowCategorySelect(!showCategorySelect)}
               >
                 <SelectValue>{category}</SelectValue>
@@ -113,7 +119,7 @@ const CreateProjectForm: React.FC<CreateProjectFormProps> = ({ onClose }) => {
                     </SelectItem>
                   ))}
                 </SelectContent>
-              )}
+              )} */}
             </SelectContainer>
           </FormGroup>
         </FormRow>

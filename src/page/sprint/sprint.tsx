@@ -31,7 +31,7 @@ import {
   FormRow,
   Label,
   Textarea,
-} from "../../components/ui";
+} from "../../components/comment/preverComment";
 import {
   PageContainer,
   MainContent,
@@ -1369,6 +1369,7 @@ export default function SprintsPage() {
                         onAdd={(content) =>
                           handleAddIssueComment(viewIssue.issue.id, content)
                         }
+
                         onDelete={(commentId) =>
                           handleDeleteIssueComment(
                             viewIssue.issue.id,

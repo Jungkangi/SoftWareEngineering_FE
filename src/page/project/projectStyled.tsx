@@ -1240,41 +1240,27 @@ export const DeleteButton = styled.button`
 export const ProjectModalContent = styled.div`
   display: flex;
   flex-direction: row;
-  gap: 32px;
-  width: 100%;
+  gap: 0.5em;
+  width: 80vw;
   height: 100%;
-  min-width: 0;
-  min-height: 0;
-  box-sizing: border-box;
 `;
 
 export const ProjectModalLeft = styled.div`
   flex: 1;
   min-width: 0;
   min-height: 0;
+  width: 70px;
   width: 100%;
   height: 100%;
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
-  /* 댓글 영역이 모달에 맞게 꽉 차도록 */
-  > h3 {
-    margin: 0 0 8px 0;
-    font-size: 18px;
-  }
-  > .comment-box-wrapper {
-    flex: 1;
-    min-height: 0;
-    display: flex;
-    flex-direction: column;
-  }
+  background-color: pink;
 `;
 
 export const ProjectModalRight = styled.div`
   flex: 1;
-  min-width: 0;
-  min-height: 0;
-  width: 100%;
+  width: 30vw;
   height: 100%;
   display: flex;
   flex-direction: column;

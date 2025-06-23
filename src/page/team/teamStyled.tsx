@@ -156,7 +156,7 @@ export const NextButton = styled.button`
   cursor: pointer;
 
   &:hover {
-    background-color: #2563eb;
+    background-color: #414654;
   }
 `;
 
@@ -214,6 +214,29 @@ export const UserCard = styled.div`
 
   &:hover {
     box-shadow: 0 0 0 2px #3b82f6;
+  }
+`;
+
+/* ==================  Team List & Card  ================== */
+
+export const TeamList = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.25rem;
+  margin-top: 1rem;
+`;
+
+export const TeamCard = styled.div`
+  flex: 0 0 220px;
+  background-color: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.75rem;
+  padding: 1.25rem 1rem;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  transition: box-shadow 0.2s;
+
+  &:hover {
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
   }
 `;
 

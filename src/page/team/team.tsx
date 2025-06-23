@@ -3,11 +3,33 @@ import * as S from "./teamStyled";
 import { User } from "lucide-react";
 import Modal from "../../components/modal/modal";
 import CreateTeamPage from "./teamCreate";
-// import { useMe } from "../../hooks/useMe";
+import useGetTeams from "../../hooks/team/getTeamData";
+import { useGetMyProjects } from "../../hooks/project/getProjectData";
+import useMe from "../../hooks/auth/getMyData";
 
 const TeamPage = () => {
-  // const { me } = useMe();
+  const { me } = useMe();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
+  const { teams, loading, error } = useGetTeams(refreshTrigger);
+  const { projects } = useGetMyProjects(refreshTrigger);
+
+  console.log("teams", teams);
+  console.log("me", me);
+  console.log("projects", projects);
+
+  if (!me) return <p>Loading user info...</p>;
+
+  const myUserId = me?.user?.UID;
+  console.log("myUserId", myUserId);
+  const uniqueTeamsMap = new Map();
+  Array.isArray(teams) &&
+    teams.forEach((t) => {
+      if (t.U_ID === myUserId && !uniqueTeamsMap.has(t.P_ID)) {
+        uniqueTeamsMap.set(t.P_ID, t);
+      }
+    });
+  const uniqueTeams = Array.from(uniqueTeamsMap.values());
 
   return (
     <div style={{ padding: "2rem" }}>
@@ -24,21 +46,57 @@ const TeamPage = () => {
       </div>
 
       <S.SectionTitle>Teams</S.SectionTitle>
-      <S.EmptyTeamWrapper>
-        <S.EmptyTeamTitle>페이지를 공유하거나 팀을 멘션하세요</S.EmptyTeamTitle>
-        <S.EmptyTeamDesc>
-          지금 팀을 만들거나
-          <a href="#" style={{ color: "#3b82f6", textDecoration: "underline" }}>
-            팀과 공동 작업하는 방법
-          </a>
-          을 알아보세요
-        </S.EmptyTeamDesc>
-        <S.TeamCreateButton onClick={() => setIsModalOpen(true)}>
-          팀 만들기
-        </S.TeamCreateButton>
-      </S.EmptyTeamWrapper>
+      {loading ? (
+        <p>Loading teams...</p>
+      ) : error ? (
+        <p style={{ color: "red" }}>{error}</p>
+      ) : uniqueTeams.length > 0 ? (
+        <S.TeamList>
+          {uniqueTeams.map((t) => (
+            <S.TeamCard key={t.T_ID}>
+              <div style={{ fontWeight: 600 }}>
+                {(Array.isArray(projects) &&
+                  projects.find((p) => p.P_ID === t.P_ID)?.P_NAME) ||
+                  "알 수 없는 프로젝트"}
+              </div>
+              <div style={{ fontSize: "0.85rem", color: "#6b7280" }}>
+                ROLE: {t.ROLE}
+              </div>
+              <div style={{ fontSize: "0.75rem", color: "#9ca3af" }}>
+                생성일: {t.CREATE_DATE}
+              </div>
+            </S.TeamCard>
+          ))}
+        </S.TeamList>
+      ) : null}
+      {!loading && (
+        <S.EmptyTeamWrapper>
+          <S.EmptyTeamTitle>
+            페이지를 공유하거나 팀을 멘션하세요
+          </S.EmptyTeamTitle>
+          <S.EmptyTeamDesc>
+            지금 팀을 만들거나
+            <a
+              href="#"
+              style={{ color: "#3b82f6", textDecoration: "underline" }}
+            >
+              팀과 공동 작업하는 방법
+            </a>
+            을 알아보세요
+          </S.EmptyTeamDesc>
+          <S.TeamCreateButton onClick={() => setIsModalOpen(true)}>
+            팀 만들기
+          </S.TeamCreateButton>
+        </S.EmptyTeamWrapper>
+      )}
 
-      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
+      <Modal
+        isOpen={isModalOpen}
+        onClose={() => {
+          setIsModalOpen(false);
+          setRefreshTrigger((prev) => prev + 1); // 팀 생성 후 목록 새로고침
+        }}
+      >
         <CreateTeamPage />
       </Modal>
     </div>
