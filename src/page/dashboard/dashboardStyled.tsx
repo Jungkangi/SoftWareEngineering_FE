@@ -90,11 +90,12 @@ export const Tab = styled.button<{ active?: boolean }>`
 
 export const ProjectsContainer = styled.div`
   display: flex;
+  flex-wrap: wrap;
   gap: 16px;
 `;
 
 export const ProjectCard = styled.div`
-  flex: 1;
+  width: 19%;
   background: #fff;
   padding: 16px;
   border-radius: 8px;
@@ -159,4 +160,8 @@ export const ViewButton = styled.button`
   border-radius: 6px;
   background: #fff;
   cursor: pointer;
+`;
+
+export const DetailWrapper = styled.div`
+  width: 80vw;
 `;
