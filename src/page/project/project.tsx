@@ -48,7 +48,6 @@ import {
   DropdownLabel,
   DropdownSeparator,
   DropdownItem,
-  DropdownItemDestructive,
   ResponsiveTableHead,
   ResponsiveTableHeadLg,
   ResponsiveTableCell,
@@ -65,6 +64,14 @@ import { useGetMyProjects } from "../../hooks/project/getProjectData";
 import { putProjectData } from "../../hooks/project/putProjectData";
 import { deleteProjectData } from "../../hooks/project/DeleteProjectData";
 
+import {
+  ProjectModalContent,
+  ProjectModalLeft,
+  ProjectModalRight,
+  ProjectModalCloseWrapper,
+} from "./projectStyled";
+import { CommentBox, CommentType } from "../../components/comment/comment";
+
 // Main Component
 export default function ProjectsPage() {
   // const isMobile = useIsMobile()
@@ -72,9 +79,6 @@ export default function ProjectsPage() {
   const [showNewProjectDialog, setShowNewProjectDialog] = useState(false);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [showFilterDropdown, setShowFilterDropdown] = useState(false);
-  const [showActionDropdown, setShowActionDropdown] = useState<number | null>(
-    null
-  );
   const [modalState, setModalState] = useState<{
     type: null | "view" | "edit" | "team" | "delete";
     project: any | null;
@@ -145,6 +149,34 @@ export default function ProjectsPage() {
     if (selectedTab === "planning") return project.status === "Planning";
     return true;
   });
+
+  // 프로젝트별 댓글 상태 (각 프로젝트별로 개별 관리)
+  const [projectComments, setProjectComments] = useState<{
+    [projectId: number]: CommentType[];
+  }>({});
+
+  // 댓글 추가/삭제 함수
+  function handleAddProjectComment(projectId: number, content: string) {
+    if (!content.trim()) return;
+    setProjectComments((prev) => ({
+      ...prev,
+      [projectId]: [
+        ...(prev[projectId] || []),
+        {
+          id: Date.now(),
+          author: "Me",
+          content,
+          createdAt: new Date().toLocaleString(),
+        },
+      ],
+    }));
+  }
+  function handleDeleteProjectComment(projectId: number, commentId: number) {
+    setProjectComments((prev) => ({
+      ...prev,
+      [projectId]: (prev[projectId] || []).filter((c) => c.id !== commentId),
+    }));
+  }
 
   return (
     <PageContainer>
@@ -312,6 +344,9 @@ export default function ProjectsPage() {
                                             );
                                           } catch (err) {
                                             console.error(err);
+                                            alert(
+                                              "PM(프로젝트 관리자)만 프로젝트 상태를 변경할 수 있습니다."
+                                            );
                                           } finally {
                                             setOpenDropdownId(null);
                                           }
@@ -659,6 +694,9 @@ export default function ProjectsPage() {
                     setRefreshTrigger((prev) => prev + 1);
                   } catch (err) {
                     console.error("Failed to delete project", err);
+                    alert(
+                      "PM(프로젝트 관리자)만 프로젝트를 삭제할 수 있습니다."
+                    );
                   }
                 }}
                 style={{
@@ -681,6 +719,48 @@ export default function ProjectsPage() {
               </Button>
             </div>
           </div>
+        )}
+      </Modal>
+
+      <Modal
+        isOpen={modalState.type === "view" && !!modalState.project}
+        onClose={() => setModalState({ type: null, project: null })}
+      >
+        {modalState.type === "view" && modalState.project && (
+          <ProjectModalContent>
+            {/* 오른쪽: 프로젝트 정보 */}
+            <ProjectModalLeft>
+              <h2>Project Details</h2>
+              <ProjectDetail
+                projectId={modalState.project.P_ID}
+                projectData={{
+                  P_NAME: modalState.project.name,
+                  STAT: modalState.project.status,
+                  DUE_DATE: modalState.project.dueDate,
+                  DISCRIPTION: modalState.project.descript,
+                  PRIORITY: modalState.project.priority,
+                  CATEGORY: modalState.project.category,
+                }}
+                onUpdate={() => {
+                  setModalState({ type: null, project: null });
+                  setRefreshTrigger((prev) => prev + 1);
+                }}
+              />
+            </ProjectModalLeft>
+            {/* 왼쪽: 댓글 */}
+            {/* <ProjectModalRight>
+              <h3>댓글</h3>
+              <div>
+                <CommentBox
+                  comments={projectComments[modalState.project.id] || []}
+                  onAdd={(content) =>
+                    handleAddProjectComment(modalState.project.id, content)
+                  }
+                  inputPlaceholder="이 프로젝트에 댓글을 남겨보세요!"
+                />
+              </div>
+            </ProjectModalRight> */}
+          </ProjectModalContent>
         )}
       </Modal>
 

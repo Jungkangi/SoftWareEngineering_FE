@@ -31,7 +31,7 @@ import {
   FormRow,
   Label,
   Textarea,
-} from "../../components/ui";
+} from "../../components/comment/preverComment";
 import {
   PageContainer,
   MainContent,
@@ -47,6 +47,15 @@ import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import BurndownChart from "./BurndownChart";
 import React from "react";
 import Modal from "../../components/modal/modal";
+import { CommentBox, CommentType } from "../../components/comment/comment";
+import SprintWideModal from "./SprintWideModal";
+import {
+  SprintModalContent,
+  SprintModalLeft,
+  SprintModalRight,
+  SprintModalInfoList,
+  SprintModalCloseWrapper,
+} from "./sprintStyled";
 
 //import api
 import { getSprintsByProject } from "../../hooks/sprint/getSprintsByProject";
@@ -1196,6 +1205,28 @@ export default function SprintsPage() {
                       <li>Done: {viewSprint.issues.DONE.length}</li>
                     </ul>
                   </div>
+                  {/* 예시: 스프린트 상세 모달 내 이슈별 댓글 */}
+                  {(["TODO", "PROCESSING", "REVIEW", "DONE"] as const).map(
+                    (col) =>
+                      viewSprint.issues?.[col]?.map?.((issue: any) => (
+                        <div
+                          key={issue.id}
+                          style={{
+                            marginTop: 20,
+                            borderTop: "1px solid #e5e7eb",
+                            paddingTop: 12,
+                          }}
+                        >
+                          <div style={{ fontWeight: 500 }}>{issue.title}</div>
+                          <CommentBox
+                            comments={modalIssueComments[issue.id] || []}
+                            onAdd={(content) =>
+                              handleAddModalIssueComment(issue.id, content)
+                            }
+                          />
+                        </div>
+                      ))
+                  )}
                   <div style={{ marginTop: 16, textAlign: "right" }}>
                     <Button
                       variant="outline"
@@ -1207,6 +1238,52 @@ export default function SprintsPage() {
                 </div>
               )}
             </Modal>
+
+            {/* 이슈 상세 모달 */}
+            <SprintWideModal
+              isOpen={!!viewIssue}
+              onClose={() => setViewIssue(null)}
+            >
+              {viewIssue && (
+                <SprintModalContent>
+                  <SprintModalLeft>
+                    <h3>댓글</h3>
+                    <div className="comment-box-wrapper">
+                      <CommentBox
+                        comments={issueComments[viewIssue.issue.id] || []}
+                        onAdd={(content) =>
+                          handleAddIssueComment(viewIssue.issue.id, content)
+                        }
+                        inputPlaceholder="이 이슈에 댓글을 남겨보세요!"
+                      />
+                    </div>
+                  </SprintModalLeft>
+                  <SprintModalRight>
+                    <h2 style={{ marginBottom: 8 }}>Issue Details</h2>
+                    <SprintModalInfoList>
+                      <div>
+                        <b>Title:</b> {viewIssue.issue.title}
+                      </div>
+                      <div>
+                        <b>Assignee:</b> {viewIssue.issue.assignee}
+                      </div>
+                      <div>
+                        <b>Priority:</b> {viewIssue.issue.priority}
+                      </div>
+                      <div>
+                        <b>Column:</b> {viewIssue.column}
+                      </div>
+                      <div>
+                        <b>ID:</b> {viewIssue.issue.id}
+                      </div>
+                    </SprintModalInfoList>
+                    <SprintModalCloseWrapper>
+                      <Button onClick={() => setViewIssue(null)}>Close</Button>
+                    </SprintModalCloseWrapper>
+                  </SprintModalRight>
+                </SprintModalContent>
+              )}
+            </SprintWideModal>
           </ContentContainer>
         </Main>
         <NewSprintDialog

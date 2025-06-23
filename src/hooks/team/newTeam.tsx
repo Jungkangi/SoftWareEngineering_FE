@@ -1,7 +1,7 @@
 import api from "../axios";
 
 interface CreateProjectPayload {
-  ROLE: string;
+  ROLE: string | "PM";
   P_NAME: string;
   CREATE_DATE: string;
 }

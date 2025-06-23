@@ -1236,3 +1236,53 @@ export const DeleteButton = styled.button`
     background-color: #fee2e2;
   }
 `;
+// View Project 모달 내부 레이아웃
+export const ProjectModalContent = styled.div`
+  display: flex;
+  flex-direction: row;
+  gap: 0.5em;
+  width: 80vw;
+  height: 100%;
+`;
+
+export const ProjectModalLeft = styled.div`
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  width: 70px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+
+  background-color: pink;
+`;
+
+export const ProjectModalRight = styled.div`
+  flex: 1;
+  width: 30vw;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  overflow-y: auto;
+  /* 내부 데이터가 보기 좋게 여백 추가 */
+  padding-right: 8px;
+`;
+
+export const ProjectModalInfoList = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  font-size: 1rem;
+  margin-bottom: 24px;
+  > div {
+    word-break: break-all;
+  }
+`;
+
+export const ProjectModalCloseWrapper = styled.div`
+  margin-top: auto;
+  display: flex;
+  justify-content: flex-end;
+`;
