@@ -4,8 +4,8 @@ export const PageWrapper = styled.div`
   position: relative;
   padding: 2rem 2rem;
   background-color: #f9fafb;
-  height: 100%;
-  width: 100%;
+  height: fit-content;
+  width: 60vw;
   overflow: hidden;
 `;
 
@@ -75,7 +75,7 @@ export const Label = styled.label`
 `;
 
 export const Input = styled.input`
-  width: 24.5%;
+  width: 100%;
   padding: 0.75rem;
   border-radius: 0.5rem;
   border: 1px solid #d1d5db;
@@ -101,7 +101,7 @@ export const Textarea = styled.textarea`
 `;
 
 export const Select = styled.select`
-  width: 24.5%;
+  width: 100%;
   padding: 0.75rem;
   border-radius: 0.5rem;
   border: 1px solid #d1d5db;
@@ -139,7 +139,7 @@ export const TipBox = styled.div`
   display: flex;
   align-items: flex-start;
   gap: 0.75rem;
-  width: 24.5%;
+  width: 100%;
 `;
 
 export const NextButton = styled.button`

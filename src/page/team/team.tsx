@@ -3,14 +3,25 @@ import * as S from "./teamStyled";
 import { User } from "lucide-react";
 import Modal from "../../components/modal/modal";
 import CreateTeamPage from "./teamCreate";
+import Modifyteam from "./teamModify";
 import useGetTeams from "../../hooks/team/getTeamData";
 import { useGetMyProjects } from "../../hooks/project/getProjectData";
 import useMe from "../../hooks/auth/getMyData";
+import useAllUsers from "../../hooks/team/getAlluser";
 
 const TeamPage = () => {
   const { me } = useMe();
+  const { users } = useAllUsers();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
+  const [selectedTeam, setSelectedTeam] = useState<{
+    P_ID: number;
+    T_ID: number;
+    ROLE: string;
+    CREATE_DATE: string;
+    U_ID?: number;
+    [key: string]: any;
+  } | null>(null);
   const { teams, loading, error } = useGetTeams(refreshTrigger);
   const { projects } = useGetMyProjects(refreshTrigger);
 
@@ -53,7 +64,13 @@ const TeamPage = () => {
       ) : uniqueTeams.length > 0 ? (
         <S.TeamList>
           {uniqueTeams.map((t) => (
-            <S.TeamCard key={t.T_ID}>
+            <S.TeamCard
+              key={t.T_ID}
+              onClick={() => {
+                setSelectedTeam(t);
+                setIsModalOpen(true);
+              }}
+            >
               <div style={{ fontWeight: 600 }}>
                 {(Array.isArray(projects) &&
                   projects.find((p) => p.P_ID === t.P_ID)?.P_NAME) ||
@@ -91,13 +108,38 @@ const TeamPage = () => {
       )}
 
       <Modal
-        isOpen={isModalOpen}
+        isOpen={isModalOpen && selectedTeam !== null}
         onClose={() => {
           setIsModalOpen(false);
-          setRefreshTrigger((prev) => prev + 1); // 팀 생성 후 목록 새로고침
+          setSelectedTeam(null);
+          setRefreshTrigger((prev) => prev + 1);
         }}
       >
-        <CreateTeamPage />
+        <div style={{ padding: "1.5rem" }}>
+          <Modifyteam
+            initialTeam={selectedTeam}
+            projectName={
+              Array.isArray(projects)
+                ? projects.find((p) => p.P_ID === selectedTeam?.P_ID)?.P_NAME
+                : ""
+            }
+            teamMembers={teams
+              .filter((tm) => tm.P_ID === selectedTeam?.P_ID)
+              .map((tm) => {
+                const matchedUser = users?.find((user) => user.UID === tm.U_ID);
+                return {
+                  UID: tm.U_ID,
+                  NICKNAME: matchedUser?.NICKNAME || "알 수 없음",
+                  EMAIL: matchedUser?.EMAIL || "",
+                  ROLE: tm.ROLE || "MEMBER",
+                  PASSWORD: "",
+                  PHONE: "",
+                  CREATE_DATE: tm.CREATE_DATE || "",
+                };
+              })}
+          />
+          {/* You can use selectedTeam here to show more info */}
+        </div>
       </Modal>
     </div>
   );
