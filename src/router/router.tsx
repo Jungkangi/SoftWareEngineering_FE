@@ -7,6 +7,7 @@ import {
   SprintsPage,
   AuthPage,
   Team,
+  Calendar,
 } from "../page/index";
 
 const AppRouter = () => {
@@ -20,6 +21,7 @@ const AppRouter = () => {
           <Route path="project" element={<ProjectsPage />} />
           <Route path="sprint" element={<SprintsPage />} />
           <Route path="team" element={<Team />} />
+          <Route path="calendar" element={<Calendar />} />
           <Route path="reports" element={<Dashboard />} />
           <Route path="settings" element={<Dashboard />} />
         </Route>
